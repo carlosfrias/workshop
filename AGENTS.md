@@ -15,6 +15,7 @@ Project-mirrored execution workspace. Each project here mirrors its documentatio
 | Project Keywords | Route To |
 |-----------------|----------|
 | kingdom, warfare, leadership, mike brewer, nancy, training, curriculum, flashcard, study aid, mkdocs | `./01-Projects/kingdom-warfare-leadership/AGENTS.md` |
+| doc-standards, enablement, scaffold, project template, topology, documentation standard | `./01-Projects/doc-standards-enablement/AGENTS.md` |
 
 ---
 
