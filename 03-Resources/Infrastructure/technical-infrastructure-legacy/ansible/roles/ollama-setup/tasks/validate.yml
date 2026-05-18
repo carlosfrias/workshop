@@ -1,0 +1,31 @@
+---
+# validate.yml — Post-deployment verification
+
+- name: "Validate | Check Ollama service health"
+  ansible.builtin.systemd:
+    name: ollama
+    state: started
+  register: ollama_service
+  ignore_errors: true
+
+- name: "Validate | Query Ollama API for installed models"
+  ansible.builtin.uri:
+    url: http://localhost:11434/api/tags
+    method: GET
+    status_code: 200
+  register: api_model_list
+  retries: 3
+  delay: 5
+  until: api_model_list.status == 200
+  ignore_errors: true
+
+- name: "Validate | Verify expected models are present"
+  ansible.builtin.fail:
+    msg: "Expected model {{ item }} not found on {{ inventory_hostname }}."
+  when: item not in (api_model_list.json.models | default([]) | map(attribute='name') | list)
+  loop: "{{ _models }}"
+  ignore_errors: true
+
+- name: "Validate | Log final model state"
+  ansible.builtin.debug:
+    msg: "Node {{ inventory_hostname }} has models: {{ api_model_list.json.models | default([]) | map(attribute='name') | list }}"

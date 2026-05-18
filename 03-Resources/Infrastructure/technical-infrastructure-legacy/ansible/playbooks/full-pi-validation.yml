@@ -1,0 +1,54 @@
+---
+# Full Pi Validation Playbook
+# Complete workflow: Test → Install/Update → Fix → Reboot Test → Report
+
+- name: Full Pi Validation Workflow
+  hosts: localhost
+  gather_facts: no
+  
+  tasks:
+    - name: Create reports directory
+      file:
+        path: "{{ playbook_dir }}/../reports"
+        state: directory
+        mode: '0755'
+
+    - name: Initialize validation report
+      copy:
+        dest: "{{ playbook_dir }}/../reports/pi-validation-{{ ansible_date_time.date }}.md"
+        content: |
+          # Pi Lab Nodes Validation Report
+          
+          **Date:** {{ ansible_date_time.date }}
+          **Time:** {{ ansible_date_time.time }}
+          
+          ## Executive Summary
+          
+          This report documents the complete validation of pi-coding-agent installation
+          across all lab nodes, including reboot persistence testing.
+          
+          ## Test Sequence
+          
+          1. Initial Status Check
+          2. Installation/Update
+          3. PATH Configuration
+          4. Reboot Persistence Test
+          5. Final Verification
+          
+          ## Node Status
+          
+          | Hostname | IP | Initial | Final | Persistent |
+          |----------|-----|---------|-------|------------|
+          
+          ---
+          *Report generated automatically by Ansible*
+        mode: '0644'
+      register: report_init
+
+    - name: Display validation start
+      debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════╗
+          ║     PI LAB NODES FULL VALIDATION STARTING                ║
+          ║     Date: {{ ansible_date_time.date }} {{ ansible_date_time.time }}          ║
+          ╚══════════════════════════════════════════════════════════╝

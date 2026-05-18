@@ -5,7 +5,7 @@
 
 ## [S-TIGHT]
 
-Tooling and scripts for the doc-standards enablement project. Contains the project scaffold script, validation tools, and build automation. The doc-standards skill source code lives in its own package repo at `../../ai-trading-workspace/technical-infrastructure/packages/doc-standards/`.
+Tooling and scripts for the doc-standards enablement project. Contains the project scaffold script, validation tools, and build automation. The doc-standards skill source code lives in its own package repo at `../../workshop/technical-infrastructure/packages/doc-standards/`.
 
 ## Tech Stack
 
@@ -13,7 +13,7 @@ Tooling and scripts for the doc-standards enablement project. Contains the proje
 |-----------|-----------|-------------|
 | Project scaffolding | Bash | `scripts/scaffold-project.sh` |
 | Link validation | Python 3.14 | `validation/check-links.py` (to create) |
-| Doc-standards skill | Markdown | `../../ai-trading-workspace/technical-infrastructure/packages/doc-standards/skills/doc-standards/` |
+| Doc-standards skill | Markdown | `../../workshop/technical-infrastructure/packages/doc-standards/skills/doc-standards/` |
 
 ## Directory Structure
 
@@ -47,7 +47,7 @@ doc-standards-enablement/
 | Project overview, deliverables | `../../personal-vault/01-Projects/doc-standards-enablement/README.md` |
 | Current state, priorities | `../../personal-vault/01-Projects/doc-standards-enablement/FOCUS.md` |
 | Prompt history | `../../personal-vault/01-Projects/doc-standards-enablement/threads/doc-standards-enablement/0-THREAD.md` |
-| Doc-standards skill source | `../../ai-trading-workspace/technical-infrastructure/packages/doc-standards/skills/doc-standards/` |
+| Doc-standards skill source | `../../workshop/technical-infrastructure/packages/doc-standards/skills/doc-standards/` |
 
 ---
 

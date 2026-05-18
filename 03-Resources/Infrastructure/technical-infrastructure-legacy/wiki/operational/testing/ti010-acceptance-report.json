@@ -1,0 +1,194 @@
+{
+  "suite": "TI-010 Acceptance Tests",
+  "timestamp": "2026-05-06T11:28:27.802372+00:00",
+  "gist_id": "0c517214489cb78c0484ca661f3d8463",
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "tests": [
+    {
+      "name": "gist_event_bus.py exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/gist_event_bus.py",
+      "timestamp": "2026-05-06T11:28:02.820665+00:00"
+    },
+    {
+      "name": "Event bus can be imported",
+      "passed": true,
+      "detail": "Import OK",
+      "timestamp": "2026-05-06T11:28:03.095051+00:00"
+    },
+    {
+      "name": "Event bus CLI works",
+      "passed": true,
+      "detail": "CLI help displayed",
+      "timestamp": "2026-05-06T11:28:03.363026+00:00"
+    },
+    {
+      "name": "gist_lag_monitor.py exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/gist_lag_monitor.py",
+      "timestamp": "2026-05-06T11:28:03.363234+00:00"
+    },
+    {
+      "name": "Lag monitor --status works",
+      "passed": true,
+      "detail": "=== Gist Event Bus Status ===\nGist ID: 0c517214489cb78c0484ca661f3d8463\nDescription: Network Trouble",
+      "timestamp": "2026-05-06T11:28:04.228407+00:00"
+    },
+    {
+      "name": "Lag monitor --lag works",
+      "passed": true,
+      "detail": "=== Consumer Lag ===\nTotal events: 4\nPending: 0\nConsumed: 1\nDLQ: 0\n\nPending by target:",
+      "timestamp": "2026-05-06T11:28:06.079482+00:00"
+    },
+    {
+      "name": "Lag monitor --metrics works",
+      "passed": true,
+      "detail": "=== Event Metrics ===\nMessages published: 4\nMessages consumed: 1\nMessages lost: 0\nMessages in DLQ: 0\nAvg delivery latency: 68.1s\nMax delivery latency: 68.1s",
+      "timestamp": "2026-05-06T11:28:06.919607+00:00"
+    },
+    {
+      "name": "Can publish event with schema",
+      "passed": true,
+      "detail": "\ud83d\udce4 Published evt_20260506112807_269e09fc (test.schema)\nPublished: evt_20260506112807_269e09fc",
+      "timestamp": "2026-05-06T11:28:09.707869+00:00"
+    },
+    {
+      "name": "Events have required schema fields",
+      "passed": true,
+      "detail": "Found 0 pending events",
+      "timestamp": "2026-05-06T11:28:10.540094+00:00"
+    },
+    {
+      "name": "Published test event",
+      "passed": true,
+      "detail": "evt_20260506112810_ff860454",
+      "timestamp": "2026-05-06T11:28:13.017041+00:00"
+    },
+    {
+      "name": "DLQ file exists in Gist",
+      "passed": true,
+      "detail": "DLQ tracking active",
+      "timestamp": "2026-05-06T11:28:24.927011+00:00"
+    },
+    {
+      "name": "Wildcard pattern matching works",
+      "passed": true,
+      "detail": "Wildcard matching works",
+      "timestamp": "2026-05-06T11:28:25.797306+00:00"
+    },
+    {
+      "name": "Compaction command works",
+      "passed": true,
+      "detail": "Removed 0 old events",
+      "timestamp": "2026-05-06T11:28:26.705649+00:00"
+    },
+    {
+      "name": "Programmatic compaction works",
+      "passed": true,
+      "detail": "Compacted {removed} events",
+      "timestamp": "2026-05-06T11:28:27.545131+00:00"
+    },
+    {
+      "name": "test_ti010.py exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/test_ti010.py",
+      "timestamp": "2026-05-06T11:28:27.545349+00:00"
+    },
+    {
+      "name": "Test harness produces report",
+      "passed": true,
+      "detail": "Report generated",
+      "timestamp": "2026-05-06T11:28:27.799882+00:00"
+    },
+    {
+      "name": "Architecture Plan exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/operational/planning/PLAN-TI010-EVENT-DRIVEN.md",
+      "timestamp": "2026-05-06T11:28:27.800096+00:00"
+    },
+    {
+      "name": "Master Prompt exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/operational/planning/prompts/PROMPT-TI010-EVENT-DRIVEN.md",
+      "timestamp": "2026-05-06T11:28:27.800124+00:00"
+    },
+    {
+      "name": "Protocol Guide exists",
+      "passed": true,
+      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/guides/gist-message-protocol.md",
+      "timestamp": "2026-05-06T11:28:27.800155+00:00"
+    },
+    {
+      "name": "TI-010 entry exists in backlog",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.801327+00:00"
+    },
+    {
+      "name": "TI-010 marked as complete",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.801987+00:00"
+    },
+    {
+      "name": "Deliverable: gist_event_bus.py",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802005+00:00"
+    },
+    {
+      "name": "Deliverable: EventConsumer",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802013+00:00"
+    },
+    {
+      "name": "Deliverable: gist_lag_monitor.py",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802018+00:00"
+    },
+    {
+      "name": "Deliverable: Event schema",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802027+00:00"
+    },
+    {
+      "name": "Deliverable: Retry logic",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802032+00:00"
+    },
+    {
+      "name": "Deliverable: Wildcard matching",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802038+00:00"
+    },
+    {
+      "name": "Deliverable: Compaction",
+      "passed": true,
+      "detail": "",
+      "timestamp": "2026-05-06T11:28:27.802043+00:00"
+    }
+  ],
+  "acceptance_criteria": {
+    "Event bus library published to Gist": true,
+    "Consumer lag monitor operational": true,
+    "DLQ captures failed events": true,
+    "Retry logic with 3 attempts": true,
+    "Wildcard subscription matching": true,
+    "Event compaction works": true,
+    "Event schema correct": true,
+    "Test harness exists": true,
+    "Documentation complete": true,
+    "Backlog status accurate": true
+  },
+  "acceptance_criteria_met": true
+}

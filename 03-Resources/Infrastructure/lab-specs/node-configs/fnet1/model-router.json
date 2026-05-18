@@ -1,0 +1,20 @@
+{
+  "routing_profile": {
+    "default": "auto",
+    "local": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Routes tasks to the node's local GPU resources."
+    },
+    "cloud": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Routes tasks to external cloud endpoints."
+    },
+    "fast": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Routes tasks via pre-warmed, high-speed endpoints."
+    }
+  }
+}

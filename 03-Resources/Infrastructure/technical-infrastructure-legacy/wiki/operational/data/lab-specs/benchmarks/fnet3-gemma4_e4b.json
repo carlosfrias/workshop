@@ -1,0 +1,1 @@
+{"model": "gemma4:e4b", "node": "fnet3", "tokens_per_sec": 4.58, "total_time_s": 27.93, "tokens_generated": 128, "prompt_eval_count": 21, "timestamp": "2026-04-29T16:05:44Z"}

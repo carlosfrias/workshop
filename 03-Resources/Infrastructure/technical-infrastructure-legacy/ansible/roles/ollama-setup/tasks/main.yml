@@ -1,0 +1,22 @@
+---
+# Ollama Setup Role — Decomposed, Hardware-Aware, Depot-Based
+
+- name: "Ollama Setup | Phase 0 — Preflight validation"
+  include_tasks: preflight.yml
+
+- name: "Ollama Setup | Phase 1 — Depot management (run_once on depot node)"
+  include_tasks: depot.yml
+  when: inventory_hostname == ollama_depot_host
+
+- name: "Ollama Setup | Phase 2 — Ollama binary installation"
+  include_tasks: install.yml
+
+- name: "Ollama Setup | Phase 3 — Model deployment (depot sync or direct pull)"
+  include_tasks: models.yml
+
+- name: "Ollama Setup | Phase 4 — Validation"
+  include_tasks: validate.yml
+
+- name: "Ollama Setup | Phase 5 — Optional benchmarking"
+  include_tasks: benchmark.yml
+  when: run_benchmarks | default(false) | bool

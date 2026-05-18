@@ -1,0 +1,20 @@
+---
+# Default variables for wireguard-client
+
+wg_interface: "wg0"
+wg_client_ip: "10.200.200.2/32"
+wg_mtu: 1420
+wg_dns: "192.168.0.1"
+
+# Client key paths
+wg_client_private_key_file: "{{ playbook_dir }}/../vpn-keys/client.private.key"
+wg_client_public_key_file: "{{ playbook_dir }}/../vpn-keys/client.public.key"
+
+# Server details
+wg_server_endpoint: "carlos-lab.duckdns.org"
+wg_server_port: 51820
+wg_server_public_key: ""
+
+# Split tunnel — only these networks route through VPN
+wg_allowed_ips: "192.168.0.0/24, 10.200.200.0/24"
+wg_persistent_keepalive: 25

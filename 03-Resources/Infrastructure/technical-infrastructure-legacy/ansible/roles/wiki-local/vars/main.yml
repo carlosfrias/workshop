@@ -1,0 +1,23 @@
+---
+# Wiki server role variables
+# VitePress now runs from the PROJECT ROOT, not technical-infrastructure/wiki-build/.
+# Config: .vitepress/config.js at the project root
+# Content: wiki/ (unified: trading desk + operations + technical infrastructure)
+#
+# playbook_dir is .../technical-infrastructure/ansible/playbooks
+# Three dirname calls get us to the project root
+
+wiki_root: "{{ playbook_dir | dirname | dirname | dirname }}"
+wiki_build_dir: "{{ wiki_root }}"
+wiki_content_dir: "{{ wiki_root }}/wiki"
+vitepress_port: 5173
+wiki_log_file: "/tmp/vitepress-wiki.log"
+
+# Subdirectories in wiki/ that have README.md and need an index.md symlink
+# for VitePress clean URLs.
+wiki_subdirs_with_readme:
+  - operations
+  - technical-infrastructure/decomposition-examples/network-troubleshooting
+
+# Whether to open the default browser when the wiki starts
+open_browser: true

@@ -1,0 +1,144 @@
+---
+# Pi Installation and Configuration Role
+
+- name: Check if Node.js is installed
+  command: node --version
+  register: nodejs_check
+  failed_when: false
+  changed_when: false
+
+- name: Install Node.js 20.x if not present or wrong version
+  block:
+    - name: Install curl for NodeSource setup
+      apt:
+        name: curl
+        state: present
+        update_cache: yes
+
+    - name: Add NodeSource repository
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_{{ nodejs_version }} | bash -
+      args:
+        creates: /etc/apt/sources.list.d/nodesource.list
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+        update_cache: yes
+  when: nodejs_check.failed or (nodejs_check.stdout is defined and nodejs_check.stdout is match('v(1[0-9]|[0-9])\..*'))
+
+- name: Ensure npm is installed
+  apt:
+    name: npm
+    state: present
+  when: nodejs_check.failed
+
+- name: Get current pi version
+  command: pi --version
+  register: pi_current_version
+  failed_when: false
+  changed_when: false
+
+- name: Install pi-coding-agent
+  npm:
+    name: "@mariozechner/pi-coding-agent"
+    global: yes
+    state: latest
+  become: yes
+
+- name: Install pi-intercom
+  npm:
+    name: "pi-intercom"
+    global: yes
+    state: latest
+  become: yes
+
+- name: Get pi version after installation
+  command: pi --version
+  register: pi_installed_version
+  changed_when: false
+
+- name: Verify pi installation
+  command: pi --version
+  register: pi_verify
+  changed_when: false
+  failed_when: pi_verify.rc != 0
+
+- name: Create pi startup script
+  copy:
+    dest: /home/friasc/.pi-startup.sh
+    content: |
+      #!/bin/bash
+      # Pi startup script - ensures pi is available in PATH
+      export PATH="/usr/local/bin:$HOME/.npm-global/bin:$PATH"
+      echo "Pi initialized at $(date)" >> /home/friasc/.pi-startup.log
+    owner: friasc
+    group: friasc
+    mode: '0755'
+
+- name: Add pi PATH to bashrc
+  lineinfile:
+    path: /home/friasc/.bashrc
+    line: 'export PATH="/usr/local/bin:$HOME/.npm-global/bin:$PATH"'
+    create: yes
+    owner: friasc
+    group: friasc
+
+- name: Source pi PATH in profile
+  lineinfile:
+    path: /home/friasc/.profile
+    line: 'export PATH="/usr/local/bin:$HOME/.npm-global/bin:$PATH"'
+    create: yes
+    owner: friasc
+    group: friasc
+
+- name: Create systemd user service directory
+  file:
+    path: /home/friasc/.config/systemd/user
+    state: directory
+    owner: friasc
+    group: friasc
+    mode: '0755'
+
+- name: Install pi-intercom systemd service (optional background service)
+  copy:
+    dest: /home/friasc/.config/systemd/user/pi-intercom.service
+    content: |
+      [Unit]
+      Description=Pi Intercom Bridge Service
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/bin/bash -c 'source /home/friasc/.bashrc && echo "Pi intercom ready"'
+      Restart=on-failure
+      User=friasc
+      Group=friasc
+
+      [Install]
+      WantedBy=default.target
+    owner: friasc
+    group: friasc
+    mode: '0644'
+  when: false  # Disabled by default - intercom is a pi tool, not a daemon
+
+- name: Test intercom availability within pi
+  shell: |
+    source /home/friasc/.bashrc
+    pi --version
+    echo "Intercom tool available in pi"
+  register: intercom_test
+  changed_when: false
+  failed_when: false
+
+- name: Record installation results
+  set_fact:
+    pi_installation_results:
+      hostname: "{{ ansible_hostname }}"
+      ip_address: "{{ ansible_host }}"
+      nodejs_version: "{{ nodejs_check.stdout | default('installed') }}"
+      pi_version: "{{ pi_installed_version.stdout | default('unknown') }}"
+      pi_status: "{{ 'SUCCESS' if pi_verify.rc == 0 else 'FAILED' }}"
+      intercom_available: "{{ intercom_test.rc == 0 }}"
+      timestamp: "{{ ansible_date_time.iso8601 | default('unknown') }}"

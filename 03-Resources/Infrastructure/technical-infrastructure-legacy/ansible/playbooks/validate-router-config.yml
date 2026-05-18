@@ -1,0 +1,97 @@
+---
+# ============================================================
+# validate-router-config.yml
+# Validate pi-keyword-router configuration consistency
+# ============================================================
+#
+# PURPOSE:
+#   Detects configuration collisions, stale files, and
+#   misconfigurations in the pi-keyword-router extension.
+#
+#   Checks:
+#   1. Stale model-router.json files (not read by router)
+#   2. Global fallback keyword-router.json (divergence risk)
+#   3. Default thinking level (should be "off", not "medium")
+#   4. Stop-words in reasoning route ("what", "when", etc.)
+#   5. Missing infrastructure keywords
+#   6. Route priority consistency
+#
+# USAGE:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i localhost, -c local playbooks/validate-router-config.yml
+#
+#   To see raw script output:
+#   ansible-playbook ... -v
+#
+# NOTES:
+#   - Runs on orchestrator (localhost) — pi config is local to Mac
+#   - Does NOT modify config — read-only validation
+#   - Exit code 0 = clean, 1 = warnings, 2 = critical errors
+#   - If critical errors found, run `scripts/validate-router-config.py --fix`
+
+- name: Validate pi-keyword-router Configuration
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    script_path: "{{ playbook_dir | dirname | dirname | dirname }}/scripts/validate-router-config.py"
+    project_config: "{{ playbook_dir | dirname | dirname | dirname }}/.pi/keyword-router.json"
+
+  tasks:
+    - name: "[TI-VALIDATE] Check validation script exists"
+      ansible.builtin.stat:
+        path: "{{ script_path }}"
+      register: script_stat
+
+    - name: "[TI-VALIDATE] Fail if script missing"
+      ansible.builtin.fail:
+        msg: |
+          Validation script not found: {{ script_path }}
+          Clone or update the trading-workspace repo.
+      when: not script_stat.stat.exists
+
+    - name: "[TI-VALIDATE] Check project-level config exists"
+      ansible.builtin.stat:
+        path: "{{ project_config }}"
+      register: config_stat
+
+    - name: "[TI-VALIDATE] Warn if project config missing"
+      ansible.builtin.debug:
+        msg:
+          - "⚠️  Project-level config missing: {{ project_config }}"
+          - "   Router will use built-in defaults + global fallback (if any)."
+          - "   Create it: cp technical-infrastructure/operational/data/lab-specs/node-configs/fnet3/model-router.json {{ project_config }}"
+      when: not config_stat.stat.exists
+
+    - name: "[TI-VALIDATE] Run validation script"
+      ansible.builtin.command: "python3 {{ script_path }}"
+      changed_when: false
+      register: validate_result
+      ignore_errors: true
+
+    - name: "[TI-VALIDATE] Report results"
+      ansible.builtin.debug:
+        msg:
+          - ""
+          - "╔═══════════════════════════════════════════════════════════════╗"
+          - "║  pi-keyword-router Config Validation                          ║"
+          - "╚═══════════════════════════════════════════════════════════════╝"
+          - ""
+          - "{{ validate_result.stdout_lines }}"
+          - ""
+          - "Exit code: {{ validate_result.rc }}"
+          - "  0 = 🟢 Clean"
+          - "  1 = 🟡 Warnings"
+          - "  2 = 🔴 Critical errors"
+          - ""
+          - "Authoritative config: {{ project_config }}"
+          - ""
+
+    - name: "[TI-VALIDATE] Fail on critical errors"
+      ansible.builtin.fail:
+        msg: |
+          🔴 Critical router config errors found.
+          Fix before proceeding with model routing.
+          Run: python3 {{ script_path }} --fix
+      when: validate_result.rc == 2

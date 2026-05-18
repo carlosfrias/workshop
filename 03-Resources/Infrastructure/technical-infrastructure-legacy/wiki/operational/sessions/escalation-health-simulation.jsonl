@@ -1,0 +1,52 @@
+{"timestamp": "2026-05-12T14:29:02.744267+00:00", "event": "execution_attempt", "task_id": 1, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 0, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.745675+00:00", "event": "saturation_detected", "task_id": 1, "tier": "local_low", "action": "2x_decompose"}
+{"timestamp": "2026-05-12T14:29:02.745765+00:00", "event": "decomposition", "task_id": 1, "sub_task_count": 2, "tier": "local_low"}
+{"timestamp": "2026-05-12T14:29:02.756946+00:00", "event": "execution_attempt", "task_id": "1-a", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.757191+00:00", "event": "escalation", "task_id": "1-a", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.769830+00:00", "event": "execution_attempt", "task_id": "1-a", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.770182+00:00", "event": "escalation", "task_id": "1-a", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.783016+00:00", "event": "execution_attempt", "task_id": "1-a", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.783287+00:00", "event": "escalation", "task_id": "1-a", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.795161+00:00", "event": "execution_attempt", "task_id": "1-a", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:02.807347+00:00", "event": "execution_attempt", "task_id": "1-b", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.807605+00:00", "event": "escalation", "task_id": "1-b", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.820234+00:00", "event": "execution_attempt", "task_id": "1-b", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.820615+00:00", "event": "escalation", "task_id": "1-b", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.833285+00:00", "event": "execution_attempt", "task_id": "1-b", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.833536+00:00", "event": "escalation", "task_id": "1-b", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.844974+00:00", "event": "execution_attempt", "task_id": "1-b", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:02.857875+00:00", "event": "execution_attempt", "task_id": 2, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "MEDIUM", "result": "SATURATED", "generation": 0, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.858261+00:00", "event": "saturation_detected", "task_id": 2, "tier": "local_low", "action": "2x_decompose"}
+{"timestamp": "2026-05-12T14:29:02.858367+00:00", "event": "decomposition", "task_id": 2, "sub_task_count": 2, "tier": "local_low"}
+{"timestamp": "2026-05-12T14:29:02.870153+00:00", "event": "execution_attempt", "task_id": "2-a", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.870624+00:00", "event": "escalation", "task_id": "2-a", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.886889+00:00", "event": "execution_attempt", "task_id": "2-a", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.887352+00:00", "event": "escalation", "task_id": "2-a", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.900016+00:00", "event": "execution_attempt", "task_id": "2-a", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.900231+00:00", "event": "escalation", "task_id": "2-a", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.912863+00:00", "event": "execution_attempt", "task_id": "2-a", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:02.925745+00:00", "event": "execution_attempt", "task_id": "2-b", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.926015+00:00", "event": "escalation", "task_id": "2-b", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.936512+00:00", "event": "execution_attempt", "task_id": "2-b", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.936727+00:00", "event": "escalation", "task_id": "2-b", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.949499+00:00", "event": "execution_attempt", "task_id": "2-b", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.949740+00:00", "event": "escalation", "task_id": "2-b", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.962376+00:00", "event": "execution_attempt", "task_id": "2-b", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:02.975227+00:00", "event": "execution_attempt", "task_id": 3, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "MEDIUM", "result": "SATURATED", "generation": 0, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.975505+00:00", "event": "saturation_detected", "task_id": 3, "tier": "local_low", "action": "2x_decompose"}
+{"timestamp": "2026-05-12T14:29:02.975613+00:00", "event": "decomposition", "task_id": 3, "sub_task_count": 2, "tier": "local_low"}
+{"timestamp": "2026-05-12T14:29:02.986881+00:00", "event": "execution_attempt", "task_id": "3-a", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:02.987112+00:00", "event": "escalation", "task_id": "3-a", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:02.999747+00:00", "event": "execution_attempt", "task_id": "3-a", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:03.001175+00:00", "event": "escalation", "task_id": "3-a", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:03.014882+00:00", "event": "execution_attempt", "task_id": "3-a", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:03.016039+00:00", "event": "escalation", "task_id": "3-a", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:03.028658+00:00", "event": "execution_attempt", "task_id": "3-a", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:03.041303+00:00", "event": "execution_attempt", "task_id": "3-b", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:03.042670+00:00", "event": "escalation", "task_id": "3-b", "from_tier": "local_low", "to_tier": "local_medium", "generation": 1}
+{"timestamp": "2026-05-12T14:29:03.056899+00:00", "event": "execution_attempt", "task_id": "3-b", "tier": "local_medium", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:03.061577+00:00", "event": "escalation", "task_id": "3-b", "from_tier": "local_medium", "to_tier": "local_high", "generation": 1}
+{"timestamp": "2026-05-12T14:29:03.074864+00:00", "event": "execution_attempt", "task_id": "3-b", "tier": "local_high", "model": "gemma4:e4b", "complexity": "LOW", "result": "SATURATED", "generation": 1, "node_health": false}
+{"timestamp": "2026-05-12T14:29:03.075444+00:00", "event": "escalation", "task_id": "3-b", "from_tier": "local_high", "to_tier": "cloud_low", "generation": 1}
+{"timestamp": "2026-05-12T14:29:03.089465+00:00", "event": "execution_attempt", "task_id": "3-b", "tier": "cloud_low", "model": "qwen3.5:397b-cloud", "complexity": "LOW", "result": "SUCCESS", "generation": 1, "node_health": true}
+{"timestamp": "2026-05-12T14:29:03.090811+00:00", "event": "simulation_complete", "duration_sec": 0.3573157787322998, "total_tasks": 3, "success_count": 3}

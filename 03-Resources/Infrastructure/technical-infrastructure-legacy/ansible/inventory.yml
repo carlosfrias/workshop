@@ -1,0 +1,20 @@
+# TI-041 Lab Node Inventory
+# Place this at /Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/ansible/inventory.yml
+
+[lab_nodes]
+fnet1 ansible_host=192.168.0.141 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=12 node_cpu=4
+fnet2 ansible_host=192.168.0.142 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=12 node_cpu=4
+fnet3 ansible_host=192.168.0.143 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=31 node_cpu=8
+fnet4 ansible_host=192.168.0.144 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=31 node_cpu=8
+fnet5 ansible_host=192.168.0.145 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=31 node_cpu=8
+fnet6 ansible_host=192.168.0.146 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=31 node_cpu=8
+fnet7 ansible_host=192.168.0.147 ansible_user=friasc ansible_python_interpreter=/usr/bin/python3 node_ram=12 node_cpu=4
+
+[orchestrator]
+localhost ansible_connection=local
+
+[all:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+ansible_become_method=sudo
+ansible_become_user=root

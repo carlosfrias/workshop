@@ -1,0 +1,12 @@
+---
+# Cleanup Playbook — Remove all Ollama models for testing reset
+
+- name: Cleanup Ollama Models on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: no
+
+  tasks:
+    - name: "Include cleanup tasks"
+      ansible.builtin.include_role:
+        name: ollama-setup
+        tasks_from: cleanup.yml

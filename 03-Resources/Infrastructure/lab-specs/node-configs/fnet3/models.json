@@ -1,0 +1,31 @@
+{
+  "models": [
+    {
+      "id": "gemma4:e4b",
+      "provider": "ollama",
+      "tokens_per_sec": 1600,
+      "throughput_tier": "local"
+    },
+    {
+      "id": "qwen3:8b",
+      "provider": "ollama",
+      "tokens_per_sec": 2000,
+      "throughput_tier": "auto"
+    },
+    {
+      "id": "qwen3.5:4b",
+      "provider": "ollama",
+      "tokens_per_sec": 1400,
+      "throughput_tier": "local"
+    },
+    {
+      "id": "nomic-embed-text",
+      "provider": "ollama",
+      "tokens_per_sec": 5000,
+      "throughput_tier": "embedding",
+      "purpose": "ChromaDB embeddings"
+    }
+  ],
+  "node_specialization": "vector-memory",
+  "services": ["chromadb:8000", "ollama:11434"]
+}

@@ -1,0 +1,46 @@
+# Trigger Keywords for Playbook Execution
+# Format: keyword: playbook_file
+
+# Deployment
+deploy: deploy_app.yml
+deploy_app: deploy_app.yml
+update: update_packages.yml
+update_packages: update_packages.yml
+
+# Monitoring
+health: check_health.yml
+check_health: check_health.yml
+monitor: monitor_services.yml
+monitor_services: monitor_services.yml
+status: check_status.yml
+check_status: check_status.yml
+
+# Maintenance
+cleanup: cleanup_logs.yml
+cleanup_logs: cleanup_logs.yml
+backup: backup_data.yml
+backup_data: backup_data.yml
+prune: prune_old_files.yml
+prune_old_files: prune_old_files.yml
+
+# Infrastructure
+provision: provision_node.yml
+provision_node: provision_node.yml
+configure: configure_service.yml
+configure_service: configure_service.yml
+restart: restart_service.yml
+restart_service: restart_service.yml
+
+# Security
+audit: security_audit.yml
+security_audit: security_audit.yml
+patch: apply_patches.yml
+apply_patches: apply_patches.yml
+
+# Data
+migrate: migrate_data.yml
+migrate_data: migrate_data.yml
+sync: sync_data.yml
+sync_data: sync_data.yml
+export: export_data.yml
+export_data: export_data.yml

@@ -1,0 +1,92 @@
+---
+# Ansible Playbook: Configure Passwordless Sudo (NOPASSWD)
+# For Trading Desk lab nodes
+#
+# Usage:
+#   ansible-playbook -i inventory.yml playbooks/configure-nopasswd-sudo.yml --ask-become-pass --limit fnet2,fnet3
+#
+# This playbook is idempotent. On nodes that already have NOPASSWD, it skips.
+# On nodes that require a password, it prompts once and configures NOPASSWD.
+#
+# After running, verify with:
+#   ansible -i inventory.yml all -m ping
+#
+- name: Configure NOPASSWD Sudo on Lab Nodes
+  hosts: lab_nodes
+  become: yes
+  gather_facts: no
+
+  vars:
+    sudoers_file: "/etc/sudoers.d/ansible-nopasswd"
+    sudoers_content: "{{ ansible_user }} ALL=(ALL:ALL) NOPASSWD:ALL"
+
+  tasks:
+    # ============================================================
+    # 1. CHECK IF NOPASSWD ALREADY WORKS
+    # ============================================================
+    - name: Test if NOPASSWD sudo is already active
+      ansible.builtin.command: "sudo -n true"
+      changed_when: false
+      failed_when: false
+      register: nopasswd_test
+      delegate_to: "{{ inventory_hostname }}"
+      become: false
+
+    - name: Set fact — NOPASSWD status
+      ansible.builtin.set_fact:
+        nopasswd_active: "{{ nopasswd_test.rc == 0 }}"
+
+    - name: Report NOPASSWD status
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: NOPASSWD is {{ 'already active ✅' if nopasswd_active else 'NOT active — will configure' }}"
+
+    # ============================================================
+    # 2. CONFIGURE NOPASSWD (only if not already active)
+    # ============================================================
+    - name: Create NOPASSWD sudoers file
+      ansible.builtin.copy:
+        content: "{{ sudoers_content }}\n"
+        dest: "{{ sudoers_file }}"
+        owner: root
+        group: root
+        mode: '0440'
+        validate: 'visudo -cf %s'
+      when: not nopasswd_active
+
+    - name: Verify sudoers file syntax
+      ansible.builtin.command: "visudo -c"
+      changed_when: false
+      when: not nopasswd_active
+
+    # ============================================================
+    # 3. VALIDATE NOPASSWD WORKS
+    # ============================================================
+    - name: Validate NOPASSWD sudo after configuration
+      ansible.builtin.command: "sudo -n true"
+      changed_when: false
+      register: validation
+      when: not nopasswd_active
+
+    - name: Report configuration result
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: NOPASSWD configured and verified ✅"
+      when:
+        - not nopasswd_active
+        - validation.rc == 0
+
+    # ============================================================
+    # 4. FAIL IF VALIDATION DOES NOT PASS
+    # ============================================================
+    - name: Fail if NOPASSWD validation failed
+      ansible.builtin.fail:
+        msg: "{{ inventory_hostname }}: NOPASSWD validation FAILED. Check sudoers file syntax."
+      when:
+        - not nopasswd_active
+        - validation.rc != 0
+
+    # ============================================================
+    # 5. SUMMARY
+    # ============================================================
+    - name: Summary — NOPASSWD status after run
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: NOPASSWD sudo is ACTIVE ✅"

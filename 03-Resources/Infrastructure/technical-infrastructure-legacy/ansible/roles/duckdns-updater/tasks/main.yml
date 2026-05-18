@@ -1,0 +1,40 @@
+---
+- name: "DuckDNS Updater | Ensure curl is installed"
+  ansible.builtin.apt:
+    name: curl
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: "DuckDNS Updater | Deploy update script"
+  ansible.builtin.template:
+    src: duckdns-update.sh.j2
+    dest: "{{ duckdns_script_dir }}/duckdns-update.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: "DuckDNS Updater | Ensure log file exists"
+  ansible.builtin.file:
+    path: "{{ duckdns_log_file }}"
+    state: touch
+    mode: '0644'
+  ignore_errors: true
+
+- name: "DuckDNS Updater | Install cron job"
+  ansible.builtin.cron:
+    name: "DuckDNS update"
+    minute: "*/5"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "{{ duckdns_script_dir }}/duckdns-update.sh{% if duckdns_cron_suppress_output %} > /dev/null 2>&1{% endif %}"
+    user: root
+    cron_file: duckdns-update
+    state: present
+
+- name: "DuckDNS Updater | Run update immediately to verify"
+  ansible.builtin.command: "{{ duckdns_script_dir }}/duckdns-update.sh"
+  register: duckdns_verify
+  changed_when: "'OK' in duckdns_verify.stdout"
+  ignore_errors: true

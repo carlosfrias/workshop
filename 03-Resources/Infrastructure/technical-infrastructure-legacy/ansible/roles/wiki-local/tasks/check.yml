@@ -1,0 +1,28 @@
+---
+# Detect whether the VitePress wiki server is currently running.
+# On macOS, lsof -t returns ALL PIDs with connections (including the browser).
+# We must explicitly filter for LISTEN to find only the server PID.
+
+- name: "[TI-WIKI] Detect LISTENing server process"
+  ansible.builtin.shell: |
+    lsof -i :{{ vitepress_port }} 2>/dev/null | grep LISTEN | awk '{print $2}' | head -1 || true
+  changed_when: false
+  register: _wiki_pid_raw
+
+- name: "[TI-WIKI] Set server state facts"
+  ansible.builtin.set_fact:
+    _wiki_server_up: "{{ _wiki_pid_raw.stdout | length > 0 }}"
+    _wiki_pid: "{{ _wiki_pid_raw.stdout | default('') | trim }}"
+
+- name: "[TI-WIKI] Verify PID is actually a Node process"
+  ansible.builtin.shell: |
+    ps -p "{{ _wiki_pid }}" -o comm= 2>/dev/null | grep -q node || echo "NOT_NODE"
+  changed_when: false
+  when: _wiki_server_up | bool
+  register: _pid_verify
+
+- name: "[TI-WIKI] Reset state if PID is not Node"
+  ansible.builtin.set_fact:
+    _wiki_server_up: false
+    _wiki_pid: ""
+  when: _wiki_server_up | bool and (_pid_verify.stdout | default('')) == 'NOT_NODE'

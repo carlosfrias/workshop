@@ -1,0 +1,55 @@
+---
+# Playbook: Deploy Task Worker v2 with verification and logging
+- name: Deploy Task Worker v2
+  hosts: lab_nodes
+  gather_facts: no
+  become: yes
+  strategy: free
+
+  tasks:
+    - name: Ensure directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      loop:
+        - /srv/lab-worker/pending
+        - /srv/lab-worker/running
+        - /srv/lab-worker/results
+        - /srv/lab-worker/logs
+
+    - name: Copy lab worker scripts
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../scripts/lab-worker/"
+        dest: /usr/local/bin/
+        owner: root
+        group: root
+        mode: '0755'
+      ignore_errors: true
+
+    - name: Deploy task worker v2
+      ansible.builtin.copy:
+        src: task-worker.sh
+        dest: /usr/local/bin/task-worker
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Restart task worker service
+      ansible.builtin.systemd:
+        name: task-worker
+        state: restarted
+        daemon_reload: yes
+
+    - name: Verify service
+      ansible.builtin.systemd:
+        name: task-worker
+        state: started
+      register: svc
+      changed_when: false
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: task-worker v2 {{ 'running' if svc.status.ActiveState == 'active' else 'inactive' }}"

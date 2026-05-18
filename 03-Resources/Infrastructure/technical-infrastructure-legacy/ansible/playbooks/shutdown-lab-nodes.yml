@@ -1,0 +1,14 @@
+---
+- name: Gracefully shutdown lab nodes
+  hosts: lab_nodes
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Trigger graceful shutdown with delay
+      ansible.builtin.shell: |
+        nohup bash -c 'sleep 5 && shutdown now' >/dev/null 2>&1 &
+      changed_when: true
+      # Nodes will become unreachable after shutdown; this is expected.
+      # The 5-second delay allows Ansible to report task completion before
+      # the SSH connection drops.

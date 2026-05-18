@@ -1,0 +1,17 @@
+---
+# Lab Node Optimization Playbook
+# Installs project-blueprint, runs local-model-router, and captures capacity metrics
+
+- name: Optimize Lab Node Cluster
+  hosts: lab_nodes
+  gather_facts: yes
+  
+  roles:
+    - pi-optimization
+
+  post_tasks:
+    - name: Fetch optimization report
+      fetch:
+        src: "/home/friasc/pi_node_report.json"
+        dest: "/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/ansible/reports/{{ inventory_hostname }}_report.json"
+        flat: yes

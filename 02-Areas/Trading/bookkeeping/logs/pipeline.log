@@ -1,0 +1,106 @@
+[2026-04-21T17:10:28Z] INGEST: bookkeeping/staging/inbox/sample_trades.csv -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/sample_trades_2026-04-21T171028Z.csv
+[2026-04-21T17:10:28Z] JOB START: IMP-acb5bc93d3a8
+[2026-04-21T17:10:28Z] VALIDATE OK: IMP-acb5bc93d3a8 (4 rows)
+[2026-04-21T17:10:28Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/sample_trades_2026-04-21T171028Z.csv
+[2026-04-21T17:10:28Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_171028.beancount
+[2026-04-21T17:10:28Z] IMPORT OK: IMP-acb5bc93d3a8 -> lines 75-82
+[2026-04-21T17:11:39Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_171028.beancount
+[2026-04-21T17:11:39Z] ROLLBACK complete for IMP-acb5bc93d3a8
+[2026-04-21T18:34:55Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T183455Z.PDF
+[2026-04-21T18:34:55Z] JOB START: IMP-3e1024625d7b
+[2026-04-21T18:34:55Z] VALIDATE FAIL: IMP-3e1024625d7b — Unsupported file type: .pdf
+[2026-04-21T18:44:46Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T184446Z.PDF
+[2026-04-21T18:44:46Z] JOB START: IMP-c24c1f143474
+[2026-04-21T18:44:54Z] VALIDATE OK: IMP-c24c1f143474 (126 draft entries)
+[2026-04-21T18:44:54Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T184446Z.PDF
+[2026-04-21T18:52:51Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T185251Z.PDF
+[2026-04-21T18:52:51Z] JOB START: IMP-dfd851053e34
+[2026-04-21T18:52:59Z] VALIDATE FAIL: IMP-dfd851053e34 — could not convert string to float: '74.67ST'
+[2026-04-21T18:54:16Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T185416Z.PDF
+[2026-04-21T18:54:16Z] JOB START: IMP-5dad3f20c2ed
+[2026-04-21T18:54:23Z] VALIDATE OK: IMP-5dad3f20c2ed (126 draft entries)
+[2026-04-21T18:54:23Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T185416Z.PDF
+[2026-04-21T19:11:55Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T191155Z.PDF
+[2026-04-21T19:11:55Z] JOB START: IMP-9e6780c1ebe7
+[2026-04-21T19:12:03Z] VALIDATE OK: IMP-9e6780c1ebe7 (126 draft entries)
+[2026-04-21T19:12:03Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T191155Z.PDF
+[2026-04-21T19:16:01Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_191601.beancount
+[2026-04-21T19:16:01Z] IMPORT OK: IMP-9e6780c1ebe7 -> lines 75-600
+[2026-04-21T19:55:52Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_191601.beancount
+[2026-04-21T19:55:52Z] ROLLBACK complete for IMP-9e6780c1ebe7
+[2026-04-21T20:00:33Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T200033Z.PDF
+[2026-04-21T20:00:33Z] JOB START: IMP-6d7bd91a6ecb
+[2026-04-21T20:00:42Z] VALIDATE OK: IMP-6d7bd91a6ecb (126 draft entries)
+[2026-04-21T20:00:42Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T200033Z.PDF
+[2026-04-21T20:01:16Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_200116.beancount
+[2026-04-21T20:01:16Z] IMPORT OK: IMP-6d7bd91a6ecb -> lines 75-600
+[2026-04-21T23:26:07Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T232607Z.PDF
+[2026-04-21T23:26:07Z] JOB START: IMP-f14c5bd397a1
+[2026-04-21T23:26:17Z] VALIDATE OK: IMP-f14c5bd397a1 (126 draft entries)
+[2026-04-21T23:26:17Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T232607Z.PDF
+[2026-04-21T23:26:47Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T232647Z.PDF
+[2026-04-21T23:26:47Z] JOB START: IMP-06643994b271
+[2026-04-21T23:26:56Z] VALIDATE OK: IMP-06643994b271 (126 draft entries)
+[2026-04-21T23:26:56Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T232647Z.PDF
+[2026-04-21T23:26:56Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_232656.beancount
+[2026-04-21T23:26:56Z] IMPORT OK: IMP-06643994b271 -> lines 72-607
+[2026-04-21T23:29:30Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_232656.beancount
+[2026-04-21T23:29:30Z] ROLLBACK complete for IMP-06643994b271
+[2026-04-21T23:29:36Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T232936Z.PDF
+[2026-04-21T23:29:36Z] JOB START: IMP-71786fd84fdf
+[2026-04-21T23:29:45Z] SKIP SCHWAB-20260318-062: No prior long lots for SLV (qty=100.0). Manual review required.
+[2026-04-21T23:29:45Z] VALIDATE OK: IMP-71786fd84fdf (125 draft entries)
+[2026-04-21T23:29:45Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T232936Z.PDF
+[2026-04-21T23:29:45Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_232945.beancount
+[2026-04-21T23:29:45Z] IMPORT OK: IMP-71786fd84fdf -> lines 72-602
+[2026-04-21T23:44:13Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_232945.beancount
+[2026-04-21T23:44:13Z] ROLLBACK complete for IMP-71786fd84fdf
+[2026-04-21T23:44:19Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-01-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-01-31_074_2026-04-21T234419Z.PDF
+[2026-04-21T23:44:19Z] JOB START: IMP-21e98e516c7c
+[2026-04-21T23:44:23Z] VALIDATE OK: IMP-21e98e516c7c (27 draft entries)
+[2026-04-21T23:44:23Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-01-31_074_2026-04-21T234419Z.PDF
+[2026-04-21T23:44:23Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_234423.beancount
+[2026-04-21T23:44:23Z] IMPORT OK: IMP-21e98e516c7c -> lines 72-147
+[2026-04-21T23:44:56Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_234423.beancount
+[2026-04-21T23:44:56Z] ROLLBACK complete for IMP-21e98e516c7c
+[2026-04-21T23:49:41Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-01-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-01-31_074_2026-04-21T234941Z.PDF
+[2026-04-21T23:49:41Z] JOB START: IMP-b098f18c64fd
+[2026-04-21T23:49:46Z] VALIDATE OK: IMP-b098f18c64fd (27 draft entries)
+[2026-04-21T23:49:46Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-01-31_074_2026-04-21T234941Z.PDF
+[2026-04-21T23:49:46Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_234946.beancount
+[2026-04-21T23:49:46Z] IMPORT OK: IMP-b098f18c64fd -> lines 45-120
+[2026-04-21T23:50:07Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-02-28_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-02-28_074_2026-04-21T235007Z.PDF
+[2026-04-21T23:50:07Z] JOB START: IMP-74321d409632
+[2026-04-21T23:50:11Z] VALIDATE OK: IMP-74321d409632 (16 draft entries)
+[2026-04-21T23:50:11Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-02-28_074_2026-04-21T235007Z.PDF
+[2026-04-21T23:50:11Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_235011.beancount
+[2026-04-21T23:50:11Z] IMPORT OK: IMP-74321d409632 -> lines 121-163
+[2026-04-21T23:50:25Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-21T235025Z.PDF
+[2026-04-21T23:50:25Z] JOB START: IMP-4175943e881d
+[2026-04-21T23:50:34Z] SKIP SCHWAB-20260318-062: No prior long lots for SLV (qty=100.0). Manual review required.
+[2026-04-21T23:50:34Z] VALIDATE OK: IMP-4175943e881d (125 draft entries)
+[2026-04-21T23:50:34Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-21T235025Z.PDF
+[2026-04-21T23:50:34Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_235034.beancount
+[2026-04-21T23:50:34Z] IMPORT OK: IMP-4175943e881d -> lines 164-694
+[2026-04-22T00:07:04Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260421_235034.beancount
+[2026-04-22T00:07:04Z] ROLLBACK complete for IMP-4175943e881d
+[2026-04-22T00:16:04Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-22T001604Z.PDF
+[2026-04-22T00:16:04Z] JOB START: IMP-350ddee7de3d
+[2026-04-22T00:16:15Z] SKIP SCHWAB-20260318-062: No prior long lots for SLV (qty=100.0). Manual review required.
+[2026-04-22T00:16:15Z] VALIDATE OK: IMP-350ddee7de3d (125 draft entries)
+[2026-04-22T00:16:15Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-22T001604Z.PDF
+[2026-04-22T00:16:15Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260422_001615.beancount
+[2026-04-22T00:16:15Z] IMPORT OK: IMP-350ddee7de3d -> lines 172-702
+[2026-04-22T00:19:19Z] ROLLBACK: Restored ledger from /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260422_001615.beancount
+[2026-04-22T00:19:19Z] ROLLBACK complete for IMP-350ddee7de3d
+[2026-04-22T00:19:34Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-22T001934Z.PDF
+[2026-04-22T00:19:34Z] JOB START: IMP-b93823562933
+[2026-04-22T00:19:42Z] VALIDATE OK: IMP-b93823562933 (175 draft entries)
+[2026-04-22T00:19:42Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-22T001934Z.PDF
+[2026-04-22T00:19:42Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260422_001942.beancount
+[2026-04-22T00:21:50Z] INGEST: bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074.PDF -> /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/inbox/Brokerage Statement_2026-03-31_074_2026-04-22T002150Z.PDF
+[2026-04-22T00:21:50Z] JOB START: IMP-035b3d5d6acb
+[2026-04-22T00:21:57Z] VALIDATE OK: IMP-035b3d5d6acb (126 draft entries)
+[2026-04-22T00:21:57Z] MOVED -> pending: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/staging/pending/Brokerage Statement_2026-03-31_074_2026-04-22T002150Z.PDF
+[2026-04-22T00:21:57Z] BACKUP: /Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/ledger/.backups/main_20260422_002157.beancount
+[2026-04-22T00:21:57Z] IMPORT OK: IMP-035b3d5d6acb -> lines 172-706

@@ -1,0 +1,23 @@
+[Unit]
+Description=Pi Coding Agent - {{ node_name }}
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=piagent
+Group=piagent
+WorkingDirectory={{ workspace }}
+Environment="HOME=/var/lib/piagent"
+Environment="PI_NAME={{ node_name }}"
+Environment="PI_WORKSPACE={{ workspace }}"
+Environment="NODE_OPTIONS=--no-warnings"
+ExecStart=/usr/local/bin/pi --no-session --provider ollama --model qwen3.5:4b
+Restart=always
+RestartSec=5
+KillMode=process
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

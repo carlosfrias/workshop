@@ -1,0 +1,10 @@
+{
+  "task_id": "fnet7-verify-2026-05-02",
+  "type": "shell",
+  "node": "fnet7",
+  "description": "Verify performance improvement after CPU governor fix",
+  "command": "echo '=== CPU Governor ===' && cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor; echo '=== cpufrequtils status ===' && systemctl status cpufrequtils --no-pager || true; echo '=== Ollama version ===' && ollama --version; echo '=== Benchmark qwen3.5:4b ===' && ollama run qwen3.5:4b 'Count from 1 to 10' 2>&1 | tail -5; echo '=== Benchmark qwen3:8b ===' && ollama run qwen3:8b 'Count from 1 to 10' 2>&1 | tail -5",
+  "timeout_seconds": 300,
+  "created_by": "orchestrator",
+  "created_at": "2026-05-02T00:45:00Z"
+}

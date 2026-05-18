@@ -1,0 +1,214 @@
+---
+# run-pilot-lab.yml
+# Orchestrates TI-016: remote detection, benchmarking, and profile generation
+# across all lab nodes from the orchestrator.
+#
+# Usage:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i inventory.yml playbooks/run-pilot-lab.yml --vault-password-file ./.vault_pass
+#
+# What it does:
+#   1. Pre-flight health check — probes each node, builds healthy node list
+#   2. Detects hardware and installed models on healthy nodes only
+#   3. Benchmarks candidate models on healthy nodes
+#   4. Generates per-node models.json + model-router.json
+#   5. Reports results and any skipped/problematic nodes
+#
+- name: TI-016 — local-model-pilot Lab Expansion
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    workspace_root: "{{ playbook_dir }}/../../.."
+    lab_specs_dir: "{{ workspace_root }}/lab-specs"
+    scripts_dir: "{{ workspace_root }}/technical-infrastructure/scripts/pilot-lab"
+    lmp_dir: "{{ lookup('env', 'HOME') }}/Dropbox/agent-workspace/local-model-pilot"
+    ssh_opts: "-o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=no"
+
+  tasks:
+    # ========================================================================
+    # 1. VERIFY PREREQUISITES
+    # ========================================================================
+    - name: Check remote-detect.sh exists
+      ansible.builtin.stat:
+        path: "{{ scripts_dir }}/remote-detect.sh"
+      register: detect_script
+
+    - name: Check benchmark-lab.sh exists
+      ansible.builtin.stat:
+        path: "{{ scripts_dir }}/benchmark-lab.sh"
+      register: benchmark_script
+
+    - name: Check generate-node-profiles.py exists
+      ansible.builtin.stat:
+        path: "{{ scripts_dir }}/generate-node-profiles.py"
+      register: profile_script
+
+    - name: Fail if any prerequisite script is missing
+      ansible.builtin.fail:
+        msg: |
+          Missing prerequisite: {{ item.name }}
+          Expected at: {{ item.path }}
+      when: not item.exists
+      loop:
+        - { name: "remote-detect.sh", path: "{{ scripts_dir }}/remote-detect.sh", exists: "{{ detect_script.stat.exists }}" }
+        - { name: "benchmark-lab.sh", path: "{{ scripts_dir }}/benchmark-lab.sh", exists: "{{ benchmark_script.stat.exists }}" }
+        - { name: "generate-node-profiles.py", path: "{{ scripts_dir }}/generate-node-profiles.py", exists: "{{ profile_script.stat.exists }}" }
+
+    # ========================================================================
+    # 2. PRE-FLIGHT HEALTH CHECK
+    # ========================================================================
+    - name: Probe SSH + Ollama on each lab node
+      ansible.builtin.command:
+        cmd: |
+          ssh {{ ssh_opts }} friasc@{{ item }} "echo PONG && curl -fsSL -o /dev/null http://localhost:11434"
+      loop: "{{ groups.lab_nodes }}"
+      register: node_pings
+      ignore_errors: yes
+      changed_when: false
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Build healthy node list (responsive + Ollama running)
+      ansible.builtin.set_fact:
+        healthy_nodes: "{{ healthy_nodes | default([]) + [item.item] }}"
+      loop: "{{ node_pings.results }}"
+      when: item.rc == 0
+
+    - name: Build unhealthy node list
+      ansible.builtin.set_fact:
+        unhealthy_nodes: "{{ unhealthy_nodes | default([]) + [item.item] }}"
+      loop: "{{ node_pings.results }}"
+      when: item.rc != 0
+
+    - name: Report node health
+      ansible.builtin.debug:
+        msg:
+          - "✅ Healthy ({{ healthy_nodes | default([]) | length }}): {{ healthy_nodes | default([]) | join(', ') }}"
+          - "⚠️  Unhealthy ({{ unhealthy_nodes | default([]) | length }}): {{ unhealthy_nodes | default([]) | join(', ') }}"
+
+    - name: Fail if no healthy nodes found
+      ansible.builtin.fail:
+        msg: "No healthy lab nodes found. Cannot proceed with detection/benchmarking."
+      when: healthy_nodes | default([]) | length == 0
+
+    # ========================================================================
+    # 3. ENSURE OUTPUT DIRECTORIES EXIST
+    # ========================================================================
+    - name: Ensure lab-specs output directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ lab_specs_dir }}/node-hardware"
+        - "{{ lab_specs_dir }}/node-benchmarks"
+        - "{{ lab_specs_dir }}/node-configs"
+
+    # ========================================================================
+    # 4. RUN REMOTE DETECTION (on healthy nodes only)
+    # ========================================================================
+    - name: Run remote-detect.sh on healthy nodes
+      ansible.builtin.command:
+        argv:
+          - "bash"
+          - "{{ scripts_dir }}/remote-detect.sh"
+          - "--output-dir"
+          - "{{ lab_specs_dir }}/node-hardware"
+          - "--lmp-dir"
+          - "{{ lmp_dir }}"
+          - "{{ healthy_nodes | join(',') }}"
+      register: detect_result
+      async: 600
+      poll: 15
+      changed_when: true
+      ignore_errors: yes
+
+    - name: Display detection results
+      ansible.builtin.debug:
+        var: detect_result.stdout_lines
+
+    - name: Fail detection if all nodes failed (not just some)
+      ansible.builtin.fail:
+        msg: |
+          remote-detect.sh reported failures.
+          Check stdout above for node-specific errors.
+      when: detect_result.rc | default(0) != 0 and detect_result.stdout_lines | default([]) | select('search', 'Saved.*hardware.json') | list | length == 0
+
+    # ========================================================================
+    # 5. RUN BENCHMARKS (on healthy nodes only)
+    # ========================================================================
+    - name: Run benchmark-lab.sh on healthy nodes
+      ansible.builtin.command:
+        argv:
+          - "bash"
+          - "{{ scripts_dir }}/benchmark-lab.sh"
+          - "--output-dir"
+          - "{{ lab_specs_dir }}/node-benchmarks"
+          - "{{ healthy_nodes | join(',') }}"
+      register: benchmark_result
+      async: 900
+      poll: 20
+      changed_when: true
+      ignore_errors: yes
+
+    - name: Display benchmark results
+      ansible.builtin.debug:
+        var: benchmark_result.stdout_lines
+
+    - name: Fail benchmarking if no benchmark files produced
+      ansible.builtin.fail:
+        msg: |
+          benchmark-lab.sh produced no benchmark files.
+          Check stdout above for node-specific errors.
+      when: benchmark_result.rc | default(0) != 0
+
+    # ========================================================================
+    # 6. GENERATE PER-NODE PROFILES
+    # ========================================================================
+    - name: Run generate-node-profiles.py
+      ansible.builtin.command:
+        argv:
+          - "python3"
+          - "{{ scripts_dir }}/generate-node-profiles.py"
+          - "--lab-specs-dir"
+          - "{{ lab_specs_dir }}"
+      register: profile_result
+      changed_when: true
+
+    - name: Display profile generation results
+      ansible.builtin.debug:
+        var: profile_result.stdout_lines
+
+    # ========================================================================
+    # 7. VERIFY OUTPUT
+    # ========================================================================
+    - name: List generated hardware files
+      ansible.builtin.find:
+        paths: "{{ lab_specs_dir }}/node-hardware"
+        patterns: "*-hardware.json"
+      register: hardware_files
+
+    - name: List generated benchmark files
+      ansible.builtin.find:
+        paths: "{{ lab_specs_dir }}/node-benchmarks"
+        patterns: "*.json"
+      register: benchmark_files
+
+    - name: List generated config files
+      ansible.builtin.find:
+        paths: "{{ lab_specs_dir }}/node-configs"
+        patterns: "*/models.json"
+      register: config_files
+
+    - name: Report final counts
+      ansible.builtin.debug:
+        msg:
+          - "=================== TI-016 RESULTS ==================="
+          - "Healthy nodes detected: {{ healthy_nodes | default([]) | join(', ') }}"
+          - "Unhealthy nodes skipped: {{ unhealthy_nodes | default([]) | join(', ') }}"
+          - "Hardware files: {{ hardware_files.files | length }}"
+          - "Benchmark files: {{ benchmark_files.files | length }}"
+          - "Node configs: {{ config_files.files | length }}"
+          - "======================================================"

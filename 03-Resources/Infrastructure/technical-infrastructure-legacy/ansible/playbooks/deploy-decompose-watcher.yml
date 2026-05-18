@@ -1,0 +1,78 @@
+---
+# ============================================================
+# deploy-decompose-watcher.yml
+# Deploy decomposition watcher to orchestrator (Mac)
+# ============================================================
+#
+# PURPOSE:
+#   Installs the decompose-watcher.py as a user-level systemd service
+#   (or launchd on macOS) for automatic trigger processing.
+#
+#   The watcher scans ~/.pi/decomposition-triggers/pending/ every 5s,
+#   invokes the decomposer, and dispatches sub-tasks to lab nodes.
+#
+# USAGE:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i localhost, -c local playbooks/deploy-decompose-watcher.yml
+#
+# NOTES:
+#   - Runs on orchestrator (Mac) only
+#   - Uses launchd on macOS (systemd is for Linux nodes)
+#   - Watches triggers created by classify_prompt.py
+
+- name: Deploy Decomposition Watcher
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    repo_root: "{{ playbook_dir | dirname | dirname | dirname }}"
+    watcher_script: "{{ repo_root }}/technical-infrastructure/scripts/decompose-watcher.py"
+    trigger_dir: "{{ ansible_env.HOME }}/.pi/decomposition-triggers"
+
+  tasks:
+    - name: "[TI-WATCHER] Ensure trigger directories exist"
+      ansible.builtin.file:
+        path: "{{ trigger_dir }}/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - pending
+        - completed
+        - failed
+        - plans
+
+    - name: "[TI-WATCHER] Ensure watcher script exists"
+      ansible.builtin.stat:
+        path: "{{ watcher_script }}"
+      register: watcher_stat
+
+    - name: "[TI-WATCHER] Fail if watcher script missing"
+      ansible.builtin.fail:
+        msg: "decompose-watcher.py not found at {{ watcher_script }}"
+      when: not watcher_stat.stat.exists
+
+    - name: "[TI-WATCHER] Install launchd plist (macOS)"
+      ansible.builtin.template:
+        src: decompose-watcher.plist.j2
+        dest: "{{ ansible_env.HOME }}/Library/LaunchAgents/com.tradingdesk.decompose-watcher.plist"
+        mode: '0644'
+      when: ansible_os_family == "Darwin" or ansible_system == "Darwin"
+
+    - name: "[TI-WATCHER] Load launchd service"
+      ansible.builtin.command: launchctl load -w "{{ ansible_env.HOME }}/Library/LaunchAgents/com.tradingdesk.decompose-watcher.plist"
+      when: ansible_os_family == "Darwin" or ansible_system == "Darwin"
+      ignore_errors: yes
+
+    - name: "[TI-WATCHER] Summary"
+      ansible.builtin.debug:
+        msg:
+          - "✅ Decomposition watcher deployed"
+          - "  Script: {{ watcher_script }}"
+          - "  Triggers: {{ trigger_dir }}/"
+          - "  Poll interval: 5s"
+          - ""
+          - "Manual commands:"
+          - "  Start: python3 {{ watcher_script }} --daemon"
+          - "  Status: python3 {{ watcher_script }} --status"
+          - "  Once: python3 {{ watcher_script }} --once"

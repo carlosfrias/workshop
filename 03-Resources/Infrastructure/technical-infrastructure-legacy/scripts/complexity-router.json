@@ -1,0 +1,49 @@
+{
+  "_description": "Complexity-based routing overlay for pi-keyword-router. Loaded by classify_prompt.py to map complexity to specific models within each route.",
+  "version": "1.0",
+  "enabled": true,
+  "tierMap": {
+    "TRIVIAL": "low",
+    "SIMPLE": "low",
+    "MEDIUM": "medium",
+    "HARD": "high"
+  },
+  "routeProfiles": {
+    "infrastructure": {
+      "TRIVIAL": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "SIMPLE": {"model": "ollama/qwen3:8b", "thinking": "low", "estimated_latency_ms": 2000},
+      "MEDIUM": {"model": "ollama/qwen3:8b", "thinking": "medium", "estimated_latency_ms": 5000},
+      "HARD": {"model": "ollama/gemma4:e4b", "thinking": "high", "estimated_latency_ms": 8000}
+    },
+    "reasoning": {
+      "TRIVIAL": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "SIMPLE": {"model": "ollama/qwen3:8b", "thinking": "low", "estimated_latency_ms": 2000},
+      "MEDIUM": {"model": "ollama/gemma4:e4b", "thinking": "medium", "estimated_latency_ms": 6000},
+      "HARD": {"model": "ollama-cloud/qwen3.5:397b", "thinking": "medium", "estimated_latency_ms": 10000}
+    },
+    "coding": {
+      "TRIVIAL": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "SIMPLE": {"model": "ollama/qwen3:8b", "thinking": "low", "estimated_latency_ms": 2000},
+      "MEDIUM": {"model": "ollama/gemma4:e4b", "thinking": "medium", "estimated_latency_ms": 6000},
+      "HARD": {"model": "ollama-cloud/deepseek-v4-pro", "thinking": "medium", "estimated_latency_ms": 12000}
+    },
+    "monitoring": {
+      "TRIVIAL": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "SIMPLE": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "MEDIUM": {"model": "ollama/qwen3:8b", "thinking": "low", "estimated_latency_ms": 2000},
+      "HARD": {"model": "ollama/qwen3:8b", "thinking": "medium", "estimated_latency_ms": 5000}
+    },
+    "default": {
+      "TRIVIAL": {"model": "ollama/qwen3.5:4b", "thinking": "off", "estimated_latency_ms": 200},
+      "SIMPLE": {"model": "ollama/qwen3:8b", "thinking": "low", "estimated_latency_ms": 2000},
+      "MEDIUM": {"model": "ollama/gemma4:e4b", "thinking": "medium", "estimated_latency_ms": 6000},
+      "HARD": {"model": "ollama-cloud/kimi-k2.6", "thinking": "high", "estimated_latency_ms": 15000}
+    }
+  },
+  "fallback": {
+    "onClassifierFailure": "MEDIUM",
+    "onTimeout": {"model": "ollama/qwen3:8b", "thinking": "medium"},
+    "maxLocalLatencyMs": 10000,
+    "maxTotalLatencyMs": 30000
+  }
+}

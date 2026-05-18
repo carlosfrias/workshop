@@ -1,0 +1,236 @@
+---
+# ============================================================
+# deploy-gist-workers-only.yml
+# Standalone worker deployment for third-party clusters
+# ============================================================
+#
+# PURPOSE:
+#   Deploys only the Gist worker component to a set of hosts.
+#   This playbook is designed to be shared with third parties who
+#   want to connect their compute nodes to your orchestrator via
+#   the Gist Message Protocol.
+#
+#   The orchestrator (your Mac) uses deploy-gist-message-protocol.yml
+#   or setup-gist-orchestrator.sh. This playbook is ONLY for the
+#   worker side (their nodes).
+#
+# WHAT IT DOES:
+#   1. Creates /srv/gist-tasks directory tree on each node
+#   2. Copies gist-worker.py to /usr/local/bin/ (must be provided)
+#   3. Installs systemd service template + timer
+#   4. Enables timer for node-specific + all-node tasks
+#   5. Verifies timer is active
+#
+# USAGE — Third Party:
+#   1. Install Ansible on their control node:
+#        sudo apt update && sudo apt install ansible
+#
+#   2. Create inventory.ini with their nodes:
+#        [lab_nodes]
+#        node1 ansible_host=192.168.1.10 ansible_user=admin
+#        node2 ansible_host=192.168.1.11 ansible_user=admin
+#
+#   3. Copy this playbook + gist-worker.py + templates to their machine
+#
+#   4. Provide them the Gist ID and instructions to set GITHUB_TOKEN
+#
+#   5. Run:
+#        ansible-playbook -i inventory.ini deploy-gist-workers-only.yml \
+#          --extra-vars "gist_worker_gist_id=0c517214489cb78c0484ca661f3d8463"
+#
+# REQUIRED FILES (must be present alongside this playbook):
+#   - gist-worker.py              → copied to nodes
+#   - templates/gist-worker@.service.j2
+#   - templates/gist-worker.timer.j2
+#
+# REQUIRED VARIABLES (override with --extra-vars or group_vars):
+#   gist_worker_gist_id    → The shared Gist ID (provided by orchestrator owner)
+#   GITHUB_TOKEN           → Set as environment variable or in group_vars
+#
+# SECURITY NOTES:
+#   - The Gist ID is NOT a secret — it's just a queue identifier
+#   - GITHUB_TOKEN IS a secret — never commit it to version control
+#   - Use ansible-vault or environment variables for the token
+#
+# CUSTOMIZATION:
+#   - Change gist_worker_poll_interval to adjust polling frequency (default 30s)
+#   - Change gist_worker_dir to use a different task directory
+#
+# FOR THE ORCHESTRATOR OWNER:
+#   After third party deploys workers, add their nodes to your inventory
+#   or update your node pool in the orchestrator config.
+
+- name: Deploy Gist Workers — Third-Party Cluster
+  hosts: lab_nodes
+  become: true
+  gather_facts: yes
+
+  vars:
+    # Poll interval in seconds (lower = faster response, more API usage)
+    gist_worker_poll_interval: 30
+    # Directory for local task state
+    gist_worker_dir: /srv/gist-tasks
+
+  pre_tasks:
+    - name: Verify required variables
+      ansible.builtin.fail:
+        msg: "gist_worker_gist_id is required. Provide with --extra-vars 'gist_worker_gist_id=YOUR_ID'"
+      when: gist_worker_gist_id is not defined or gist_worker_gist_id == ""
+
+    - name: Check for gist-worker.py in expected locations
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - "{{ playbook_dir }}/../scripts/gist-worker.py"
+        - "{{ playbook_dir }}/gist-worker.py"
+        - "./gist-worker.py"
+      register: worker_locations
+      delegate_to: localhost
+
+    - name: Find the actual gist-worker.py path
+      ansible.builtin.set_fact:
+        worker_src: "{{ item.item }}"
+      when: item.stat.exists
+      loop: "{{ worker_locations.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Fail if gist-worker.py not found
+      ansible.builtin.fail:
+        msg: |
+          gist-worker.py not found. Expected one of:
+            - {{ playbook_dir }}/../scripts/gist-worker.py
+            - {{ playbook_dir }}/gist-worker.py
+            - ./gist-worker.py
+          Please ensure gist-worker.py is copied alongside this playbook.
+      when: worker_src is not defined
+
+    - name: Warn about GITHUB_TOKEN
+      ansible.builtin.debug:
+        msg:
+          - "⚠ GITHUB_TOKEN should be set as an environment variable"
+          - "  export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx"
+          - "  Without it, workers can read tasks but cannot post results."
+      when: lookup('env', 'GITHUB_TOKEN') == ""
+
+  tasks:
+    - name: Display deployment info
+      ansible.builtin.debug:
+        msg:
+          - "========================================"
+          - "Deploying Gist Worker to {{ inventory_hostname }}"
+          - "Gist ID: {{ gist_worker_gist_id }}"
+          - "Poll interval: {{ gist_worker_poll_interval }}s"
+          - "========================================"
+
+    - name: Install Python3 if not present
+      ansible.builtin.apt:
+        name: python3
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure gist-tasks directory exists
+      ansible.builtin.file:
+        path: "{{ gist_worker_dir }}/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - pending
+        - running
+        - completed
+        - results
+
+    - name: Copy gist-worker.py to node
+      ansible.builtin.copy:
+        src: "{{ worker_src }}"
+        dest: /usr/local/bin/gist-worker.py
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Verify gist-worker.py syntax
+      ansible.builtin.command: python3 -m py_compile /usr/local/bin/gist-worker.py
+      changed_when: false
+
+    - name: Verify gist-worker.py is executable
+      ansible.builtin.stat:
+        path: /usr/local/bin/gist-worker.py
+      register: worker_stat
+
+    - name: Fail if worker not executable
+      ansible.builtin.fail:
+        msg: "gist-worker.py is not executable on {{ inventory_hostname }}"
+      when: not worker_stat.stat.executable
+
+    - name: Install systemd service template
+      ansible.builtin.template:
+        src: gist-worker@.service.j2
+        dest: /etc/systemd/system/gist-worker@.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Install systemd timer
+      ansible.builtin.template:
+        src: gist-worker.timer.j2
+        dest: /etc/systemd/system/gist-worker.timer
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Enable and start timer for this node
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Enable timer for all-node tasks
+      ansible.builtin.systemd:
+        name: "gist-worker@all.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Verify timer is active
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: started
+
+    - name: Test worker in dry-run mode
+      ansible.builtin.command:
+        cmd: "/usr/local/bin/gist-worker.py --status"
+      environment:
+        GIST_WORKER_GIST_ID: "{{ gist_worker_gist_id }}"
+        GIST_WORKER_NODE: "{{ inventory_hostname }}"
+      changed_when: false
+      ignore_errors: true
+
+    - name: Summary — Worker deployed
+      ansible.builtin.debug:
+        msg:
+          - "✓ Gist Worker deployed on {{ inventory_hostname }}"
+          - "  Script: /usr/local/bin/gist-worker.py"
+          - "  Timer: gist-worker@{{ inventory_hostname }}.timer"
+          - "  Tasks: {{ gist_worker_dir }}/"
+          - "  Poll interval: {{ gist_worker_poll_interval }}s"
+          - ""
+          - "  Next steps for third party:"
+          - "  1. Ensure GITHUB_TOKEN is set (in environment or systemd override)"
+          - "  2. Check logs: sudo journalctl -u gist-worker@{{ inventory_hostname }} -f"
+          - "  3. Verify: sudo systemctl status gist-worker@{{ inventory_hostname }}.timer"
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart gist-worker timer
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: restarted

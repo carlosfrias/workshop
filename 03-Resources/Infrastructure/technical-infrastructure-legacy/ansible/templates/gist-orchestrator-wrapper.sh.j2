@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Wrapper for gist-orchestrator.py
+# Installed by deploy-gist-message-protocol.yml to ~/.local/bin/gist-orchestrator
+repo="{{ ansible_env.HOME }}/Dropbox/ai-trading-workspace"
+script="${repo}/technical-infrastructure/scripts/gist-orchestrator.py"
+if [[ ! -f "$script" ]]; then
+    echo "✗ gist-orchestrator.py not found at ${script}"
+    exit 1
+fi
+cd "$repo" || exit 1
+python3 "$script" "$@"

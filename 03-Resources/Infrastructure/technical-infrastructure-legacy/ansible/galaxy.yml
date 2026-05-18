@@ -1,0 +1,36 @@
+namespace: friaslab
+name: trading_lab
+description: Ansible collection for managing trading infrastructure nodes, pi agents, ollama models, VPN, and capacity reporting
+version: 1.0.0
+readme: README_COLLECTION.md
+authors:
+  - Carlos Frias <carlos.frias@hey.com>
+  - Trading Lab Operations Team
+license:
+  - MIT
+tags:
+  - trading
+  - infrastructure
+  - ollama
+  - wireguard
+  - pi-coding-agent
+repository: https://github.com/carlosfrias/trading-workspace
+documentation: https://github.com/carlosfrias/trading-workspace/tree/main/technical-infrastructure/ansible/docs
+homepage: https://github.com/carlosfrias/trading-workspace
+issues: https://github.com/carlosfrias/trading-workspace/issues
+build_ignore:
+  - .git
+  - .pi
+  - '*.swp'
+  - '*.log'
+  - __pycache__
+  - .DS_Store
+  - tests/inventory
+  - tests/inventory.yml
+  - .ansible-lint
+  - .yamllint
+  - .pre-commit-config.yaml
+dependencies:
+  community.general: ">=6.0.0"
+  ansible.posix: ">=1.5.0"
+  community.crypto: ">=2.13.0"

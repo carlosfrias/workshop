@@ -1,0 +1,60 @@
+---
+- name: Backup Data v1.0
+  hosts: localhost
+  vars:
+    trigger_keyword: "backup_data"
+    backup_source: "/Users/friasc/Dropbox/ai-trading-workspace"
+    backup_dest: "/Volumes/Backup/ai-trading-workspace"
+    health_check: true
+  
+  tasks:
+    - name: TI-031 Health Check
+      command: python3 technical-infrastructure/scripts/orchestrator_health.py --json
+      register: health_result
+      changed_when: false
+      when: health_check
+    
+    - name: Evaluate Health Status
+      set_fact:
+        health_status: "{{ health_result.stdout | from_json | json_query('status') }}"
+      when: health_check
+    
+    - name: Fail if health critical
+      fail:
+        msg: "Health check failed: {{ health_status }}"
+      when: health_check and health_status == 'critical'
+    
+    - name: Check source directory exists
+      stat:
+        path: "{{ backup_source }}"
+      register: source_check
+    
+    - name: Fail if source missing
+      fail:
+        msg: "Backup source not found: {{ backup_source }}"
+      when: not source_check.stat.exists
+    
+    - name: Create backup destination
+      file:
+        path: "{{ backup_dest }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Execute backup
+      command: rsync -av --delete {{ backup_source }}/ {{ backup_dest }}/
+      register: backup_result
+    
+    - name: Verify backup
+      command: diff -r {{ backup_source }} {{ backup_dest }} --exclude='.git'
+      register: verify_result
+      failed_when: verify_result.rc != 0
+    
+    - name: Backup summary
+      debug:
+        msg: "Backup complete: {{ backup_result.changed }} files changed"
+    
+    - name: Log backup
+      lineinfile:
+        path: wiki/operational/sessions/backup-log.jsonl
+        line: '{"timestamp": "{{ ansible_date_time.iso8601 }}", "source": "{{ backup_source }}", "dest": "{{ backup_dest }}", "status": "success"}'
+        create: yes

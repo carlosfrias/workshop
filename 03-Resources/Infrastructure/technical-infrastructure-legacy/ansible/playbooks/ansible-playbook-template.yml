@@ -1,0 +1,20 @@
+---
+- name: Dynamic Playbook Execution
+  hosts: all
+  vars:
+    env: "{{ env }}"
+    role: "{{ role }}"
+  tasks:
+    - name: "Initialize {{ role }} environment"
+      debug:
+        msg: "Starting {{ role }} for {{ env }}"
+
+    - name: "Run role-specific tasks"
+      include_tasks: "tasks/{{ role }}.yml"
+      vars:
+        env: "{{ env }}"
+
+    - name: "Finalize {{ role }} execution"
+      debug:
+        msg: "Completed {{ role }} for {{ env }}"
+

@@ -1,0 +1,56 @@
+{
+  "_comment": "Phase-based instruction loading for Trading Desk agents. Each phase is loaded independently based on the current task stage.",
+  "version": "1.0",
+  "project": "trading-desk",
+  "phases": {
+    "domain-activation": {
+      "file": "phase-1-domain-activation.md",
+      "tokens": "~630",
+      "purpose": "Scan prompt, detect domain keywords, route to correct domain AGENTS.md",
+      "load_when": "Every prompt — before any work begins",
+      "model": "qwen3.5:4b"
+    },
+    "planning": {
+      "file": "phase-2-planning.md",
+      "tokens": "~840",
+      "purpose": "Framework readiness check, complexity assessment, decomposition decision",
+      "load_when": "After domain activated, before execution begins",
+      "model": "qwen3:8b"
+    },
+    "execution": {
+      "file": "phase-3-execution.md",
+      "tokens": "~1,100",
+      "purpose": "Core Must Always / Must Never rules, working standards, and safety index",
+      "load_when": "During active work — file edits, commands, deployments",
+      "model": "qwen3:8b",
+      "modules": [
+        "phase-3-ansible.md",
+        "phase-3-orchestrator.md"
+      ]
+    },
+    "quality-check": {
+      "file": "phase-4-quality-check.md",
+      "tokens": "~1,300",
+      "purpose": "Quality checklist verification before declaring task complete",
+      "load_when": "After work completes, before reporting success",
+      "model": "gemma4:e4b"
+    },
+    "documentation": {
+      "file": "phase-5-documentation.md",
+      "tokens": "~710",
+      "purpose": "Session notes, status updates, backlog updates, recommendation capture",
+      "load_when": "After quality check passes, before ending session",
+      "model": "gemma4:e4b"
+    }
+  },
+  "load_order": [
+    "domain-activation",
+    "planning",
+    "execution",
+    "quality-check",
+    "documentation"
+  ],
+  "total_tokens_all_phases": "~6,300",
+  "total_tokens_original": "~6,300",
+  "reduction": "55% per-inference (heaviest phase vs original full file)"
+}

@@ -1,0 +1,42 @@
+---
+# preflight.yml — Hardware and OS validation before Ollama deployment
+
+- name: "Preflight | Gather hardware facts"
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+      - network
+
+- name: "Preflight | Verify minimum RAM"
+  ansible.builtin.fail:
+    msg: "Node {{ inventory_hostname }} has only {{ ansible_memtotal_mb // 1024 }}GB RAM. Minimum 8GB required."
+  when: ansible_memtotal_mb < 8192
+
+- name: "Preflight | Verify disk space"
+  ansible.builtin.fail:
+    msg: "Node {{ inventory_hostname }} has only {{ ansible_mounts[0].size_available | human_readable }} free. Minimum 30GB required."
+  when: ansible_mounts[0].size_available < 30 * 1024 * 1024 * 1024
+
+- name: "Preflight | Check ollama.com reachability"
+  ansible.builtin.uri:
+    url: "https://ollama.com"
+    method: GET
+    timeout: 10
+  register: ollama_reachable
+  ignore_errors: true
+  changed_when: false
+
+- name: "Preflight | Warn if ollama.com unreachable"
+  ansible.builtin.debug:
+    msg: "WARNING: ollama.com is unreachable. Depot sync will be required for model deployment."
+  when: ollama_reachable.failed | default(false)
+
+- name: "Preflight | Determine tier from inventory"
+  ansible.builtin.set_fact:
+    _tier: "{{ ollama_tier | default('tier2') }}"
+    _models: "{{ ollama_models | default([]) }}"
+
+- name: "Preflight | Validate models list"
+  ansible.builtin.fail:
+    msg: "No ollama_models defined for {{ inventory_hostname }}. Check inventory."
+  when: _models | length == 0

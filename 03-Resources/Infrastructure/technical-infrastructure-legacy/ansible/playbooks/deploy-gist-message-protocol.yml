@@ -1,0 +1,215 @@
+---
+# ============================================================
+# deploy-gist-message-protocol.yml
+# Unified deployment: Orchestrator (Mac) + Workers (Lab Nodes)
+# ============================================================
+#
+# PURPOSE:
+#   One-command deployment of the complete Gist Message Protocol
+#   for off-premise remote access to lab nodes.
+#
+# WHAT IT DOES:
+#   1. Orchestrator (localhost):
+#      - Verifies/creates the shared Gist
+#      - Sets up environment variables (GIST_ORCHESTRATOR_GIST_ID, GITHUB_TOKEN)
+#      - Installs gist-orchestrator.py wrapper
+#   2. Workers (lab_nodes):
+#      - Copies gist-worker.py to /usr/local/bin/
+#      - Creates /srv/gist-tasks directory tree
+#      - Installs systemd service template + timer
+#      - Enables timer for node-specific + all-node tasks
+#      - Verifies timer is active
+#
+# USAGE:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i inventory.yml playbooks/deploy-gist-message-protocol.yml \
+#     --vault-password-file ./.vault_pass \
+#     --extra-vars "gist_id=0c517214489cb78c0484ca661f3d8463 github_token=ghp_xxx"
+#
+# FOR THIRD PARTIES (workers only):
+#   Use deploy-gist-workers-only.yml instead (no orchestrator setup)
+#
+# PREREQUISITES:
+#   - GitHub CLI (gh) installed on orchestrator OR GitHub token available
+#   - SSH key auth to all lab nodes
+#   - GitHub token with 'gist' scope
+#
+# ROLLBACK:
+#   To remove workers from nodes:
+#     ansible-playbook -i inventory.yml playbooks/remove-gist-worker.yml
+
+- name: Deploy Gist Message Protocol — Orchestrator Setup
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    # Default shared Gist ID (override with --extra-vars)
+    gist_orchestrator_gist_id: "0c517214489cb78c0484ca661f3d8463"
+    gist_local_bin: "{{ ansible_env.HOME }}/.local/bin"
+
+  tasks:
+    - name: Ensure .local/bin exists
+      ansible.builtin.file:
+        path: "{{ gist_local_bin }}"
+        state: directory
+        mode: '0755'
+
+    - name: Check if gist-orchestrator.py exists in repo
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/../../scripts/gist-orchestrator.py"
+      register: orchestrator_script
+
+    - name: Fail if orchestrator script is missing
+      ansible.builtin.fail:
+        msg: "gist-orchestrator.py not found at {{ playbook_dir }}/../../scripts/gist-orchestrator.py"
+      when: not orchestrator_script.stat.exists
+
+    - name: Install gist-orchestrator wrapper script
+      ansible.builtin.template:
+        src: gist-orchestrator-wrapper.sh.j2
+        dest: "{{ gist_local_bin }}/gist-orchestrator"
+        mode: '0755'
+      when: orchestrator_script.stat.exists
+
+    - name: Detect shell profile
+      ansible.builtin.set_fact:
+        shell_profile: "{% if ansible_env.SHELL is search('zsh') %}{{ ansible_env.HOME }}/.zshrc{% else %}{{ ansible_env.HOME }}/.bash_profile{% endif %}"
+
+    - name: Fallback to .bashrc if profile doesn't exist
+      ansible.builtin.stat:
+        path: "{{ shell_profile }}"
+      register: profile_stat
+
+    - name: Use .bashrc if profile missing
+      ansible.builtin.set_fact:
+        shell_profile: "{{ ansible_env.HOME }}/.bashrc"
+      when: not profile_stat.stat.exists
+
+    - name: Add Gist environment variables to shell profile
+      ansible.builtin.lineinfile:
+        path: "{{ shell_profile }}"
+        line: "{{ item }}"
+        create: yes
+        insertafter: EOF
+      loop:
+        - "# Gist Message Protocol (added {{ ansible_date_time.date }})"
+        - "export GIST_ORCHESTRATOR_GIST_ID=\"{{ gist_orchestrator_gist_id }}\""
+      when: ansible_env.GITHUB_TOKEN is not defined
+      ignore_errors: yes
+
+    - name: Warn about GITHUB_TOKEN
+      ansible.builtin.debug:
+        msg:
+          - "⚠ GITHUB_TOKEN not detected in environment"
+          - "  Set it before running gist-orchestrator:"
+          - "  export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx"
+          - "  Or add to {{ shell_profile }}"
+      when: ansible_env.GITHUB_TOKEN is not defined
+
+    - name: Summary — Orchestrator
+      ansible.builtin.debug:
+        msg:
+          - "✓ Orchestrator setup complete"
+          - "  Gist ID: {{ gist_orchestrator_gist_id }}"
+          - "  Wrapper: {{ gist_local_bin }}/gist-orchestrator"
+          - "  Source: {{ playbook_dir }}/../../scripts/gist-orchestrator.py"
+
+- name: Deploy Gist Message Protocol — Workers to Lab Nodes
+  hosts: lab_nodes
+  become: true
+  vars:
+    gist_worker_gist_id: "0c517214489cb78c0484ca661f3d8463"
+    gist_worker_poll_interval: 30
+    gist_worker_dir: /srv/gist-tasks
+
+  tasks:
+    - name: Ensure gist-tasks directory exists
+      ansible.builtin.file:
+        path: "{{ gist_worker_dir }}/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - pending
+        - running
+        - completed
+        - results
+
+    - name: Copy gist-worker.py from orchestrator repo
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../scripts/gist-worker.py"
+        dest: /usr/local/bin/gist-worker.py
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Verify gist-worker.py syntax
+      ansible.builtin.command: python3 -m py_compile /usr/local/bin/gist-worker.py
+      changed_when: false
+
+    - name: Install systemd service template
+      ansible.builtin.template:
+        src: gist-worker@.service.j2
+        dest: /etc/systemd/system/gist-worker@.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Install systemd timer
+      ansible.builtin.template:
+        src: gist-worker.timer.j2
+        dest: /etc/systemd/system/gist-worker.timer
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Enable and start timer for this node
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Enable timer for all-node tasks
+      ansible.builtin.systemd:
+        name: "gist-worker@all.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Verify timer is active
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: started
+
+    - name: Verify worker script is executable
+      ansible.builtin.stat:
+        path: /usr/local/bin/gist-worker.py
+      register: worker_stat
+
+    - name: Fail if worker script is not executable
+      ansible.builtin.fail:
+        msg: "gist-worker.py not found or not executable on {{ inventory_hostname }}"
+      when: not worker_stat.stat.exists or not worker_stat.stat.executable
+
+    - name: Summary — Worker
+      ansible.builtin.debug:
+        msg:
+          - "✓ Gist Worker deployed on {{ inventory_hostname }}"
+          - "  Script: /usr/local/bin/gist-worker.py"
+          - "  Timer: gist-worker@{{ inventory_hostname }}.timer"
+          - "  Tasks: {{ gist_worker_dir }}/"
+          - "  Poll interval: {{ gist_worker_poll_interval }}s"
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart gist-worker timer
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: restarted

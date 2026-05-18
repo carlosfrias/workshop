@@ -1,0 +1,75 @@
+---
+# gather-hardware-specs.yml
+# Runs the hardware spec extraction script across the lab inventory
+# and aggregates results into a local JSON file for capacity planning.
+
+- name: Gather Hardware Specs from Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  vars:
+    # Compute absolute path from playbook location so it works regardless of CWD
+    local_results_dir: "{{ playbook_dir }}/../../lab-specs"
+    aggregate_file: "{{ playbook_dir }}/../../lab-specs/lab-capacity-report.json"
+
+  tasks:
+    - name: Ensure local results directory exists
+      delegate_to: localhost
+      run_once: yes
+      ansible.builtin.file:
+        path: "{{ local_results_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy extraction script to nodes
+      ansible.builtin.copy:
+        src: "../../scripts/extract-hardware-specs.sh"
+        dest: "/tmp/extract-hardware-specs.sh"
+        mode: '0755'
+
+    - name: Execute hardware spec extraction
+      ansible.builtin.shell: "bash /tmp/extract-hardware-specs.sh"
+      args:
+        executable: /bin/bash
+      register: spec_output
+      changed_when: false
+
+    - name: Save raw JSON from each node
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ spec_output.stdout }}"
+        dest: "{{ local_results_dir }}/{{ inventory_hostname }}.json"
+        mode: '0644'
+
+    - name: Collect all spec files for aggregation
+      delegate_to: localhost
+      run_once: yes
+      ansible.builtin.find:
+        paths: "{{ local_results_dir }}"
+        patterns: "fnet*.json"
+      register: spec_files
+
+    - name: Aggregate specs into lab capacity report
+      delegate_to: localhost
+      run_once: yes
+      ansible.builtin.shell: |
+        jq -s '{ nodes: ., summary: {
+          total_nodes: length,
+          ram_tiers: {
+            tier1_lt8gb:  map(select(.memory.total_gb < 8)) | length,
+            tier2_8to16gb: map(select(.memory.total_gb >= 8 and .memory.total_gb < 16)) | length,
+            tier3_16to32gb: map(select(.memory.total_gb >= 16 and .memory.total_gb < 32)) | length,
+            tier4_gte32gb: map(select(.memory.total_gb >= 32)) | length
+          },
+          disk_pressure: map(select(.storage.free_gb < 50)) | length,
+          network_issues: map(select(.network.download_speed_mbps < 10 and .network.download_speed_mbps > 0)) | length,
+          ollama_installed: map(select(.ollama.installed == true)) | length
+        }}' {{ spec_files.files | map(attribute='path') | join(' ') }} > {{ aggregate_file }}
+      args:
+        executable: /bin/bash
+      when: spec_files.files | length > 0
+
+    - name: Display aggregate report path
+      delegate_to: localhost
+      run_once: yes
+      ansible.builtin.debug:
+        msg: "Lab capacity report saved to: {{ aggregate_file }}"

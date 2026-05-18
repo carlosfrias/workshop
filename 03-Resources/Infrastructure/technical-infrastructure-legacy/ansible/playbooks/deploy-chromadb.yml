@@ -1,0 +1,158 @@
+---
+# deploy-chromadb.yml — Deploy ChromaDB on fnet3 for Carlos' Desktop vector memory
+# Usage:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i inventory.yml playbooks/deploy-chromadb.yml --vault-password-file .vault_pass --limit fnet3
+
+- name: Deploy ChromaDB on fnet3
+  hosts: fnet3
+  become: true
+  gather_facts: yes
+
+  vars:
+    chromadb_version: "0.6.2"
+    # NOTE: 0.6.3 has an async/await bug in the collections endpoint.
+    # Use 0.6.2 until fixed. Non-empty metadata required on collection create.
+    chromadb_host: "0.0.0.0"
+    chromadb_port: 8000
+    chromadb_data_dir: "/srv/chromadb"
+    chromadb_container_name: "chromadb"
+    # Memory limit: 10GB for ChromaDB (safe on 31GB node)
+    chromadb_memory: "10g"
+
+  tasks:
+    # ========================================================================
+    # 1. VERIFY SYSTEM RESOURCES
+    # ========================================================================
+    - name: Check available RAM
+      ansible.builtin.shell: |
+        free -m | awk '/^Mem:/ {print $7}'
+      args:
+        executable: /bin/bash
+      register: free_ram_mb
+      changed_when: false
+
+    - name: Fail if insufficient RAM
+      ansible.builtin.fail:
+        msg: "fnet3 has {{ free_ram_mb.stdout | int }}MB free RAM. Minimum 4096MB required."
+      when: free_ram_mb.stdout | int < 4096
+
+    # ========================================================================
+    # 2. CREATE DATA DIRECTORY
+    # ========================================================================
+    - name: Ensure ChromaDB data directory exists
+      ansible.builtin.file:
+        path: "{{ chromadb_data_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure ChromaDB collections subdirectory exists
+      ansible.builtin.file:
+        path: "{{ chromadb_data_dir }}/collections"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    # ========================================================================
+    # 3. PULL CHROMADB DOCKER IMAGE
+    # ========================================================================
+    - name: Pull ChromaDB Docker image
+      community.docker.docker_image:
+        name: "chromadb/chroma:{{ chromadb_version }}"
+        source: pull
+      register: chromadb_pull
+
+    # ========================================================================
+    # 4. STOP ANY EXISTING CHROMADB CONTAINER
+    # ========================================================================
+    - name: Stop existing ChromaDB container
+      community.docker.docker_container:
+        name: "{{ chromadb_container_name }}"
+        state: absent
+      ignore_errors: yes
+
+    # ========================================================================
+    # 5. CREATE AND START CHROMADB CONTAINER
+    # ========================================================================
+    - name: Start ChromaDB container
+      community.docker.docker_container:
+        name: "{{ chromadb_container_name }}"
+        image: "chromadb/chroma:{{ chromadb_version }}"
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "{{ chromadb_port }}:8000"
+        env:
+          CHROMA_SERVER_HOST: "0.0.0.0"
+          CHROMA_SERVER_HTTP_PORT: "8000"
+          CHROMA_SERVER_AUTH_CREDENTIALS: "no"
+          CHROMA_PERSIST_DIRECTORY: "/chroma/chroma"
+          ANONYMIZED_TELEMETRY: "False"
+        volumes:
+          - "{{ chromadb_data_dir }}:/chroma/chroma:rw"
+        memory: "{{ chromadb_memory }}"
+        memory_swap: "{{ chromadb_memory }}"
+        log_driver: json-file
+        log_options:
+          max-size: "10m"
+          max-file: "3"
+
+    # ========================================================================
+    # 6. HEALTH CHECK
+    # ========================================================================
+    - name: Wait for ChromaDB to start
+      ansible.builtin.wait_for:
+        port: "{{ chromadb_port }}"
+        host: "127.0.0.1"
+        timeout: 60
+        delay: 3
+
+    - name: Verify ChromaDB health
+      ansible.builtin.uri:
+        url: "http://localhost:{{ chromadb_port }}/api/v1/heartbeat"
+        method: GET
+        status_code: 200
+      register: chromadb_health
+      retries: 5
+      delay: 5
+
+    - name: Display ChromaDB version
+      ansible.builtin.uri:
+        url: "http://localhost:{{ chromadb_port }}/api/v1/version"
+        method: GET
+      register: chromadb_version_info
+      ignore_errors: yes
+
+    # ========================================================================
+    # 7. CONFIGURE FIREWALL (OPTIONAL — restrict to lab network)
+    # ========================================================================
+    - name: Configure UFW to allow ChromaDB port
+      ansible.builtin.ufw:
+        rule: allow
+        port: "{{ chromadb_port }}"
+        proto: tcp
+        from_ip: "192.168.0.0/24"
+      when: ansible_os_family == "Debian"
+
+    # ========================================================================
+    # 8. REPORT STATUS
+    # ========================================================================
+    - name: Report deployment status
+      ansible.builtin.debug:
+        msg:
+          - "=== ChromaDB Deployment Complete ==="
+          - "Host: fnet3 ({{ ansible_host }})"
+          - "Port: {{ chromadb_port }}"
+          - "Data Dir: {{ chromadb_data_dir }}"
+          - "Memory Limit: {{ chromadb_memory }}"
+          - "Health Check: {{ chromadb_health.status }}"
+          - "Version: {{ chromadb_version_info.json.version | default('unknown') }}"
+          - ""
+          - "Access from orchestrator:"
+          - "  http://{{ ansible_host }}:{{ chromadb_port }}"
+          - ""
+          - "Test with:"
+          - "  curl http://{{ ansible_host }}:{{ chromadb_port }}/api/v1/heartbeat"

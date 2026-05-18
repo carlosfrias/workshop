@@ -1,0 +1,2092 @@
+[
+  {
+    "timestamp": "2026-05-01T16:09:13.158819",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "qwen3.5:4b",
+    "latency_ms": 200,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-01T16:09:13.264814",
+    "prompt": "Write a Python script",
+    "complexity": "SIMPLE",
+    "model": "qwen3:8b",
+    "latency_ms": 2000,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-01T16:09:13.391959",
+    "prompt": "Design meta-orchestration",
+    "complexity": "HARD",
+    "model": "kimi-k2.6",
+    "latency_ms": 15000,
+    "cost": 0.05,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:20:44.800682",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:30:46.133075",
+    "prompt": "Check node status",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:16.307823",
+    "prompt": "Write Python script",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 12,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:47.197146",
+    "prompt": "Analyze market data",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 10,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:47.385150",
+    "prompt": "Debug network issue",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:47.519465",
+    "prompt": "Format JSON",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:47.655114",
+    "prompt": "Create playbook",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:31:47.786405",
+    "prompt": "Summarize email",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:32:17.946015",
+    "prompt": "Design framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:32:18.116599",
+    "prompt": "Compare models",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:32:18.250784",
+    "prompt": "Troubleshoot VPN",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T13:38:13.500186",
+    "prompt": "Fix Gist Protocol UX issues: workers must auto-poll with systemd timer, auto-post results without being nagged, reduce message noise. Create systemd service and timer files",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:18:42.995050",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:18:53.252729",
+    "prompt": "Create an Ansible playbook that sets up Ollama on 7 nodes",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:19:10.220230",
+    "prompt": "Design a meta-orchestration framework with complexity classification and adaptive feedback",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:21:45.070209",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:21:45.242902",
+    "prompt": "Write a Python script that submits tasks to remote nodes",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 4,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:21:45.402755",
+    "prompt": "Create an Ansible playbook for Ollama on 7 nodes",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:21:45.564689",
+    "prompt": "Design a meta-orchestration framework with adaptive feedback",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 4,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:26:59.635584",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T14:26:59.827480",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T18:37:35.964796",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T18:37:35.971571",
+    "prompt": "Check if fnet2 is online",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 0,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T18:37:55.895945",
+    "prompt": "Design a complex framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T19:32:06.057688",
+    "prompt": "let's address the lab node fnet3 and fnet7 issues now.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T20:09:46.867283",
+    "prompt": "It seems that local low models are introducing latency into processing the AGENTS.md file that we are using for the technical domain. How can we assess why this is occuring and if we need to modify th",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T20:09:58.937400",
+    "prompt": "decompose It seems that local low models are introducing latency into processing the AGENTS.md file that we are using for the technical domain. How can we assess why this is occuring and if we need to",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T20:16:16.468199",
+    "prompt": "decompose this complex question. we have multiple model-router.json files and we need to consolidate them into the one file that is used and clean up the ones we don't need. I see a model-router.json ",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T20:25:57.986523",
+    "prompt": "pi install github:carlosfrias/pi-keyword-router",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T20:31:56.025996",
+    "prompt": "decompose This difficult task of looking into the technical-infrastructure backlog.md file to find the description of the nvidia issue with lab node fnet2. Please fix fnet2 nvidia issue.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3:8b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:05:59.529208",
+    "prompt": "The Ctrl+P fix did not work. I still cycle through models that are not in the models.json file. Please fix this.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:10:35.308701",
+    "prompt": "decompose The Ctrl+P fix did not work. I still cycle through models that are not in the models.json file. You completed this work on the lab nodes and created an ansible script for this but did not in",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:23:45.599971",
+    "prompt": "complex: The Ctrl+P is a pi agent and documented in the BACKLOG.md file which you need to find.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 11,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:24:04.056110",
+    "prompt": "assess: The Ctrl+P is a pi agent and documented in the BACKLOG.md file which you need to find.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 11,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:37:40.059683",
+    "prompt": "The Ctrl+P is working. The keyword-router.json extension is now broken with the fixes you did to repair Ctrl+P. Can you repair this please?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:46:11.816730",
+    "prompt": "The pi-keyword-extension needs to be package for distribution using `pi install`. create a private standalone github repo from the pi-keyword-router extension and package is it so that it can be insta",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:51:26.839399",
+    "prompt": "Please remove the old pi-keyword-router installation and use the new distribution you created. Please make sure it is working in a subagent",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:53:04.842359",
+    "prompt": "Test that the pi-keyword-router extension is loaded and working. \n\nRun these steps:\n1. Check the extension is listed in the startup output (look for \"keyword-router\" in any loaded extensions or status",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:53:41.962042",
+    "prompt": "status",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 14,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T21:55:25.433347",
+    "prompt": "Hello pi",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T22:09:33.892390",
+    "prompt": "The wiki documentation is based on markdown files which also double as context files for the model. We are using vitepress to render the markdown as a website. Significant difficulties are present for",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 10,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T22:12:59.098685",
+    "prompt": "Yes",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 12,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T22:15:19.342996",
+    "prompt": "You are fixing internal cross-references in the technical-infrastructure wiki after a folder reorganization.\n\n## What Changed\n\nThe wiki at `technical-infrastructure/wiki/` was reorganized from a flat ",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 11,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T22:32:41.722875",
+    "prompt": "The ../agent-workspace/ contains the projects decomposition-skill, gist-message-queue, local-model-pilot,project-blueprint, and trading-lab-architecture. I think these need to be back under technical-",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T22:32:55.812999",
+    "prompt": "The ../agent-workspace/ contains the projects decomposition-skill, gist-message-queue, local-model-pilot,project-blueprint, and trading-lab-architecture. These components are distribution ready and ha",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T23:22:20.009427",
+    "prompt": "Yes please",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T23:32:35.787022",
+    "prompt": "Please capture this final output in a session note. The tables, directory structure and what this enables sections will be helpful to continue to think about this.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-02T23:45:41.222130",
+    "prompt": "I like the organization except delete the offline-pi-* items entirely.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T00:01:23.384000",
+    "prompt": "I found that we have lab-specs/ folder that was inadvertently created here. Can we merge this into technical-infrastructure/operational/data/?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T08:35:36.657514",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T08:35:52.141421",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T08:36:50.839980",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T08:37:07.512410",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T08:37:24.850173",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T12:08:09.560415",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T12:08:51.314788",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T12:09:11.584886",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T13:24:10.915793",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-03T13:25:44.818866",
+    "prompt": "Design a meta-orchestration framework",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T00:18:45.156038",
+    "prompt": "ok",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T00:29:04.072204",
+    "prompt": "also fnet1 and fnet2",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T10:46:21.528952",
+    "prompt": "proceed",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T12:17:43.227857",
+    "prompt": "Yes, please escalate to a higher model so the work can be completed.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T12:26:11.884120",
+    "prompt": "Complex problem to solve with the wiki search plugin. the search is not returning english. search is returning another language. please fix.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T14:17:13.896549",
+    "prompt": "continue",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T20:48:02.667080",
+    "prompt": "comprenhensively explain why we are using ChromaDB",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-04T22:49:28.437371",
+    "prompt": "Q6: hybrid; Q7: both; Q8: YES; Q10: Best effort; Q11: Telegram; Q12: Yes, real-time web dashboard",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-05T08:20:42.947226",
+    "prompt": "Prune completed backlog items and fix broken paths",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-05T09:48:52.935815",
+    "prompt": "Fix 185 broken wiki links across 6 categories with test harness verification",
+    "complexity": "TRIVIAL",
+    "model": "ollama-cloud/qwen3.5:397b-cloud",
+    "latency_ms": 7,
+    "cost": 0.011,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-05T09:53:41.411957",
+    "prompt": "Manage and execute the dispatch script.",
+    "complexity": "TRIVIAL",
+    "model": "ollama-cloud/qwen3.5:397b-cloud",
+    "latency_ms": 10,
+    "cost": 0.011,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T12:28:42.048142",
+    "prompt": "What is the status on the health monitor skill?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T12:34:58.264011",
+    "prompt": "Create a high priority backlog to resolve the python dependency of this skill so that it will be funcational upon installation?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T12:47:38.241829",
+    "prompt": "The error is still present: `[Skill conflicts]                                                                                                                 \n  \"decompose-execute-verify\" collision: ",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T12:58:02.512225",
+    "prompt": "We must do a comprehensive and detailed review of pi-keyword-router, local-model-pilot and resize-node packages to find overlapping functionality or conflicting prompt triggers or any other functional",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T13:55:07.646255",
+    "prompt": "Yes, fix all of them use orchestration where it makes senes",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T14:53:30.671954",
+    "prompt": "Prepare a detailed report for the wiki with an exhaustive table listing Prompt, What Happens and Model-Router that will show every combination that are reflected in the keyword-router and model-router",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T15:04:42.055902",
+    "prompt": "Why does /router thinking high provide two high selectors? Do they mean different things? If so, how am i suppose to know which high means what kind of high?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T15:55:00.352923",
+    "prompt": "Do we have any additional work remaining?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:08:20.795305",
+    "prompt": "Make sure that the skills node-router and health-monitor are included as independent skills under technical-infrastructure/packages/. They are currently installed under ~/.pi/agent/git but future work",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:12:25.083687",
+    "prompt": "No, just checkout a copy of each of those skills from github and maintain a copy under technical-infrastructure/packages. The skills installed under git have been installed using `pi install`. They ar",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:25:58.613523",
+    "prompt": "Please note that the work was done in another pi session. The work was inadvertently done in `~/.pi/agent/git`. The work needs to be placed in the correct location under technical-infrastructure/packa",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:34:16.913337",
+    "prompt": "did you understand the changes made to health-monitor and how it works with node-router?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:35:09.386243",
+    "prompt": "did you assess the architectural refactoring that was done to health-monitor and how it works with node-router?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:37:48.865258",
+    "prompt": "Can you make use of the lab nodes to carry out this test so that you don't risk crashing the orchestrator?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:38:45.271426",
+    "prompt": "I meant the orchestrator node.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:40:32.052917",
+    "prompt": "We developed the Gist Message Protocol. Was the this skill ever setup as an independent git repo that can be installed with `pi install`?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:49:54.980775",
+    "prompt": "Research how do orchestrate pi agents installed on other nodes in the network?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T16:51:08.068131",
+    "prompt": "Analyze and research how do orchestrate pi agents installed on other nodes in the network? Is there a skill available we could use? We have the gist message protocol but we need something that is near",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T21:43:16.933305",
+    "prompt": "If there is no gist-message-protocol repo then let's create a private github repo for this skill. It should be an independent repo that we work out of technical-infrastructure/packages and can be inst",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T21:44:36.647647",
+    "prompt": "If there is no gist-message-protocol repo then let's create a private github repo for this skill. It should be an independent repo that we work out of technical-infrastructure/packages and can be inst",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-08T21:52:37.780098",
+    "prompt": "Please use technical-infrastructure/packages/ as your workspace for gist-message-protocol.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-09T14:36:02.834538",
+    "prompt": "Execute git add . command",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-09T14:52:56.658460",
+    "prompt": "Evaluate gist-message-queue and gist-message-protocol functionality and report whether the functionality is duplicate or complementary.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-09T15:24:34.737687",
+    "prompt": "Evaluate gist-message-queue and gist-message-protocol functionality and report whether the functionality is duplicate or complementary.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-09T15:25:30.587387",
+    "prompt": "Evaluate technical-infrastructure/packages/gist-message-queue and technical-infrastructure/packages/gist-message-protocol and report whether the functionality is duplicate or complementary.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-09T20:38:43.434172",
+    "prompt": "Please move this backlog from wiki/operational/BACKLOG.md to technical-infrastructure/wiki/operational/BACKLOG.md",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T08:44:18.394462",
+    "prompt": "Evaluate the TI-031/TI-032 Master Prompt System and extract the Playbook Trigger System into a standalone skill that is located in technical-infrastructure/packages/Playbook Trigger System. Configure ",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T16:33:31.177324",
+    "prompt": "Do you have a recommendation on how to have two pi agents work together?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T17:13:20.866668",
+    "prompt": "2",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T17:25:21.883011",
+    "prompt": "Set up a two-node distributed agent system with intercom coordination. Your task:\n1. First, check what's already installed locally\n2. Guide me through completing the intercom setup steps\n3. Monitor pr",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T17:34:37.814256",
+    "prompt": "Use ssh to remote server fnet3",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T17:52:26.573947",
+    "prompt": "try now",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:09:54.577021",
+    "prompt": "Let's build a skill to Setup an intercom-coordinated workflow between two agents.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:10:51.867578",
+    "prompt": "Let's build a skill to create a subagent chain for planner-worker pattern",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:11:10.711387",
+    "prompt": "Let's build a skill to Setup an intercom-coordinated workflow between two agents.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:11:56.432680",
+    "prompt": "Let's build a skill to Setup an intercom-coordinated workflow between two agents. Please start with creating the needed folder and writing the initial files we will need.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:18:51.543604",
+    "prompt": "Create acceptance test that the files were created, committed and pushed to the private github repo.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:32:02.597860",
+    "prompt": "The `gh` tool is already logged in you don't need to use `ssh` explicitly since `gh` uses it already.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:40:50.294013",
+    "prompt": "update router thinking to medium",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T18:57:02.393800",
+    "prompt": "execute",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T19:01:27.970530",
+    "prompt": "Create the test properly in the intercom-coord-workflows skill folder. Commit and push to repo and test that the test is in the repo.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T19:06:18.182284",
+    "prompt": "status",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T19:06:59.306985",
+    "prompt": "1.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T19:15:41.986036",
+    "prompt": "Can you examine Voxtype https://voxtype.io/ as a tool to add voice input to the pi agent tui?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T19:17:34.657790",
+    "prompt": "Complete an acceptance test that validates that the acceptance tests has been written to the intercom-coord-workflows",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:13:02.730603",
+    "prompt": "Please create acceptance test for a voice-input skill that uses voxtype. Create a private github repository, commit and     \npush the acceptance test.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:15:28.518434",
+    "prompt": "Please create acceptance test for a voice-input skill that uses voxtype. Create a private github repository, commit and     \npush the acceptance test.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:16:03.666718",
+    "prompt": "Design an acceptance test for a voice-input skill that uses voxtype. Create a private github repository, commit and     \npush the acceptance test.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:18:43.191415",
+    "prompt": "Design a comprehensive acceptance test for the intercom-coord-workflow using fnet3 as the worker node.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:22:06.820292",
+    "prompt": "Evaluate if the prior work is optimal. Make recommendations if you find gaps in the workflow.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:31:29.916469",
+    "prompt": "Evaluate the technical master-prompt skill and list the functionality it provides.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:31:45.876262",
+    "prompt": "Examine the technical master-prompt skill and list the functionality it provides.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T20:34:35.682854",
+    "prompt": "Pleaes update the technical-infrastructure wiki with this skill and test results.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:00:21.442387",
+    "prompt": "Is the github repo set to private?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:12:49.354217",
+    "prompt": "Please examine and report what you learn from technical-infrastructure/packages/health-monitor/.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:35:02.601226",
+    "prompt": "The driver issue was resolved some time ago. I'm surprised this was referenced in a way that prompted you to attempt to help fix it. It never should have been associated with this issue. Please remove",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:42:52.970333",
+    "prompt": "Refactor the health-monitor package to remove Ansible dependencies and convert to scripts-only local monitoring.\n\n**Tasks:**\n\n1. **Remove Ansible playbooks:**\n   - Delete `playbooks/check_health_v1.0.",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:42:53.191823",
+    "prompt": "Update the health-monitor skill documentation to reflect local-only monitoring (no lab nodes, no Ansible).\n\n**Focus areas:**\n\n1. **SKILL.md updates:**\n   - Remove \"Lab Nodes\" from the three-layer moni",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:44:50.397488",
+    "prompt": "I noted that both health-monitor and master-prompt-system each contain health monitoring scripts. I want to make sure that only health-monitor is doing the work of monitoring nodes. I would like to re",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:50:30.434250",
+    "prompt": "Complete the health monitoring consolidation based on the audit findings.\n\n**Audit Results (from previous agent):**\n- Playbooks (`check_health_v1.0.yml`, `monitor_services_v1.0.yml`) are 100% identica",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T21:55:12.123582",
+    "prompt": "Yes, please execute those changes.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T22:14:52.478046",
+    "prompt": "The next architectural concern I would like to examine with you is between master-prompt-system and decompose-execute-verify. Both of these skills perform decomposition of prompts. We need a compariso",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T22:25:38.375778",
+    "prompt": "yes, let's proceed with Option A",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 4,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-10T22:36:08.152738",
+    "prompt": "Please create a backlog for comprehensive acceptance testing that covers the flow end to end",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T07:18:50.121688",
+    "prompt": "The Lord's mercies are new today!",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T07:43:43.669025",
+    "prompt": "Choosing only one local LLM of the ones defined, which one would likely work best",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T08:06:32.104869",
+    "prompt": "Can you send this summary to the printer?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T08:33:05.945929",
+    "prompt": "How can I inquire how a prompt will be routed without executing the prompt?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T08:54:07.632708",
+    "prompt": "I like the summary. Let's review the plan first. Confirm the file location please.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T09:27:57.325881",
+    "prompt": "1. manual configuration of the domain should be an option. Default should be the domain. 2. Tax calculations represent too much complexity to include here, just raw costs. 3. Rate card can be consider",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T10:03:26.228527",
+    "prompt": "The `routing-bill ... --format...` should include csv or quicken. 1. This appears in the document you created on line 44 of /Users/friasc/Dropbox/workshop/technical-infrastructure/extensio",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T10:11:07.413706",
+    "prompt": "Thank you that makes sense to me now.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T11:24:13.760875",
+    "prompt": "Is the extension pushed to a private github repo?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T11:25:37.581735",
+    "prompt": "1.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T11:38:57.273162",
+    "prompt": "Let's install this and start using it! Please install it using `pi install` and so forth.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T11:39:54.964132",
+    "prompt": "extensions",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T11:47:25.597768",
+    "prompt": "list",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T12:22:35.281512",
+    "prompt": "Please prepare a detailed training on using the pi-routing-transparency. Assume the role of a user that is not aware of how to use the tool. Use Libreoffice Impress to create the slides and include th",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T12:42:11.405150",
+    "prompt": "Why does the thinking on the model keep going back to minimal? Pi agent reports an error and I'm then unable to work. I look at the defaultThinkingLevel set in the settings.json and it is set to minim",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T12:49:09.753028",
+    "prompt": "status please",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T12:52:56.833063",
+    "prompt": "Please execute Option 1",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T13:14:56.738519",
+    "prompt": "continue working hard please",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T13:34:03.932767",
+    "prompt": "Both. which one do we do first?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T13:44:13.438796",
+    "prompt": "Did the testing complete for router-transparency?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T13:45:21.612308",
+    "prompt": "Did the testing complete for pi-routing-transparency?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T13:49:08.728512",
+    "prompt": "Yes, fix these difficult and hard to resolve issues.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T14:13:23.489887",
+    "prompt": "is the router-transparency componenet working now",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T14:51:25.221223",
+    "prompt": "Router-transparency component is still not working. Re-examine pi-router-transparency comprehensively and with fresh eyes to find what is wrong. Also please review the tests for the gaps that I know a",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T14:58:14.150340",
+    "prompt": "Decompose acceptance test technical-infrastructure/extensions/routing-transparency/test/acceptance.test.ts into individual files so that each file contains a single tests and thus not exceed the max c",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T15:03:21.303841",
+    "prompt": "If you find a more practical way to split the tests the use that way. It is currently not loading and the file must be made smaller.\n\nThe test file split needs to make sense. Perhaps by block would al",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T15:15:39.366467",
+    "prompt": "remove it",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T15:21:59.516290",
+    "prompt": "The TUI is still broken and not showing what the routing-transparency extension is suppose to show. Please fix it.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T15:30:42.934768",
+    "prompt": "We are having a real problem attempting to get the routing-transparency tested. How can we reason through the steps we need to make sure we can complete testing without exceeding the context length of",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T15:39:14.546308",
+    "prompt": "Please create a technical-infrastructure/wiki/operational/BACKLOG.md to create a plan to provide testing instructions that include the learnings you describe above in the  \"Methodology: Testing Withou",
+    "complexity": "HARD",
+    "model": "ollama/gemma4:e4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:04:36.597333",
+    "prompt": "extensions",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:11:34.967125",
+    "prompt": "pi-routing-transaparency is installed. The TUI status bar still doesn't show the routing information we  need. What else do we need to fix?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:33:17.234888",
+    "prompt": "what is next on the backlog?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:43:00.333196",
+    "prompt": "I wanted to get clarity because you constantly contradicted the documentation. The user had it correct but you, the model, had it wrong.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:47:54.451860",
+    "prompt": "What is next on the backlog?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:48:41.117820",
+    "prompt": "This question was asked in another session to test the router-transparency footer. Hold on",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T16:51:42.441009",
+    "prompt": "What next on the backlog?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T17:18:39.341475",
+    "prompt": "what is on the backlog?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T17:37:06.164459",
+    "prompt": "hello",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T17:37:18.284106",
+    "prompt": "hello",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T21:14:32.108217",
+    "prompt": "There is no routing information at all.",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-11T21:22:52.832471",
+    "prompt": "/name: test",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T08:29:40.036620",
+    "prompt": "Are you able to update obsidian with this plan?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T08:30:53.690073",
+    "prompt": "hold on",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T08:32:44.277821",
+    "prompt": "Are you able to update my obsidian (~/Dropbox/obsidian-vaults/)  with this plan?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T09:05:15.289886",
+    "prompt": "yes, begin",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T09:18:31.336430",
+    "prompt": "Continue",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T09:42:25.310412",
+    "prompt": "Proceed",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:07:19.315685",
+    "prompt": "I would like to begin performance monitoring of the system with live data. I want to use the master prompt system immediately and to do the remainder of the work going forward if possible. What do we ",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:16:58.907677",
+    "prompt": "That will take some time. That we could better leverage by working on the orchestrator node. The logic of the master prompt is too decompose complex tasks into simpler tasks that could carried out by ",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:17:35.166915",
+    "prompt": "agent",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 15,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:17:56.348947",
+    "prompt": "list",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:24:29.192229",
+    "prompt": "That will take some time. That we could better leverage by working on the orchestrator node. The logic of the master prompt is too decompose complex tasks into simpler tasks that could carried out by ",
+    "complexity": "MEDIUM",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:25:49.147312",
+    "prompt": "Task: Decompose the following task into executable sub-tasks. Return ONLY a JSON array of sub-tasks with fields: id, action, node (if applicable), complexity (LOW/MEDIUM/HIGH).\n\nTask: Monitor the disk",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:45:58.164865",
+    "prompt": "The `$\\rightarrow$` symbol is only appearing in your responses in the terminal. I don't see it anywhere else. I hope that helps. Please continue",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:54:08.734135",
+    "prompt": "This document is polluted when you encode the `$\\rightarrow$` issue I only want addressed in your response to the terminal. The `$\\rightarrow$` has nothing to do with the orchestration-escalation-poli",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T10:56:10.402917",
+    "prompt": "This document is polluted when you encode the `$\\rightarrow$` issue in the *.md documents. I only want the `$\\rightarrow$` addressed in your response to the terminal, that's it, nothing further about ",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T11:00:23.130660",
+    "prompt": "can we move on or do you still have updating to do?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T11:21:56.485219",
+    "prompt": "Excellent work!",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 7,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T11:22:32.640141",
+    "prompt": "What is our next step to deploy to the lab?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T11:59:40.951513",
+    "prompt": "Yes, execute canary task now",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T12:01:14.147054",
+    "prompt": "What keyword should I use to invoke model gemma4:31b-cloud?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T12:03:35.231243",
+    "prompt": "Task: Decompose the following task into a a highly atomic a deparseable JSON array of sub-tasks with fields: id, action, node (target), complexity (LOW/MEDIUM/HIGH), and a a la-node (lab-node) model a",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 9,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T12:06:31.592419",
+    "prompt": "Continue",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 8,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T12:11:47.876084",
+    "prompt": "where is the file that showed ` ### Current fnet6 Node Model Router  `?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T12:12:04.249184",
+    "prompt": "Show me the file that showed ` ### Current fnet6 Node Model Router  `?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 5,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T13:27:48.260495",
+    "prompt": "Execute this:  `2. Master Prompt Integration: Wire the orchestrator to drop tasks into node queues instead of SSHing directly.           \n 3. Verifying subagent: Add the verifier agent to check result",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T14:24:20.606030",
+    "prompt": "I see that we created /srv/tasks on the lab-worker node when it should have been /srv/lab-worker/tasks. Please correct this",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T14:52:57.954397",
+    "prompt": "What do I need to do to make sure my next prompt is running through the master prompt?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T15:08:08.525997",
+    "prompt": "Please update the trigger prompt from \"Master Orchestrator\" to \"orchestrator\", \"route this task through the lab nodes\" to \"route to lab\"",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T15:21:04.195808",
+    "prompt": "orchestrate What do we need to do to prepare the master-prompt-system and dependencies into a deployable skill that can be deployed with `pi install`. This means that we would need some commands for s",
+    "complexity": "SIMPLE",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  },
+  {
+    "timestamp": "2026-05-12T15:42:58.026807",
+    "prompt": "Why is this item recorded in a folder called operational/backlog-completed/? Is this the correct location for a backlog item that has not been worked?",
+    "complexity": "TRIVIAL",
+    "model": "ollama/qwen3.5:4b",
+    "latency_ms": 6,
+    "cost": 0.0,
+    "quality": "",
+    "adequate": ""
+  }
+]

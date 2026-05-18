@@ -1,0 +1,41 @@
+---
+# install.yml — Ollama binary and systemd service installation (idempotent)
+
+- name: "Install | Check if Ollama is installed"
+  ansible.builtin.command: ollama --version
+  register: ollama_version
+  changed_when: false
+  ignore_errors: true
+
+- name: "Install | Download and run Ollama installer"
+  ansible.builtin.shell: |
+    curl -fsSL https://ollama.com/install.sh | sh
+  args:
+    creates: /usr/local/bin/ollama
+  when: ollama_version.rc != 0
+
+- name: "Install | Ensure ollama user exists"
+  ansible.builtin.user:
+    name: ollama
+    system: true
+    home: /usr/share/ollama
+    shell: /bin/false
+  ignore_errors: true
+
+- name: "Install | Ensure systemd service is enabled and started"
+  ansible.builtin.systemd:
+    name: ollama
+    enabled: true
+    state: started
+  when: ansible_service_mgr == 'systemd'
+
+- name: "Install | Wait for Ollama API"
+  ansible.builtin.uri:
+    url: http://localhost:11434/api/tags
+    method: GET
+    status_code: 200
+  register: ollama_api_ready
+  retries: 5
+  delay: 3
+  until: ollama_api_ready.status == 200
+  ignore_errors: true

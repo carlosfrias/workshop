@@ -1,0 +1,23 @@
+# WireGuard Client Config — Orchestrator (MacBook)
+# 
+# ⚠️  TEMPLATE: Replace placeholders with actual keys from your local WireGuard setup.
+# ⚠️  The real .conf file should live at /usr/local/etc/wireguard/wg0.conf (macOS)
+# ⚠️  NEVER commit a .conf file containing private keys to git.
+#
+# To use:
+# 1. Generate a keypair: wg genkey | tee client.private.key | wg pubkey > client.public.key
+# 2. Copy the server public key from the lab's /etc/wireguard/wg0.conf [Peer] section
+# 3. Replace placeholders below
+# 4. Save as wg0.conf or import into the WireGuard app
+
+[Interface]
+Address = 10.200.200.2/32
+PrivateKey = YOUR_CLIENT_PRIVATE_KEY_HERE
+DNS = 192.168.0.1
+MTU = 1420
+
+[Peer]
+PublicKey = YOUR_SERVER_PUBLIC_KEY_HERE
+Endpoint = carlos-lab.duckdns.org:51820
+AllowedIPs = 192.168.0.0/24, 10.200.200.0/24
+PersistentKeepalive = 25

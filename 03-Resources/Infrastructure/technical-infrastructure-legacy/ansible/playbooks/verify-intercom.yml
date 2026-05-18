@@ -1,0 +1,33 @@
+---
+# [S-TIGHT] verify-intercom.yml — Test intercom connectivity
+# Purpose: Verify pi session is running and intercom-ready on lab nodes
+# Target: All 7 lab nodes (fnet1-fnet7)
+# Author: Trading Desk Infrastructure
+# Date: 2026-05-14
+# Issue Home: technical-infrastructure/wiki/operational/issues/TI-041/
+
+- name: Verify intercom on lab node
+  hosts: lab_nodes
+  tasks:
+    - name: Check if pi session exists
+      ansible.builtin.command: ps aux | grep -E 'pi\s+--name' | grep -v grep
+      register: pi_process
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Extract session name
+      ansible.builtin.set_fact:
+        session_name: "{{ pi_process.stdout | regex_replace('.*--name\\s+([\\w-]+).*', '\\1') | default(inventory_hostname ~ '-worker') }}"
+      when: not pi_process.failed
+
+    - name: Report
+      ansible.builtin.set_fact:
+        intercom_result:
+          node_id: "{{ inventory_hostname }}"
+          intercom_ready: "{{ not pi_process.failed }}"
+          session_name: "{{ session_name | default(inventory_hostname ~ '-worker') }}"
+          status: "{{ 'ok' if not pi_process.failed else 'no_session' }}"
+  post_tasks:
+    - name: Output structured JSON
+      ansible.builtin.debug:
+        msg: "{{ intercom_result | to_json }}"

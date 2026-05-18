@@ -1,0 +1,12 @@
+{"timestamp": "2026-05-12T14:28:14.833128+00:00", "event": "execution_attempt", "task_id": 1, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SUCCESS", "generation": 0}
+{"timestamp": "2026-05-12T14:28:14.845893+00:00", "event": "execution_attempt", "task_id": 2, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "MEDIUM", "result": "SATURATED", "generation": 0}
+{"timestamp": "2026-05-12T14:28:14.846112+00:00", "event": "saturation_detected", "task_id": 2, "tier": "local_low", "action": "2x_decompose"}
+{"timestamp": "2026-05-12T14:28:14.846294+00:00", "event": "decomposition", "task_id": 2, "sub_task_count": 2, "tier": "local_low"}
+{"timestamp": "2026-05-12T14:28:14.858953+00:00", "event": "execution_attempt", "task_id": "2-a", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SUCCESS", "generation": 1}
+{"timestamp": "2026-05-12T14:28:14.870151+00:00", "event": "execution_attempt", "task_id": "2-b", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SUCCESS", "generation": 1}
+{"timestamp": "2026-05-12T14:28:14.883185+00:00", "event": "execution_attempt", "task_id": 3, "tier": "local_low", "model": "qwen3.5:4b", "complexity": "MEDIUM", "result": "SATURATED", "generation": 0}
+{"timestamp": "2026-05-12T14:28:14.883500+00:00", "event": "saturation_detected", "task_id": 3, "tier": "local_low", "action": "2x_decompose"}
+{"timestamp": "2026-05-12T14:28:14.883577+00:00", "event": "decomposition", "task_id": 3, "sub_task_count": 2, "tier": "local_low"}
+{"timestamp": "2026-05-12T14:28:14.895221+00:00", "event": "execution_attempt", "task_id": "3-a", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SUCCESS", "generation": 1}
+{"timestamp": "2026-05-12T14:28:14.907956+00:00", "event": "execution_attempt", "task_id": "3-b", "tier": "local_low", "model": "qwen3.5:4b", "complexity": "LOW", "result": "SUCCESS", "generation": 1}
+{"timestamp": "2026-05-12T14:28:14.908579+00:00", "event": "simulation_complete", "duration_sec": 0.0874929428100586, "total_tasks": 3, "success_count": 3}

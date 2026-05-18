@@ -1,0 +1,44 @@
+---
+# depot.yml — Ensures the depot node has all required models cached locally.
+# This role runs once on the designated depot node (fnet3).
+
+- name: "Depot | Ensure Ollama service is running"
+  ansible.builtin.systemd:
+    name: ollama
+    state: started
+    enabled: true
+
+- name: "Depot | Verify models directory exists"
+  ansible.builtin.file:
+    path: "{{ ollama_depot_dir }}"
+    state: directory
+    owner: ollama
+    group: ollama
+    mode: '0755'
+
+- name: "Depot | Pull each model from internet once (idempotent)"
+  ansible.builtin.command: |
+    ollama pull {{ item }}
+  args:
+    creates: "{{ ollama_depot_dir }}/manifests/registry.ollama.ai/library/{{ item | split(':') | first }}/{{ item | split(':') | last }}"
+  loop: "{{ ollama_models | union(['gemma4:e4b','qwen3:8b','qwen3.5:4b']) | unique }}"
+  register: depot_pull_result
+  retries: 3
+  delay: 10
+  until: depot_pull_result.rc == 0
+  changed_when: depot_pull_result.rc == 0 and 'already pulled' not in depot_pull_result.stdout | default('')
+
+- name: "Depot | Verify models are loadable"
+  ansible.builtin.command: |
+    ollama run {{ item }} "hello"
+  loop: "{{ ollama_models | union(['gemma4:e4b','qwen3:8b','qwen3.5:4b']) | unique }}"
+  changed_when: false
+
+- name: "Depot | Report depot status"
+  ansible.builtin.command: ollama list
+  changed_when: false
+  register: depot_list
+
+- name: "Depot | Display depot model list"
+  ansible.builtin.debug:
+    msg: "Depot ({{ inventory_hostname }}) ready with {{ depot_list.stdout_lines | length - 1 }} models."

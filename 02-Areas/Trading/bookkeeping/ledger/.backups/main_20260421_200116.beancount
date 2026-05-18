@@ -1,0 +1,74 @@
+;; Beancount Ledger for Trading Desk
+;; All dates in YYYY-MM-DD
+;; All monetary values in USD unless specified
+
+ ;; ---------------------------------------------------------------------------
+ ;; OPTIONS
+ ;; ---------------------------------------------------------------------------
+option "separator": " "
+option "commodity": "USD"
+
+ ;; ---------------------------------------------------------------------------
+ ;; ACCOUNTS
+ ;; ---------------------------------------------------------------------------
+
+;; Assets: Cash and Brokerage accounts
+openapi Assets:Brokerage:Cash                USD
+openapi Assets:Brokerage:Positions           USD
+openapi Assets:Bank:Operating                 USD
+
+;; Liabilities: Margin or Loans
+openapi Liabilities:Brokerage:Margin          USD
+
+;; Equity: Your initial and total investment
+openapi Equity:Opening-Balances              USD
+openapi Equity:Trading-Capital               USD
+
+;; Income: Gains and Dividends
+openapi Income:Trading:Realized-Gains         USD
+openapi Income:Trading:Dividends              USD
+
+;; Expenses: Fees and Subscriptions
+openapi Expenses:Trading:Commissions          USD
+openapi Expenses:Trading:Data-Subscriptions   USD
+openapi Expenses:Trading:Server-Costs         USD
+
+ ;; ---------------------------------------------------------------------------
+ ;; INITIAL BALANCES
+ ;; ---------------------------------------------------------------------------
+
+2026-01-01 open Assets:Brokerage:Cash
+2026-01-01 open Income:Trading:Realized-Gains
+2026-01-01 open Expenses:Trading:Commissions
+
+2026-01-01 * "Initial deposit — opening trading capital"
+  Assets:Brokerage:Cash           25000.00 USD
+  Equity:Trading-Capital         -25000.00 USD
+
+ ;; ---------------------------------------------------------------------------
+ ;; SAMPLE TRADE EXECUTIONS
+ ;; ---------------------------------------------------------------------------
+
+2026-04-21 * "Trade #TRD-1001: Buy 10 shares of AAPL"
+  Assets:Brokerage:Positions       10 AAPL {150.00 USD}
+  Assets:Brokerage:Cash          -1500.00 USD
+  Expenses:Trading:Commissions       5.00 USD
+  Assets:Brokerage:Cash              -5.00 USD
+
+2026-04-22 * "Trade #TRD-1002: Sell 10 shares of AAPL"
+  Assets:Brokerage:Positions       -10 AAPL {150.00 USD}
+  Income:Trading:Realized-Gains     -50.00 USD
+  Expenses:Trading:Commissions        5.00 USD
+  Assets:Brokerage:Cash           1545.00 USD
+
+2026-04-23 * "Trade #TRD-1003: Buy 15 shares of SPY"
+  Assets:Brokerage:Positions        15 SPY {520.00 USD}
+  Assets:Brokerage:Cash           -7800.00 USD
+  Expenses:Trading:Commissions        5.00 USD
+  Assets:Brokerage:Cash              -5.00 USD
+
+2026-04-24 * "Trade #TRD-1004: Buy 8 shares of MSFT"
+  Assets:Brokerage:Positions         8 MSFT {380.00 USD}
+  Assets:Brokerage:Cash           -3040.00 USD
+  Expenses:Trading:Commissions        5.00 USD
+  Assets:Brokerage:Cash              -5.00 USD

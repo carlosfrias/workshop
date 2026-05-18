@@ -11,6 +11,17 @@ package-lock.json
 .venv/
 __pycache__/
 *.pyc
+*.egg-info/
+dist/
+.pytest_cache/
+
+# VitePress
+.vitepress/dist/
+.vitepress/cache/
+
+# Nested git repos (packages with their own repos)
+01-Projects/*/.git/
+03-Resources/**/.git/
 
 # MkDocs
 site/site/
@@ -20,5 +31,11 @@ site/.cache/
 .DS_Store
 Thumbs.db
 
-# Scraped content (large — gitignore by default, add explicitly when needed)
+# Scraped content (large)
 data/courses/
+
+# Financial documents (PII)
+02-Areas/Trading/bookkeeping/staging/
+
+# Pi sessions (machine-generated)
+.pi/sessions/

@@ -1,0 +1,65 @@
+{
+  "node": "fnet1",
+  "timestamp": "2026-05-05T02:00:00Z",
+  "status": "success",
+  "system": {
+    "os": "Linux",
+    "distro": "Ubuntu 24.04.4 LTS",
+    "arch": "x86_64"
+  },
+  "cpu": {
+    "model": "Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz",
+    "cores": "4"
+  },
+  "memory": {
+    "total_gb": "15",
+    "safe_model_size_gb": "9"
+  },
+  "gpu": {
+    "info": "00:02.0 VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06)"
+  },
+  "network": {
+    "primary_ip": "192.168.0.141"
+  },
+  "ollama": {
+    "version": "ollama version is 0.23.0",
+    "running": "true",
+    "installed_models": 2
+  },
+  "models": [
+    {
+      "id": "qwen3.5:4b",
+      "architecture": "qwen35",
+      "parameters": "4.7B",
+      "quantization": "Q4_K_M",
+      "diskSize": "3.4 GB",
+      "contextWindow": 262144,
+      "reasoning": true,
+      "input": ["text", "image"],
+      "capabilities": {
+        "completion": true,
+        "vision": true,
+        "tools": true,
+        "thinking": true,
+        "audio": false
+      }
+    },
+    {
+      "id": "qwen3:8b",
+      "architecture": "qwen3",
+      "parameters": "8.2B",
+      "quantization": "Q4_K_M",
+      "diskSize": "5.2 GB",
+      "contextWindow": 40960,
+      "reasoning": true,
+      "input": ["text"],
+      "capabilities": {
+        "completion": true,
+        "vision": false,
+        "tools": true,
+        "thinking": true,
+        "audio": false
+      }
+    }
+  ]
+}

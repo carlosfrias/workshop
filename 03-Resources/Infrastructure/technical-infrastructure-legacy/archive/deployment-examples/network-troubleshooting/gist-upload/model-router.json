@@ -1,0 +1,132 @@
+{
+  "schemaType": "keyword-driven",
+  "version": "2.0.0",
+  "enabled": true,
+  "default": {
+    "provider": "ollama",
+    "model": "gemma4:e4b",
+    "thinkingLevel": "off"
+  },
+  "routes": {
+    "ultra-reasoning": {
+      "name": "ultra-reasoning",
+      "provider": "ollama",
+      "model": "kimi-k2.6:cloud",
+      "thinkingLevel": "high",
+      "keywords": [
+        "think deeply", "deep analysis", "comprehensive", "thorough",
+        "exhaustive", "detailed analysis", "in-depth", "profound",
+        "nuanced", "multi-factor", "cross-domain", "synthesize all",
+        "evaluate thoroughly", "critical assessment", "systematic review",
+        "full decomposition", "complete refactor", "architectural redesign",
+        "strategic decision", "mission-critical", "safety-critical",
+        "production-critical", "audit", "investigate deeply", "root cause",
+        "deep dive", "post-mortem", "retrospective"
+      ],
+      "domains": ["market-research", "position-management"],
+      "description": "Ultra-deep reasoning with 1T+ parameter models",
+      "priority": 2
+    },
+    "reasoning": {
+      "name": "reasoning",
+      "provider": "ollama",
+      "model": "qwen3.5:397b:cloud",
+      "thinkingLevel": "medium",
+      "keywords": [
+        "analyze", "evaluate", "assess", "decide", "compare", "judge",
+        "recommend", "reason", "think", "consider", "weigh", "pros",
+        "cons", "trade-off", "decompose", "plan", "design", "architect",
+        "strategize", "hypothesize", "predict", "forecast", "infer",
+        "deduce", "synthesize", "critique", "backtest", "signal",
+        "research", "opportunity", "size", "risk", "position-sizing",
+        "entry", "exit", "allocation", "verify", "validate", "verification",
+        "decomposer", "verifier", "setup", "refactor", "improve",
+        "diagnose", "debug", "troubleshoot", "fix", "solve", "understand",
+        "explain", "why", "where", "what", "when", "which", "how"
+      ],
+      "domains": ["market-research", "position-management", "decomposer", "verifier"],
+      "description": "Complex reasoning and analysis",
+      "priority": 1
+    },
+    "coding": {
+      "name": "coding",
+      "provider": "ollama",
+      "model": "deepseek-v4-pro:cloud",
+      "thinkingLevel": "medium",
+      "keywords": [
+        "code", "implement", "develop", "program", "script", "function",
+        "class", "method", "api", "debug code", "write code", "code review",
+        "coding", "programming", "software", "build", "compile",
+        "test code", "unit test", "integration test"
+      ],
+      "description": "Code generation and implementation",
+      "priority": 0
+    },
+    "vision": {
+      "name": "vision",
+      "provider": "ollama",
+      "model": "qwen3-vl:235b:cloud",
+      "thinkingLevel": "medium",
+      "keywords": [
+        "image", "screenshot", "chart", "diagram", "visual", "see",
+        "look at", "view", "graph", "plot", "figure", "photo", "render",
+        "drawing", "visualize", "inspect image", "analyze chart", "read chart"
+      ],
+      "description": "Vision and image analysis",
+      "priority": 0
+    },
+    "structured": {
+      "name": "structured",
+      "provider": "ollama",
+      "model": "gemma4:e4b",
+      "thinkingLevel": "off",
+      "keywords": [
+        "log", "record", "reconcile", "parse", "format", "list",
+        "tabulate", "extract", "transform", "convert", "validate",
+        "compute", "calculate", "sort", "filter", "group", "aggregate",
+        "ledger", "beancount", "entry", "transaction", "balance",
+        "import", "p&l", "realize"
+      ],
+      "domains": ["bookkeeping"],
+      "description": "Structured data operations and bookkeeping",
+      "priority": 0
+    },
+    "monitoring": {
+      "name": "monitoring",
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "thinkingLevel": "off",
+      "keywords": [
+        "status", "check", "ping", "health", "verify", "monitor",
+        "report", "watch", "alert", "uptime", "latency", "connectivity",
+        "position-status", "portfolio-state", "balance-check"
+      ],
+      "domains": ["position-monitor"],
+      "description": "Status checks, monitoring, and lightweight reporting",
+      "priority": 0
+    },
+    "infrastructure": {
+      "name": "infrastructure",
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "thinkingLevel": "off",
+      "keywords": [
+        "server", "connect", "deploy", "dns", "network", "api",
+        "configure", "install", "update", "restart", "ssh", "troubleshoot",
+        "driver", "offline", "r8169", "vpn", "firewall", "ansible",
+        "playbook", "provision", "ollama setup", "interface"
+      ],
+      "domains": ["technical-infrastructure"],
+      "description": "Infrastructure operations and troubleshooting",
+      "priority": 0
+    }
+  },
+  "respectManualSelection": true,
+  "notifyOnSwitch": true,
+  "maxHistorySize": 50,
+  "config": {
+    "autoSelect": true,
+    "fallbackToDefault": true,
+    "logSelections": true
+  }
+}

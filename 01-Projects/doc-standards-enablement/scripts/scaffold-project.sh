@@ -130,8 +130,8 @@ created: $NOW
 
 Prompt capture is active. See [threads/$PROJECT_NAME/0-THREAD.md](threads/$PROJECT_NAME/0-THREAD.md) for the prompt thread.
 
-**Overview:** [[Overview|Overview.md]] — Progress dashboard and session history
-**Workbench:** [[WORKBENCH|🔨 Workbench]] — Current working notes
+**Overview:** [[01-Projects/$PROJECT_NAME/Overview\|Overview.md]] — Progress dashboard and session history
+**Workbench:** [[01-Projects/$PROJECT_NAME/WORKBENCH\|🔨 Workbench]] — Current working notes
 
 ## What
 
@@ -144,9 +144,9 @@ Prompt capture is active. See [threads/$PROJECT_NAME/0-THREAD.md](threads/$PROJE
 ## Where
 
 - **Project Home:** \`personal-vault/01-Projects/$PROJECT_NAME/\`
-- **🔨 Workbench:** [[WORKBENCH|WORKBENCH.md]]
-- **Overview:** [[Overview|Overview.md]]
-- **Thread:** [[threads/$PROJECT_NAME/0-THREAD|0-THREAD]]
+- **🔨 Workbench:** [[01-Projects/$PROJECT_NAME/WORKBENCH\|WORKBENCH.md]]
+- **Overview:** [[01-Projects/$PROJECT_NAME/Overview\|Overview.md]]
+- **Thread:** [[01-Projects/$PROJECT_NAME/threads/$PROJECT_NAME/0-THREAD\|0-THREAD]]
 
 **Executor workspace:** \`workshop/01-Projects/$PROJECT_NAME/\` — code, scripts, data
 "
@@ -294,11 +294,11 @@ tags:
 
 | Resource | Purpose |
 |----------|---------|
-| [[WORKBENCH\\|🔨 Workbench]] | Your desk — current thinking and working notes |
-| [[AGENTS\\|AGENTS.md]] | AI routing, conventions, rules |
-| [[FOCUS]] | Current state and handoff |
-| [[README]] | Project overview and deliverables |
-| [[threads/$PROJECT_NAME/0-THREAD\\|Thread]] | Prompt history and intent arc |
+| [[01-Projects/$PROJECT_NAME/WORKBENCH\\|🔨 Workbench]] | Your desk — current thinking and working notes |
+| [[01-Projects/$PROJECT_NAME/AGENTS\\|AGENTS.md]] | AI routing, conventions, rules |
+| [[01-Projects/$PROJECT_NAME/FOCUS]] | Current state and handoff |
+| [[01-Projects/$PROJECT_NAME/README]] | Project overview and deliverables |
+| [[01-Projects/$PROJECT_NAME/threads/$PROJECT_NAME/0-THREAD\\|Thread]] | Prompt history and intent arc |
 
 ## Session History
 
@@ -310,7 +310,7 @@ tags:
 # Thread
 write_file "$THREAD_DIR/0-THREAD.md" "# Thread: $PROJECT_NAME
 
-**Project:** [[$PROJECT_NAME]] or [README.md](../../README.md)
+**Project:** [[01-Projects/$PROJECT_NAME|$PROJECT_NAME]] or [README.md](../../README.md)
 **Status:** active
 **Created:** $NOW
 **Last updated:** $NOW

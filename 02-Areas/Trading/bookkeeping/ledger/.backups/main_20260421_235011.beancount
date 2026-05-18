@@ -1,0 +1,120 @@
+;; Beancount Ledger for Trading Desk
+;; All dates in YYYY-MM-DD
+;; All monetary values in USD unless specified
+
+;; ---------------------------------------------------------------------------
+;; OPTIONS
+;; ---------------------------------------------------------------------------
+option "operating_currency" "USD"
+
+;; ---------------------------------------------------------------------------
+;; ACCOUNTS
+;; ---------------------------------------------------------------------------
+
+;; Assets: Cash and Brokerage accounts
+2026-01-01 open Assets:Brokerage:Cash                         USD
+2026-01-01 open Assets:Brokerage:Positions
+  booking: "FIFO"
+2026-01-01 open Assets:Brokerage:ShortPositions
+2026-01-01 open Assets:Bank:Operating                          USD
+
+;; Liabilities: Margin or Loans
+2026-01-01 open Liabilities:Brokerage:Margin                   USD
+
+;; Equity: Your initial and total investment
+2026-01-01 open Equity:Opening-Balances                        USD
+2026-01-01 open Equity:Trading-Capital                         USD
+
+;; Income: Gains, Dividends, and Interest
+2026-01-01 open Income:Trading:Realized-Gains                 USD
+2026-01-01 open Income:Trading:Dividends                       USD
+2026-01-01 open Income:Trading:Interest                        USD
+
+;; Expenses: Fees and Subscriptions
+2026-01-01 open Expenses:Trading:Commissions                   USD
+2026-01-01 open Expenses:Trading:Data-Subscriptions           USD
+2026-01-01 open Expenses:Trading:Server-Costs                  USD
+
+;; ---------------------------------------------------------------------------
+;; INITIAL BALANCES
+;; ---------------------------------------------------------------------------
+
+2026-01-01 * "Initial deposit — opening trading capital"
+  Assets:Brokerage:Cash           25000.00 USD
+  Equity:Trading-Capital         -25000.00 USD
+
+;; --- Import batch: Brokerage Statement_2026-01-31_074_2026-04-21T234941Z.PDF ---
+;; Import timestamp: 2026-04-21T23:49:46Z
+;; Source: Schwab brokerage statement
+2026-01-02 * "Trade #SCHWAB-20260102-001: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    350.88 USD
+  Equity:Trading-Capital    -350.88 USD
+2026-01-05 * "Trade #SCHWAB-20260105-002: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -562.75 USD
+  Equity:Trading-Capital    562.75 USD
+2026-01-06 * "Trade #SCHWAB-20260106-003: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -262.17 USD
+  Equity:Trading-Capital    262.17 USD
+2026-01-07 * "Trade #SCHWAB-20260107-004: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    5.20 USD
+  Equity:Trading-Capital    -5.20 USD
+2026-01-08 * "Trade #SCHWAB-20260108-005: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -6602.57 USD
+  Equity:Trading-Capital    6602.57 USD
+2026-01-09 * "Trade #SCHWAB-20260109-006: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -505.44 USD
+  Equity:Trading-Capital    505.44 USD
+2026-01-12 * "Trade #SCHWAB-20260112-007: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -215.74 USD
+  Equity:Trading-Capital    215.74 USD
+2026-01-12 * "Trade #SCHWAB-20260112-008: Deposit TfrNAVYFEDERALCREDI,CARLOS"
+  Assets:Brokerage:Cash    9000.00 USD
+  Equity:Trading-Capital    -9000.00 USD
+2026-01-13 * "Trade #SCHWAB-20260113-009: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    433.12 USD
+  Equity:Trading-Capital    -433.12 USD
+2026-01-14 * "Trade #SCHWAB-20260114-010: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -202.32 USD
+  Equity:Trading-Capital    202.32 USD
+2026-01-15 * "Trade #SCHWAB-20260115-011: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    146.98 USD
+  Equity:Trading-Capital    -146.98 USD
+2026-01-16 * "Trade #SCHWAB-20260116-012: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -9341.40 USD
+  Equity:Trading-Capital    9341.40 USD
+2026-01-16 * "Trade #SCHWAB-20260116-013: Withdrawal TRANSFERFUNDSTOSCHWAB"
+  Assets:Brokerage:Cash    -150.00 USD
+  Equity:Trading-Capital    150.00 USD
+2026-01-20 * "Trade #SCHWAB-20260120-014: Withdrawal OVERDRAFTTOINVESTORCH"
+  Assets:Brokerage:Cash    -9.62 USD
+  Equity:Trading-Capital    9.62 USD
+2026-01-20 * "Trade #SCHWAB-20260120-015: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    8720.57 USD
+  Equity:Trading-Capital    -8720.57 USD
+2026-01-21 * "Trade #SCHWAB-20260121-016: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -493.50 USD
+  Equity:Trading-Capital    493.50 USD
+2026-01-22 * "Trade #SCHWAB-20260122-017: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    40.05 USD
+  Equity:Trading-Capital    -40.05 USD
+2026-01-23 * "Trade #SCHWAB-20260123-018: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    58.84 USD
+  Equity:Trading-Capital    -58.84 USD
+2026-01-26 * "Trade #SCHWAB-20260126-019: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -2402.20 USD
+  Equity:Trading-Capital    2402.20 USD
+2026-01-27 * "Trade #SCHWAB-20260127-020: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -5309.55 USD
+  Equity:Trading-Capital    5309.55 USD
+2026-01-28 * "Trade #SCHWAB-20260128-021: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    6587.15 USD
+  Equity:Trading-Capital    -6587.15 USD
+2026-01-29 * "Trade #SCHWAB-20260129-022: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -65.94 USD
+  Equity:Trading-Capital    65.94 USD
+2026-01-29 * "Trade #SCHWAB-20260129-023: Interest SCHWAB1INT12/30-01/28"
+  Assets:Brokerage:Cash    0.30 USD
+  Income:Trading:Interest    -0.30 USD
+2026-01-30 * "Trade #SCHWAB-20260130-024: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -2298.45 USD
+  Equity:Trading-Capital    2298.45 USD

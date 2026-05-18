@@ -1,0 +1,42 @@
+---
+# Playbook: Clean up old worker directories
+- name: Clean up old worker paths
+  hosts: lab_nodes
+  gather_facts: no
+  become: yes
+  strategy: free
+
+  tasks:
+    - name: Remove old /srv/tasks recursively
+      ansible.builtin.file:
+        path: /srv/tasks
+        state: absent
+      ignore_errors: true
+
+    - name: Remove old /srv/results recursively
+      ansible.builtin.file:
+        path: /srv/results
+        state: absent
+      ignore_errors: true
+
+    - name: Remove any stray completed/pending/running at /srv root
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /srv/completed
+        - /srv/pending
+        - /srv/running
+      ignore_errors: true
+
+    - name: Verify /srv/lab-worker exists
+      ansible.builtin.stat:
+        path: /srv/lab-worker
+      register: lw
+
+    - name: Report
+      ansible.builtin.debug:
+        msg:
+          - "{{ inventory_hostname }} cleanup complete"
+          - "lab-worker exists: {{ lw.stat.exists | default(false) }}"
+          - "Old paths: removed"

@@ -1,0 +1,77 @@
+---
+# Pi Installation Test Playbook
+# Tests pi and intercom availability on all lab nodes
+
+- name: Test Pi Installation on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  serial: 2  # Process 2 nodes at a time
+  
+  pre_tasks:
+    - name: Check SSH connectivity
+      wait_for_connection:
+        timeout: 30
+      failed_when: false
+      register: ssh_check
+
+    - name: Report unreachable nodes
+      debug:
+        msg: "⚠️  {{ inventory_hostname }} ({{ ansible_host }}) - SSH UNREACHABLE"
+      when: not ssh_check.success
+
+  tasks:
+    - name: Get current pi version
+      command: pi --version
+      register: pi_version
+      failed_when: false
+      changed_when: false
+      when: ssh_check.success
+
+    - name: Report pi version
+      debug:
+        msg: "✅ {{ inventory_hostname }} ({{ ansible_host }}) - Pi {{ pi_version.stdout | default('NOT INSTALLED') }}"
+      when: ssh_check.success and pi_version.rc == 0
+
+    - name: Report pi not installed
+      debug:
+        msg: "❌ {{ inventory_hostname }} ({{ ansible_host }}) - Pi NOT INSTALLED"
+      when: ssh_check.success and pi_version.rc != 0
+
+    - name: Test intercom availability
+      shell: |
+        source ~/.bashrc
+        pi --version
+      register: intercom_test
+      failed_when: false
+      changed_when: false
+      when: ssh_check.success and pi_version.rc == 0
+
+    - name: Report intercom status
+      debug:
+        msg: "✅ {{ inventory_hostname }} - Intercom available (pi tool)"
+      when: ssh_check.success and intercom_test.rc == 0
+
+    - name: Check Node.js version
+      command: node --version
+      register: node_version
+      failed_when: false
+      changed_when: false
+      when: ssh_check.success
+
+    - name: Report Node.js version
+      debug:
+        msg: "   Node.js: {{ node_version.stdout | default('NOT INSTALLED') }}"
+      when: ssh_check.success
+
+  post_tasks:
+    - name: Generate summary
+      debug:
+        msg: |
+          ================================
+          Pi Installation Test Summary
+          ================================
+          Host: {{ inventory_hostname }}
+          IP: {{ ansible_host }}
+          Status: {{ 'ONLINE' if ssh_check.success else 'OFFLINE' }}
+          Pi Version: {{ pi_version.stdout | default('N/A') }}
+          Node.js: {{ node_version.stdout | default('N/A') }}

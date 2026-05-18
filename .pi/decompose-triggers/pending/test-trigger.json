@@ -1,0 +1,12 @@
+{
+  "id": "test-decomp-auto",
+  "prompt": "Write a Python script that checks if a website is online and returns status code",
+  "confidence": 0.92,
+  "timestamp": "2026-05-02T23:10:00",
+  "node_pool": [
+    "fnet3",
+    "fnet4",
+    "fnet5"
+  ],
+  "max_steps": 5
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=pi-intercom for agent coordination on {{ inventory_hostname }}
+After=network.target
+
+[Service]
+Type=simple
+User=friasc
+WorkingDirectory=/home/friasc
+ExecStart=/usr/lib/node_modules/@mariozechner/pi-coding-agent/bin/run intercom {% if inventory_hostname in groups['lab_nodes'] %}start --name {{ ansible_hostname_target }}{% else %}start --name orchestrator{% endif %} --port 8080
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

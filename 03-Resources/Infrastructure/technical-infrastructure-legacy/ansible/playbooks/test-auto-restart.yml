@@ -1,0 +1,36 @@
+---
+# test-auto-restart.yml - Simulate crash and verify systemd recovers
+- name: Test pi-agent auto-restart
+  hosts: lab_nodes
+  become: yes
+  tasks:
+    - name: Get original PID
+      ansible.builtin.shell: pgrep -f 'pi --name.*{{ inventory_hostname }}' || true
+      register: orig_pid
+      changed_when: false
+
+    - name: Simulate crash
+      ansible.builtin.shell: "kill -9 {{ orig_pid.stdout }} 2>/dev/null || true"
+      when: orig_pid.stdout != ''
+
+    - name: Wait for restart
+      ansible.builtin.pause:
+        seconds: 3
+
+    - name: Get new PID
+      ansible.builtin.shell: pgrep -f 'pi --name.*{{ inventory_hostname }}' || true
+      register: new_pid
+      changed_when: false
+
+    - name: Report
+      ansible.builtin.set_fact:
+        test_result:
+          node_id: "{{ inventory_hostname }}"
+          simulated_crash: "{{ orig_pid.stdout != '' }}"
+          auto_restart: "{{ new_pid.stdout != '' and new_pid.stdout != orig_pid.stdout }}"
+          new_pid: "{{ new_pid.stdout }}"
+          status: "{{ 'ok' if new_pid.stdout != '' else 'failed' }}"
+  post_tasks:
+    - name: Output JSON
+      ansible.builtin.debug:
+        msg: "{{ test_result | to_json }}"

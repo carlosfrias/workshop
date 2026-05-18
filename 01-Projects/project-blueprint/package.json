@@ -1,0 +1,40 @@
+{
+  "name": "project-blueprint",
+  "version": "1.3.0",
+  "description": "Scaffold new projects with sub-agent orchestration, structural routing, domain directories, agent definitions, chain files, and a self-documenting wiki. v1.3 adds post-completion AGENTS architecture — golden path extraction and executable library.",
+  "keywords": ["pi-package"],
+  "pi": {
+    "skills": ["./skills/project-blueprint"],
+    "prompts": ["./prompts"],
+    "agents": [
+      "./agents/project-blueprint-project-builder.md",
+      "./agents/project-blueprint-auto-documenter.md",
+      "./agents/project-blueprint-post-completion-architect.md"
+    ]
+  },
+  "peerDependencies": {
+    "pi-subagents": ">=0.20.0",
+    "pi-intercom": ">=0.1.0",
+    "pi-keyword-router": ">=1.0.0",
+    "find-skill": ">=1.0.0",
+    "librarian": ">=1.0.0",
+    "decompose-execute-verify": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "pi-intercom": {
+      "optional": true
+    },
+    "pi-keyword-router": {
+      "optional": true
+    },
+    "find-skill": {
+      "optional": true
+    },
+    "librarian": {
+      "optional": true
+    },
+    "decompose-execute-verify": {
+      "optional": true
+    }
+  }
+}

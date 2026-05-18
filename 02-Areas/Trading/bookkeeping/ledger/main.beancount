@@ -1,0 +1,706 @@
+;; Beancount Ledger for Trading Desk
+;; All dates in YYYY-MM-DD
+;; All monetary values in USD unless specified
+
+;; ---------------------------------------------------------------------------
+;; OPTIONS
+;; ---------------------------------------------------------------------------
+option "operating_currency" "USD"
+
+;; ---------------------------------------------------------------------------
+;; ACCOUNTS
+;; ---------------------------------------------------------------------------
+
+;; Assets: Cash and Brokerage accounts
+2026-01-01 open Assets:Brokerage:Cash                         USD
+2026-01-01 open Assets:Brokerage:Positions
+  booking: "FIFO"
+2026-01-01 open Assets:Brokerage:ShortPositions
+2026-01-01 open Assets:Bank:Operating                          USD
+
+;; Liabilities: Margin or Loans
+2026-01-01 open Liabilities:Brokerage:Margin                   USD
+
+;; Equity: Your initial and total investment
+2026-01-01 open Equity:Opening-Balances                        USD
+2026-01-01 open Equity:Trading-Capital                         USD
+
+;; Income: Gains, Dividends, and Interest
+2026-01-01 open Income:Trading:Realized-Gains                 USD
+2026-01-01 open Income:Trading:Dividends                       USD
+2026-01-01 open Income:Trading:Interest                        USD
+
+;; Expenses: Fees and Subscriptions
+2026-01-01 open Expenses:Trading:Commissions                   USD
+2026-01-01 open Expenses:Trading:Data-Subscriptions           USD
+2026-01-01 open Expenses:Trading:Server-Costs                  USD
+
+;; ---------------------------------------------------------------------------
+;; INITIAL BALANCES
+;; ---------------------------------------------------------------------------
+
+2026-01-01 * "Initial deposit — opening trading capital"
+  Assets:Brokerage:Cash           26579.82 USD
+  Equity:Trading-Capital         -26579.82 USD
+
+;; ---------------------------------------------------------------------------
+;; OPENING BALANCES — Positions carried forward from prior periods
+;; ---------------------------------------------------------------------------
+
+2026-01-01 * "Opening balance — SLV shares from prior period"
+  Assets:Brokerage:Positions       100 SLV {71.5400 USD}
+  Equity:Opening-Balances       -7154.00 USD
+
+;; --- Import batch: Brokerage Statement_2026-01-31_074_2026-04-21T234941Z.PDF ---
+;; Import timestamp: 2026-04-21T23:49:46Z
+;; Source: Schwab brokerage statement
+2026-01-02 * "Trade #SCHWAB-20260102-001: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    350.88 USD
+  Equity:Trading-Capital    -350.88 USD
+2026-01-05 * "Trade #SCHWAB-20260105-002: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -562.75 USD
+  Equity:Trading-Capital    562.75 USD
+2026-01-06 * "Trade #SCHWAB-20260106-003: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -262.17 USD
+  Equity:Trading-Capital    262.17 USD
+2026-01-07 * "Trade #SCHWAB-20260107-004: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    5.20 USD
+  Equity:Trading-Capital    -5.20 USD
+2026-01-08 * "Trade #SCHWAB-20260108-005: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -6602.57 USD
+  Equity:Trading-Capital    6602.57 USD
+2026-01-09 * "Trade #SCHWAB-20260109-006: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -505.44 USD
+  Equity:Trading-Capital    505.44 USD
+2026-01-12 * "Trade #SCHWAB-20260112-007: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -215.74 USD
+  Equity:Trading-Capital    215.74 USD
+2026-01-12 * "Trade #SCHWAB-20260112-008: Deposit TfrNAVYFEDERALCREDI,CARLOS"
+  Assets:Brokerage:Cash    9000.00 USD
+  Equity:Trading-Capital    -9000.00 USD
+2026-01-13 * "Trade #SCHWAB-20260113-009: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    433.12 USD
+  Equity:Trading-Capital    -433.12 USD
+2026-01-14 * "Trade #SCHWAB-20260114-010: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -202.32 USD
+  Equity:Trading-Capital    202.32 USD
+2026-01-15 * "Trade #SCHWAB-20260115-011: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    146.98 USD
+  Equity:Trading-Capital    -146.98 USD
+2026-01-16 * "Trade #SCHWAB-20260116-012: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -9341.40 USD
+  Equity:Trading-Capital    9341.40 USD
+2026-01-16 * "Trade #SCHWAB-20260116-013: Withdrawal TRANSFERFUNDSTOSCHWAB"
+  Assets:Brokerage:Cash    -150.00 USD
+  Equity:Trading-Capital    150.00 USD
+2026-01-20 * "Trade #SCHWAB-20260120-014: Withdrawal OVERDRAFTTOINVESTORCH"
+  Assets:Brokerage:Cash    -9.62 USD
+  Equity:Trading-Capital    9.62 USD
+2026-01-20 * "Trade #SCHWAB-20260120-015: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    8720.57 USD
+  Equity:Trading-Capital    -8720.57 USD
+2026-01-21 * "Trade #SCHWAB-20260121-016: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -493.50 USD
+  Equity:Trading-Capital    493.50 USD
+2026-01-22 * "Trade #SCHWAB-20260122-017: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    40.05 USD
+  Equity:Trading-Capital    -40.05 USD
+2026-01-23 * "Trade #SCHWAB-20260123-018: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    58.84 USD
+  Equity:Trading-Capital    -58.84 USD
+2026-01-26 * "Trade #SCHWAB-20260126-019: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -2402.20 USD
+  Equity:Trading-Capital    2402.20 USD
+2026-01-27 * "Trade #SCHWAB-20260127-020: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -5309.55 USD
+  Equity:Trading-Capital    5309.55 USD
+2026-01-28 * "Trade #SCHWAB-20260128-021: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    6587.15 USD
+  Equity:Trading-Capital    -6587.15 USD
+2026-01-29 * "Trade #SCHWAB-20260129-022: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -65.94 USD
+  Equity:Trading-Capital    65.94 USD
+2026-01-29 * "Trade #SCHWAB-20260129-023: Interest SCHWAB1INT12/30-01/28"
+  Assets:Brokerage:Cash    0.30 USD
+  Income:Trading:Interest    -0.30 USD
+2026-01-30 * "Trade #SCHWAB-20260130-024: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -2298.45 USD
+  Equity:Trading-Capital    2298.45 USD
+
+;; --- Import batch: Brokerage Statement_2026-02-28_074_2026-04-21T235007Z.PDF ---
+;; Import timestamp: 2026-04-21T23:50:11Z
+;; Source: Schwab brokerage statement
+2026-02-02 * "Trade #SCHWAB-20260202-001: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    2320.47 USD
+  Equity:Trading-Capital    -2320.47 USD
+2026-02-03 * "Trade #SCHWAB-20260203-002: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -59.77 USD
+  Equity:Trading-Capital    59.77 USD
+2026-02-04 * "Trade #SCHWAB-20260204-003: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    176.15 USD
+  Equity:Trading-Capital    -176.15 USD
+2026-02-05 * "Trade #SCHWAB-20260205-004: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    145.93 USD
+  Equity:Trading-Capital    -145.93 USD
+2026-02-09 * "Trade #SCHWAB-20260209-005: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -367.13 USD
+  Equity:Trading-Capital    367.13 USD
+2026-02-10 * "Trade #SCHWAB-20260210-006: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -404.84 USD
+  Equity:Trading-Capital    404.84 USD
+2026-02-11 * "Trade #SCHWAB-20260211-007: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -283.91 USD
+  Equity:Trading-Capital    283.91 USD
+2026-02-12 * "Trade #SCHWAB-20260212-008: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -25.88 USD
+  Equity:Trading-Capital    25.88 USD
+2026-02-12 * "Trade #SCHWAB-20260212-009: Withdrawal TfrNAVYFEDERALCREDI,CARLOS"
+  Assets:Brokerage:Cash    -13590.28 USD
+  Equity:Trading-Capital    13590.28 USD
+2026-02-12 * "Trade #SCHWAB-20260212-010: Withdrawal TRANSFERFUNDSTOSCHWAB"
+  Assets:Brokerage:Cash    -15600.00 USD
+  Equity:Trading-Capital    15600.00 USD
+2026-02-12 * "Trade #SCHWAB-20260212-011: Deposit JOURNALFRM98380157"
+  Assets:Brokerage:Cash    4288.00 USD
+  Equity:Trading-Capital    -4288.00 USD
+2026-02-23 * "Trade #SCHWAB-20260223-012: Deposit TfrNAVYFEDERALCREDI,CARLOS"
+  Assets:Brokerage:Cash    9000.00 USD
+  Equity:Trading-Capital    -9000.00 USD
+2026-02-26 * "Trade #SCHWAB-20260226-013: Interest SCHWAB1INT01/29-02/25"
+  Assets:Brokerage:Cash    0.14 USD
+  Income:Trading:Interest    -0.14 USD
+
+;; --- Import batch: Brokerage Statement_2026-03-31_074_2026-04-22T002150Z.PDF ---
+;; Import timestamp: 2026-04-22T00:21:57Z
+;; Source: Schwab brokerage statement
+2026-03-03 * "Trade #SCHWAB-20260303-001: ShortSale SLV03/27/2026 CALLISHRSILVERTR $86"
+  Assets:Brokerage:ShortPositions    -1 SLV260327C86 {537.0000 USD}
+  Assets:Brokerage:Cash    536.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-03 * "Trade #SCHWAB-20260303-002: Purchase SLV03/27/2026 CALLISHRSILVERTR $83"
+  Assets:Brokerage:Positions    1 SLV260327C83 {647.0000 USD}
+  Assets:Brokerage:Cash    -647.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-04 * "Trade #SCHWAB-20260304-003: ShortSale QQQ04/02/2026 PUTINVESCOQQQTR $545"
+  Assets:Brokerage:ShortPositions    -1 QQQ260402P545 {422.0000 USD}
+  Assets:Brokerage:Cash    421.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-04 * "Trade #SCHWAB-20260304-004: Purchase QQQ04/02/2026 PUTINVESCOQQQTR $550"
+  Assets:Brokerage:Positions    1 QQQ260402P550 {477.0000 USD}
+  Assets:Brokerage:Cash    -477.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-04 * "Trade #SCHWAB-20260304-005: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -50.04 USD
+  Equity:Trading-Capital    50.04 USD
+2026-03-05 * "Trade #SCHWAB-20260305-006: ShortSale NVDA CALLNVIDIACORP $195 EXP"
+  Assets:Brokerage:ShortPositions    -1 NVDAC195 {537.0000 USD}
+  Assets:Brokerage:Cash    536.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-05 * "Trade #SCHWAB-20260305-007: ShortSale QQQ04/02/2026 PUTINVESCOQQQTR $545"
+  Assets:Brokerage:ShortPositions    -1 QQQ260402P545 {262.0000 USD}
+  Assets:Brokerage:Cash    261.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-05 * "Trade #SCHWAB-20260305-008: Purchase NVDA CALLNVIDIACORP $190 EXP"
+  Assets:Brokerage:Positions    1 NVDAC190 {742.0000 USD}
+  Assets:Brokerage:Cash    -742.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-05 * "Trade #SCHWAB-20260305-009: Purchase QQQ04/02/2026 PUTINVESCOQQQTR $550"
+  Assets:Brokerage:Positions    1 QQQ260402P550 {298.0000 USD}
+  Assets:Brokerage:Cash    -298.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-05 * "Trade #SCHWAB-20260305-010: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -1794.22 USD
+  Equity:Trading-Capital    1794.22 USD
+2026-03-06 * "Trade #SCHWAB-20260306-011: ShortSale QQQ04/02/2026 PUTINVESCOQQQTR $545"
+  Assets:Brokerage:ShortPositions    -2 QQQ260402P545 {306.0000 USD}
+  Assets:Brokerage:Cash    610.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-06 * "Trade #SCHWAB-20260306-012: Sale QQQ04/02/2026 PUTINVESCOQQQTR $550"
+  Assets:Brokerage:Positions    -1 QQQ260402P550 {477.0000 USD}
+  Assets:Brokerage:Positions    -1 QQQ260402P550 {298.0000 USD}
+  Assets:Brokerage:Cash    746.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    27.00 USD
+2026-03-06 * "Trade #SCHWAB-20260306-013: CoverShort QQQ04/02/2026 PUTINVESCOQQQTR $545"
+  Assets:Brokerage:ShortPositions    1 QQQ260402P545 {422.0000 USD}
+  Assets:Brokerage:ShortPositions    1 QQQ260402P545 {262.0000 USD}
+  Assets:Brokerage:Cash    -663.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -22.00 USD
+2026-03-06 * "Trade #SCHWAB-20260306-014: Purchase QQQ04/02/2026 PUTINVESCOQQQTR $550"
+  Assets:Brokerage:Positions    2 QQQ260402P550 {348.0000 USD}
+  Assets:Brokerage:Cash    -697.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+2026-03-06 * "Trade #SCHWAB-20260306-015: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    1474.10 USD
+  Equity:Trading-Capital    -1474.10 USD
+2026-03-09 * "Trade #SCHWAB-20260309-016: ShortSale SLV03/09/2026 CALLISHRSILVERTR $78.5"
+  Assets:Brokerage:ShortPositions    -1 SLV260309C78 {72.0000 USD}
+  Assets:Brokerage:Cash    71.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-09 * "Trade #SCHWAB-20260309-017: ShortSale SLV03/27/2026 CALLISHRSILVERTR $86"
+  Assets:Brokerage:ShortPositions    -1 SLV260327C86 {242.0000 USD}
+  Assets:Brokerage:Cash    241.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-09 * "Trade #SCHWAB-20260309-018: ShortSale QQQ04/10/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:ShortPositions    -3 QQQ260410P535 {450.0000 USD}
+  Assets:Brokerage:Cash    1348.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-09 * "Trade #SCHWAB-20260309-019: Sale QQQ04/02/2026 PUTINVESCOQQQTR $550"
+  Assets:Brokerage:Positions    -2 QQQ260402P550 {348.0000 USD}
+  Assets:Brokerage:Cash    1200.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    -506.00 USD
+2026-03-09 * "Trade #SCHWAB-20260309-020: ShortSale GLD03/11/2026 PUTSPDRGOLDTR $464"
+  Assets:Brokerage:ShortPositions    -2 GLD260311P464 {284.0000 USD}
+  Assets:Brokerage:Cash    566.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-09 * "Trade #SCHWAB-20260309-021: Purchase SLV05/15/2026 CALLISHRSILVERTR $55"
+  Assets:Brokerage:Positions    1 SLV260515C55 {2320.0000 USD}
+  Assets:Brokerage:Cash    -2320.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-09 * "Trade #SCHWAB-20260309-022: Purchase SLV03/27/2026 CALLISHRSILVERTR $83"
+  Assets:Brokerage:Positions    1 SLV260327C83 {313.0000 USD}
+  Assets:Brokerage:Cash    -313.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-09 * "Trade #SCHWAB-20260309-023: Purchase QQQ04/10/2026 PUTINVESCOQQQTR $540"
+  Assets:Brokerage:Positions    3 QQQ260410P540 {501.0000 USD}
+  Assets:Brokerage:Cash    -1504.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-09 * "Trade #SCHWAB-20260309-024: CoverShort QQQ04/02/2026 PUTINVESCOQQQTR $545"
+  Assets:Brokerage:ShortPositions    2 QQQ260402P545 {306.0000 USD}
+  Assets:Brokerage:Cash    -1075.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    462.00 USD
+2026-03-09 * "Trade #SCHWAB-20260309-025: Purchase GLD03/11/2026 PUTSPDRGOLDTR $463"
+  Assets:Brokerage:Positions    2 GLD260311P463 {263.0000 USD}
+  Assets:Brokerage:Cash    -527.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+2026-03-10 * "Trade #SCHWAB-20260310-026: ShortSale SLV03/11/2026 CALLISHRSILVERTR $78"
+  Assets:Brokerage:ShortPositions    -1 SLV260311C78 {120.0000 USD}
+  Assets:Brokerage:Cash    119.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-10 * "Trade #SCHWAB-20260310-027: ShortSale SLV03/11/2026 CALLISHRSILVERTR $78"
+  Assets:Brokerage:ShortPositions    -1 SLV260311C78 {108.0000 USD}
+  Assets:Brokerage:Cash    107.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-10 * "Trade #SCHWAB-20260310-028: Purchase SLV05/15/2026 CALLISHRSILVERTR $55"
+  Assets:Brokerage:Positions    1 SLV260515C55 {2280.0000 USD}
+  Assets:Brokerage:Cash    -2280.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-10 * "Trade #SCHWAB-20260310-029: CoverShort SLV03/09/2026 CALLISHRSILVERTR $78.5"
+  Assets:Brokerage:ShortPositions    1 SLV260309C78 {72.0000 USD}
+  Assets:Brokerage:Cash    -11.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+  Income:Trading:Realized-Gains    -61.00 USD
+2026-03-11 * "Trade #SCHWAB-20260311-030: Sale NVDA CALLNVIDIACORP $190 EXP"
+  Assets:Brokerage:Positions    -1 NVDAC190 {742.0000 USD}
+  Assets:Brokerage:Cash    667.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+  Income:Trading:Realized-Gains    74.00 USD
+2026-03-11 * "Trade #SCHWAB-20260311-031: ShortSale NVDA CALLNVIDIACORP $195 EXP"
+  Assets:Brokerage:ShortPositions    -1 NVDAC195 {2742.0000 USD}
+  Assets:Brokerage:Cash    2741.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-11 * "Trade #SCHWAB-20260311-032: Sale GLD03/11/2026 PUTSPDRGOLDTR $463"
+  Assets:Brokerage:Positions    -2 GLD260311P463 {263.0000 USD}
+  Assets:Brokerage:Cash    98.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    426.00 USD
+2026-03-11 * "Trade #SCHWAB-20260311-033: Purchase NVDA CALLNVIDIACORP $186 EXP"
+  Assets:Brokerage:Positions    1 NVDAC186 {3155.0000 USD}
+  Assets:Brokerage:Cash    -3155.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-11 * "Trade #SCHWAB-20260311-034: CoverShort NVDA CALLNVIDIACORP $195 EXP"
+  Assets:Brokerage:ShortPositions    1 NVDAC195 {537.0000 USD}
+  Assets:Brokerage:Cash    -458.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+  Income:Trading:Realized-Gains    -79.00 USD
+2026-03-11 * "Trade #SCHWAB-20260311-035: CoverShort GLD03/11/2026 PUTSPDRGOLDTR $464"
+  Assets:Brokerage:ShortPositions    2 GLD260311P464 {284.0000 USD}
+  Assets:Brokerage:Cash    -117.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -452.00 USD
+2026-03-11 * "Trade #SCHWAB-20260311-036: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -18.28 USD
+  Equity:Trading-Capital    18.28 USD
+2026-03-12 * "Trade #SCHWAB-20260312-037: ShortSale SLV03/13/2026 CALLISHRSILVERTR $76"
+  Assets:Brokerage:ShortPositions    -2 SLV260313C76 {245.0000 USD}
+  Assets:Brokerage:Cash    488.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-12 * "Trade #SCHWAB-20260312-038: ShortSale NVDA CALLNVIDIACORP $195 EXP"
+  Assets:Brokerage:ShortPositions    -1 NVDAC195 {2705.0000 USD}
+  Assets:Brokerage:Cash    2704.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-12 * "Trade #SCHWAB-20260312-039: ShortSale QQQ04/10/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:ShortPositions    -3 QQQ260410P535 {290.0000 USD}
+  Assets:Brokerage:Cash    868.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-12 * "Trade #SCHWAB-20260312-040: CoverShort SLV03/11/2026 CALLISHRSILVERTR $78"
+  Assets:Brokerage:ShortPositions    1 SLV260311C78 {120.0000 USD}
+  Assets:Brokerage:ShortPositions    1 SLV260311C78 {108.0000 USD}
+  Assets:Brokerage:Cash    -61.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -168.00 USD
+2026-03-12 * "Trade #SCHWAB-20260312-041: Purchase NVDA CALLNVIDIACORP $186 EXP"
+  Assets:Brokerage:Positions    1 NVDAC186 {3115.0000 USD}
+  Assets:Brokerage:Cash    -3115.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-12 * "Trade #SCHWAB-20260312-042: Purchase QQQ04/10/2026 PUTINVESCOQQQTR $540"
+  Assets:Brokerage:Positions    3 QQQ260410P540 {326.0000 USD}
+  Assets:Brokerage:Cash    -979.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-13 * "Trade #SCHWAB-20260313-043: ShortSale QQQ04/17/2026 CALLINVESCOQQQTR $651"
+  Assets:Brokerage:ShortPositions    -6 QQQ260417C651 {77.0000 USD}
+  Assets:Brokerage:Cash    458.01 USD
+  Expenses:Trading:Commissions    3.99 USD
+2026-03-13 * "Trade #SCHWAB-20260313-044: ShortSale QQQ04/17/2026 PUTINVESCOQQQTR $530"
+  Assets:Brokerage:ShortPositions    -6 QQQ260417P530 {438.0000 USD}
+  Assets:Brokerage:Cash    2624.01 USD
+  Expenses:Trading:Commissions    3.99 USD
+2026-03-13 * "Trade #SCHWAB-20260313-045: Sale QQQ04/10/2026 PUTINVESCOQQQTR $540"
+  Assets:Brokerage:Positions    -3 QQQ260410P540 {501.0000 USD}
+  Assets:Brokerage:Cash    1324.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+  Income:Trading:Realized-Gains    177.00 USD
+2026-03-13 * "Trade #SCHWAB-20260313-046: Sale QQQ04/10/2026 PUTINVESCOQQQTR $540"
+  Assets:Brokerage:Positions    -3 QQQ260410P540 {326.0000 USD}
+  Assets:Brokerage:Cash    1192.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+  Income:Trading:Realized-Gains    -216.00 USD
+2026-03-13 * "Trade #SCHWAB-20260313-047: Purchase QQQ04/17/2026 CALLINVESCOQQQTR $646"
+  Assets:Brokerage:Positions    6 QQQ260417C646 {124.0000 USD}
+  Assets:Brokerage:Cash    -747.97 USD
+  Expenses:Trading:Commissions    3.97 USD
+2026-03-13 * "Trade #SCHWAB-20260313-048: CoverShort QQQ04/10/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:ShortPositions    3 QQQ260410P535 {450.0000 USD}
+  Assets:Brokerage:Cash    -1180.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    -171.00 USD
+2026-03-13 * "Trade #SCHWAB-20260313-049: CoverShort QQQ04/10/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:ShortPositions    3 QQQ260410P535 {290.0000 USD}
+  Assets:Brokerage:Cash    -1060.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    189.00 USD
+2026-03-13 * "Trade #SCHWAB-20260313-050: Purchase QQQ04/17/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:Positions    6 QQQ260417P535 {488.0000 USD}
+  Assets:Brokerage:Cash    -2931.97 USD
+  Expenses:Trading:Commissions    3.97 USD
+2026-03-13 * "Trade #SCHWAB-20260313-051: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -33.04 USD
+  Equity:Trading-Capital    33.04 USD
+2026-03-16 * "Trade #SCHWAB-20260316-052: ShortSale SLV03/13/2026 CALLISHRSILVERTR $72"
+  Assets:Brokerage:ShortPositions    -2 SLV260313C72 {366.0000 USD}
+  Assets:Brokerage:Cash    730.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-16 * "Trade #SCHWAB-20260316-053: ShortSale SLV ISHARESSILVERTRUST"
+  Assets:Brokerage:ShortPositions    -200 SLV {72.0000 USD}
+  Assets:Brokerage:Cash    14399.96 USD
+  Expenses:Trading:Commissions    0.04 USD
+2026-03-16 * "Trade #SCHWAB-20260316-054: CoverShort SLV03/13/2026 CALLISHRSILVERTR $76"
+  Assets:Brokerage:ShortPositions    2 SLV260313C76 {245.0000 USD}
+  Assets:Brokerage:Cash    -79.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -412.00 USD
+2026-03-17 * "Trade #SCHWAB-20260317-055: Sale SLV05/15/2026 CALLISHRSILVERTR $55"
+  Assets:Brokerage:Positions    -1 SLV260515C55 {2320.0000 USD}
+  Assets:Brokerage:Positions    -1 SLV260515C55 {2280.0000 USD}
+  Assets:Brokerage:Cash    4018.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    580.00 USD
+2026-03-17 * "Trade #SCHWAB-20260317-056: ShortSale SLV03/18/2026 CALLISHRSILVERTR $73.5"
+  Assets:Brokerage:ShortPositions    -2 SLV260318C73 {180.0000 USD}
+  Assets:Brokerage:Cash    358.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-17 * "Trade #SCHWAB-20260317-057: Purchase SLV06/18/2026 CALLISHRSILVERTR $52"
+  Assets:Brokerage:Positions    2 SLV260618C52 {2345.0000 USD}
+  Assets:Brokerage:Cash    -4691.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+2026-03-17 * "Trade #SCHWAB-20260317-058: CoverShort SLV03/27/2026 CALLISHRSILVERTR $86"
+  Assets:Brokerage:ShortPositions    1 SLV260327C86 {537.0000 USD}
+  Assets:Brokerage:ShortPositions    1 SLV260327C86 {242.0000 USD}
+  Assets:Brokerage:Cash    -63.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -717.00 USD
+2026-03-17 * "Trade #SCHWAB-20260317-059: CoverShort SLV ISHARESSILVERTRUST"
+  Assets:Brokerage:ShortPositions    200 SLV {72.0000 USD}
+  Assets:Brokerage:Cash    -14364.00 USD
+  Expenses:Trading:Commissions    0.00 USD
+  Income:Trading:Realized-Gains    -36.00 USD
+2026-03-17 * "Trade #SCHWAB-20260317-060: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -9.08 USD
+  Equity:Trading-Capital    9.08 USD
+2026-03-18 * "Trade #SCHWAB-20260318-061: ShortSale SLV03/18/2026 CALLISHRSILVERTR $69"
+  Assets:Brokerage:ShortPositions    -2 SLV260318C69 {254.0000 USD}
+  Assets:Brokerage:Cash    506.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-18 * "Trade #SCHWAB-20260318-062: Sale SLV ISHARESSILVERTRUST"
+  Assets:Brokerage:Positions    -100 SLV {71.5400 USD}
+  Assets:Brokerage:Cash    7153.98 USD
+  Expenses:Trading:Commissions    0.02 USD
+2026-03-18 * "Trade #SCHWAB-20260318-063: CoverShort SLV03/18/2026 CALLISHRSILVERTR $73.5"
+  Assets:Brokerage:ShortPositions    2 SLV260318C73 {180.0000 USD}
+  Assets:Brokerage:Cash    -63.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -298.00 USD
+2026-03-18 * "Trade #SCHWAB-20260318-064: Purchase SLV ISHARESSILVERTRUST"
+  Assets:Brokerage:Positions    100 SLV {72.0500 USD}
+  Assets:Brokerage:Cash    -7205.00 USD
+  Expenses:Trading:Commissions    0.00 USD
+2026-03-18 * "Trade #SCHWAB-20260318-065: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -39.04 USD
+  Equity:Trading-Capital    39.04 USD
+2026-03-19 * "Trade #SCHWAB-20260319-066: Sale QQQ04/17/2026 CALLINVESCOQQQTR $646"
+  Assets:Brokerage:Positions    -6 QQQ260417C646 {124.0000 USD}
+  Assets:Brokerage:Cash    278.01 USD
+  Expenses:Trading:Commissions    3.99 USD
+  Income:Trading:Realized-Gains    462.00 USD
+2026-03-19 * "Trade #SCHWAB-20260319-067: ShortSale SLV03/20/2026 CALLISHRSILVERTR $69"
+  Assets:Brokerage:ShortPositions    -2 SLV260320C69 {194.0000 USD}
+  Assets:Brokerage:Cash    386.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-19 * "Trade #SCHWAB-20260319-068: Sale SLV03/27/2026 CALLISHRSILVERTR $83"
+  Assets:Brokerage:Positions    -1 SLV260327C83 {647.0000 USD}
+  Assets:Brokerage:Positions    -1 SLV260327C83 {313.0000 USD}
+  Assets:Brokerage:Cash    30.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    928.00 USD
+2026-03-19 * "Trade #SCHWAB-20260319-069: CoverShort QQQ04/17/2026 CALLINVESCOQQQTR $651"
+  Assets:Brokerage:ShortPositions    6 QQQ260417C651 {77.0000 USD}
+  Assets:Brokerage:Cash    -177.97 USD
+  Expenses:Trading:Commissions    3.97 USD
+  Income:Trading:Realized-Gains    -288.00 USD
+2026-03-19 * "Trade #SCHWAB-20260319-070: CoverShort SLV03/18/2026 CALLISHRSILVERTR $69"
+  Assets:Brokerage:ShortPositions    2 SLV260318C69 {254.0000 USD}
+  Assets:Brokerage:Cash    -317.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -192.00 USD
+2026-03-20 * "Trade #SCHWAB-20260320-071: ShortSale SLV03/23/2026 CALLISHRSILVERTR $61.5"
+  Assets:Brokerage:ShortPositions    -2 SLV260323C61 {220.0000 USD}
+  Assets:Brokerage:Cash    438.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-20 * "Trade #SCHWAB-20260320-072: CoverShort SLV03/20/2026 CALLISHRSILVERTR $69"
+  Assets:Brokerage:ShortPositions    2 SLV260320C69 {194.0000 USD}
+  Assets:Brokerage:Cash    -27.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -362.00 USD
+2026-03-20 * "Trade #SCHWAB-20260320-073: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -995.02 USD
+  Equity:Trading-Capital    995.02 USD
+2026-03-23 * "Trade #SCHWAB-20260323-074: ShortSale SLV05/01/2026 CALLISHRSILVERTR $60"
+  Assets:Brokerage:ShortPositions    -2 SLV260501C60 {640.0000 USD}
+  Assets:Brokerage:Cash    1278.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-23 * "Trade #SCHWAB-20260323-075: ShortSale SLV05/01/2026 CALLISHRSILVERTR $60"
+  Assets:Brokerage:ShortPositions    -1 SLV260501C60 {610.0000 USD}
+  Assets:Brokerage:Cash    609.34 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-23 * "Trade #SCHWAB-20260323-076: ShortSale QQQ04/24/2026 PUTINVESCOQQQTR $525"
+  Assets:Brokerage:ShortPositions    -5 QQQ260424P525 {420.0000 USD}
+  Assets:Brokerage:Cash    2096.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+2026-03-23 * "Trade #SCHWAB-20260323-077: Sale QQQ04/17/2026 PUTINVESCOQQQTR $535"
+  Assets:Brokerage:Positions    -6 QQQ260417P535 {488.0000 USD}
+  Assets:Brokerage:Cash    2096.01 USD
+  Expenses:Trading:Commissions    3.99 USD
+  Income:Trading:Realized-Gains    828.00 USD
+2026-03-23 * "Trade #SCHWAB-20260323-078: Purchase SLV06/30/2026 CALLISHRSILVERTR $44"
+  Assets:Brokerage:Positions    1 SLV260630C44 {1910.0000 USD}
+  Assets:Brokerage:Cash    -1910.66 USD
+  Expenses:Trading:Commissions    0.66 USD
+2026-03-23 * "Trade #SCHWAB-20260323-079: CoverShort SLV03/23/2026 CALLISHRSILVERTR $61.5"
+  Assets:Brokerage:ShortPositions    2 SLV260323C61 {220.0000 USD}
+  Assets:Brokerage:Cash    -385.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -56.00 USD
+2026-03-23 * "Trade #SCHWAB-20260323-080: CoverShort QQQ04/17/2026 PUTINVESCOQQQTR $530"
+  Assets:Brokerage:ShortPositions    6 QQQ260417P530 {438.0000 USD}
+  Assets:Brokerage:Cash    -1857.97 USD
+  Expenses:Trading:Commissions    3.97 USD
+  Income:Trading:Realized-Gains    -774.00 USD
+2026-03-23 * "Trade #SCHWAB-20260323-081: Purchase QQQ04/24/2026 PUTINVESCOQQQTR $530"
+  Assets:Brokerage:Positions    5 QQQ260424P530 {473.0000 USD}
+  Assets:Brokerage:Cash    -2368.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+2026-03-23 * "Trade #SCHWAB-20260323-082: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    907.98 USD
+  Equity:Trading-Capital    -907.98 USD
+2026-03-24 * "Trade #SCHWAB-20260324-083: ShortSale NVDA CALLNVIDIACORP $190 EXP"
+  Assets:Brokerage:ShortPositions    -2 NVDAC190 {2252.0000 USD}
+  Assets:Brokerage:Cash    4502.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+2026-03-24 * "Trade #SCHWAB-20260324-084: CoverShort NVDA CALLNVIDIACORP $195 EXP"
+  Assets:Brokerage:ShortPositions    1 NVDAC195 {2742.0000 USD}
+  Assets:Brokerage:ShortPositions    1 NVDAC195 {2705.0000 USD}
+  Assets:Brokerage:Cash    -4115.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+  Income:Trading:Realized-Gains    -1333.00 USD
+2026-03-26 * "Trade #SCHWAB-20260326-085: ShortSale SLV05/01/2026 CALLISHRSILVERTR $55"
+  Assets:Brokerage:ShortPositions    -3 SLV260501C55 {1167.0000 USD}
+  Assets:Brokerage:Cash    3499.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-26 * "Trade #SCHWAB-20260326-086: CoverShort SLV05/01/2026 CALLISHRSILVERTR $60"
+  Assets:Brokerage:ShortPositions    2 SLV260501C60 {640.0000 USD}
+  Assets:Brokerage:ShortPositions    1 SLV260501C60 {610.0000 USD}
+  Assets:Brokerage:Cash    -2431.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    540.00 USD
+2026-03-26 * "Trade #SCHWAB-20260326-087: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    460.40 USD
+  Equity:Trading-Capital    -460.40 USD
+2026-03-27 * "Trade #SCHWAB-20260327-088: Sale SLV06/18/2026 CALLISHRSILVERTR $52"
+  Assets:Brokerage:Positions    -2 SLV260618C52 {2345.0000 USD}
+  Assets:Brokerage:Cash    2504.67 USD
+  Expenses:Trading:Commissions    1.33 USD
+  Income:Trading:Realized-Gains    2184.00 USD
+2026-03-27 * "Trade #SCHWAB-20260327-089: ShortSale SLV03/27/2026 CALLISHRSILVERTR $62"
+  Assets:Brokerage:ShortPositions    -3 SLV260327C62 {131.0000 USD}
+  Assets:Brokerage:Cash    391.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-27 * "Trade #SCHWAB-20260327-090: ShortSale QQQ04/30/2026 PUTINVESCOQQQTR $510"
+  Assets:Brokerage:ShortPositions    -5 QQQ260430P510 {460.0000 USD}
+  Assets:Brokerage:Cash    2296.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+2026-03-27 * "Trade #SCHWAB-20260327-091: ShortSale QQQ05/01/2026 PUTINVESCOQQQTR $515"
+  Assets:Brokerage:ShortPositions    -5 QQQ260501P515 {454.0000 USD}
+  Assets:Brokerage:Cash    2266.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+2026-03-27 * "Trade #SCHWAB-20260327-092: Sale QQQ04/24/2026 PUTINVESCOQQQTR $530"
+  Assets:Brokerage:Positions    -5 QQQ260424P530 {473.0000 USD}
+  Assets:Brokerage:Cash    2506.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+  Income:Trading:Realized-Gains    -145.00 USD
+2026-03-27 * "Trade #SCHWAB-20260327-093: Purchase SLV06/30/2026 CALLISHRSILVERTR $44"
+  Assets:Brokerage:Positions    2 SLV260630C44 {1868.0000 USD}
+  Assets:Brokerage:Cash    -3737.32 USD
+  Expenses:Trading:Commissions    1.32 USD
+2026-03-27 * "Trade #SCHWAB-20260327-094: CoverShort SLV05/01/2026 CALLISHRSILVERTR $55"
+  Assets:Brokerage:ShortPositions    3 SLV260501C55 {1167.0000 USD}
+  Assets:Brokerage:Cash    -2851.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    -651.00 USD
+2026-03-27 * "Trade #SCHWAB-20260327-095: Purchase QQQ05/01/2026 PUTINVESCOQQQTR $435"
+  Assets:Brokerage:Positions    3 QQQ260501P435 {102.0000 USD}
+  Assets:Brokerage:Cash    -307.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-27 * "Trade #SCHWAB-20260327-096: Purchase QQQ04/30/2026 PUTINVESCOQQQTR $515"
+  Assets:Brokerage:Positions    5 QQQ260430P515 {513.0000 USD}
+  Assets:Brokerage:Cash    -2568.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+2026-03-27 * "Trade #SCHWAB-20260327-097: Purchase QQQ05/01/2026 PUTINVESCOQQQTR $520"
+  Assets:Brokerage:Positions    5 QQQ260501P520 {506.0000 USD}
+  Assets:Brokerage:Cash    -2533.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+2026-03-27 * "Trade #SCHWAB-20260327-098: CoverShort QQQ04/24/2026 PUTINVESCOQQQTR $525"
+  Assets:Brokerage:ShortPositions    5 QQQ260424P525 {420.0000 USD}
+  Assets:Brokerage:Cash    -2228.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+  Income:Trading:Realized-Gains    125.00 USD
+2026-03-27 * "Trade #SCHWAB-20260327-099: Purchase SLV05/01/2026 PUTISHRSILVERTR $45 EXP"
+  Assets:Brokerage:Positions    3 SLV260501P45 {58.0000 USD}
+  Assets:Brokerage:Cash    -175.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-27 * "Trade #SCHWAB-20260327-100: MiscCashCredit Sweepfrom Futures"
+  Assets:Brokerage:Cash    233.30 USD
+  Equity:Trading-Capital    -233.30 USD
+2026-03-30 * "Trade #SCHWAB-20260330-101: Sale SLV06/30/2026 CALLISHRSILVERTR $44"
+  Assets:Brokerage:Positions    -1 SLV260630C44 {1910.0000 USD}
+  Assets:Brokerage:Positions    -2 SLV260630C44 {1868.0000 USD}
+  Assets:Brokerage:Cash    6085.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+  Income:Trading:Realized-Gains    -441.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-102: ShortSale SLV03/30/2026 CALLISHRSILVERTR $61.5"
+  Assets:Brokerage:ShortPositions    -3 SLV260330C61 {153.0000 USD}
+  Assets:Brokerage:Cash    457.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-103: Sale QQQ05/01/2026 PUTINVESCOQQQTR $435"
+  Assets:Brokerage:Positions    -3 QQQ260501P435 {102.0000 USD}
+  Assets:Brokerage:Cash    379.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+  Income:Trading:Realized-Gains    -75.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-104: ShortSale QQQ05/01/2026 PUTINVESCOQQQTR $495"
+  Assets:Brokerage:ShortPositions    -3 QQQ260501P495 {463.0000 USD}
+  Assets:Brokerage:Cash    1387.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-105: ShortSale QQQ05/01/2026 PUTINVESCOQQQTR $495"
+  Assets:Brokerage:ShortPositions    -3 QQQ260501P495 {476.0000 USD}
+  Assets:Brokerage:Cash    1426.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-106: Sale QQQ04/30/2026 PUTINVESCOQQQTR $515"
+  Assets:Brokerage:Positions    -5 QQQ260430P515 {513.0000 USD}
+  Assets:Brokerage:Cash    2911.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+  Income:Trading:Realized-Gains    -350.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-107: Sale QQQ05/01/2026 PUTINVESCOQQQTR $520"
+  Assets:Brokerage:Positions    -5 QQQ260501P520 {506.0000 USD}
+  Assets:Brokerage:Cash    3411.67 USD
+  Expenses:Trading:Commissions    3.33 USD
+  Income:Trading:Realized-Gains    -885.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-108: Sale SLV05/01/2026 PUTISHRSILVERTR $45 EXP"
+  Assets:Brokerage:Positions    -3 SLV260501P45 {58.0000 USD}
+  Assets:Brokerage:Cash    205.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+  Income:Trading:Realized-Gains    -33.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-109: ShortSale XSP05/08/2026 PUTMINI-SPX500PM-SET$625"
+  Assets:Brokerage:ShortPositions    -3 XSP260508P625 {1678.0000 USD}
+  Assets:Brokerage:Cash    5032.01 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-110: Purchase SLV07/17/2026 CALLISHRSILVERTR $44"
+  Assets:Brokerage:Positions    3 SLV260717C44 {2057.0000 USD}
+  Assets:Brokerage:Cash    -6172.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-111: CoverShort SLV03/27/2026 CALLISHRSILVERTR $62"
+  Assets:Brokerage:ShortPositions    3 SLV260327C62 {131.0000 USD}
+  Assets:Brokerage:Cash    -94.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    -300.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-112: Purchase QQQ05/08/2026 PUTINVESCOQQQTR $370"
+  Assets:Brokerage:Positions    3 QQQ260508P370 {73.0000 USD}
+  Assets:Brokerage:Cash    -220.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-113: Purchase QQQ05/08/2026 PUTINVESCOQQQTR $375"
+  Assets:Brokerage:Positions    3 QQQ260508P375 {77.0000 USD}
+  Assets:Brokerage:Cash    -232.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-114: Purchase QQQ05/08/2026 PUTINVESCOQQQTR $375"
+  Assets:Brokerage:Positions    3 QQQ260508P375 {79.0000 USD}
+  Assets:Brokerage:Cash    -238.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-115: Purchase QQQ05/01/2026 PUTINVESCOQQQTR $500"
+  Assets:Brokerage:Positions    3 QQQ260501P500 {514.0000 USD}
+  Assets:Brokerage:Cash    -1543.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-116: Purchase QQQ05/01/2026 PUTINVESCOQQQTR $500"
+  Assets:Brokerage:Positions    3 QQQ260501P500 {529.0000 USD}
+  Assets:Brokerage:Cash    -1588.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-117: CoverShort QQQ04/30/2026 PUTINVESCOQQQTR $510"
+  Assets:Brokerage:ShortPositions    5 QQQ260430P510 {460.0000 USD}
+  Assets:Brokerage:Cash    -2613.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+  Income:Trading:Realized-Gains    310.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-118: CoverShort QQQ05/01/2026 PUTINVESCOQQQTR $515"
+  Assets:Brokerage:ShortPositions    5 QQQ260501P515 {454.0000 USD}
+  Assets:Brokerage:Cash    -3073.31 USD
+  Expenses:Trading:Commissions    3.31 USD
+  Income:Trading:Realized-Gains    800.00 USD
+2026-03-30 * "Trade #SCHWAB-20260330-119: Purchase SLV05/01/2026 PUTISHRSILVERTR $40 EXP"
+  Assets:Brokerage:Positions    6 SLV260501P40 {35.0000 USD}
+  Assets:Brokerage:Cash    -213.97 USD
+  Expenses:Trading:Commissions    3.97 USD
+2026-03-30 * "Trade #SCHWAB-20260330-120: Purchase XSP05/08/2026 PUTMINI-SPX500PM-SET$628"
+  Assets:Brokerage:Positions    3 XSP260508P628 {1777.0000 USD}
+  Assets:Brokerage:Cash    -5332.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+2026-03-30 * "Trade #SCHWAB-20260330-121: MiscCashDebit SweeptoFutures"
+  Assets:Brokerage:Cash    -119.80 USD
+  Equity:Trading-Capital    119.80 USD
+2026-03-31 * "Trade #SCHWAB-20260331-122: ShortSale SLV04/02/2026 CALLISHRSILVERTR $62"
+  Assets:Brokerage:ShortPositions    -3 SLV260402C62 {303.0000 USD}
+  Assets:Brokerage:Cash    907.00 USD
+  Expenses:Trading:Commissions    2.00 USD
+2026-03-31 * "Trade #SCHWAB-20260331-123: CoverShort SLV03/30/2026 CALLISHRSILVERTR $61.5"
+  Assets:Brokerage:ShortPositions    3 SLV260330C61 {153.0000 USD}
+  Assets:Brokerage:Cash    -733.99 USD
+  Expenses:Trading:Commissions    1.99 USD
+  Income:Trading:Realized-Gains    273.00 USD

@@ -1,0 +1,14 @@
+requires_ansible: ">=2.14.0"
+action_groups:
+  friaslab.trading_lab.trading_ops:
+    - friaslab.trading_lab.inventory_report
+    - friaslab.trading_lab.capacity_analysis
+  friaslab.trading_lab.node_provisioning:
+    - friaslab.trading_lab.pi_install
+    - friaslab.trading_lab.intercom_configure
+plugin_routing:
+  modules:
+    inventory_report:
+      redirect: friaslab.trading_lab.inventory_report
+    capacity_analysis:
+      redirect: friaslab.trading_lab.capacity_analysis

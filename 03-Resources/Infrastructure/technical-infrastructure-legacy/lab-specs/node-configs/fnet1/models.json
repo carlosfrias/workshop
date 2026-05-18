@@ -1,0 +1,128 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-05-02T15:42:28Z",
+  "node": "fnet1",
+  "node_ram_gb": "15",
+  "safe_model_size_gb": 9,
+  "providers": [
+    {
+      "id": "ollama",
+      "type": "local",
+      "url": "http://localhost:11434"
+    },
+    {
+      "id": "ollama-cloud",
+      "type": "cloud",
+      "url": "https://api.ollama.cloud"
+    }
+  ],
+  "models": [
+    {
+      "id": "qwen3.5:4b",
+      "provider": "ollama",
+      "contextWindow": 131072,
+      "maxTokens": 8192,
+      "reasoning": true,
+      "input": [
+        "text",
+        "image"
+      ],
+      "capabilities": {
+        "completion": true,
+        "vision": true,
+        "tools": true,
+        "thinking": true,
+        "audio": false
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "size_gb": 3.4,
+      "tokens_per_sec": "unknown"
+    },
+    {
+      "id": "qwen3:8b",
+      "provider": "ollama",
+      "contextWindow": 131072,
+      "maxTokens": 8192,
+      "reasoning": true,
+      "input": [
+        "text"
+      ],
+      "capabilities": {
+        "completion": true,
+        "vision": false,
+        "tools": true,
+        "thinking": true,
+        "audio": false
+      },
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "size_gb": 5.2,
+      "tokens_per_sec": "unknown"
+    },
+    {
+      "id": "gemma4:31b-cloud",
+      "provider": "ollama-cloud",
+      "reasoning": true,
+      "vision": true,
+      "tools": true,
+      "input": [
+        "text",
+        "image"
+      ],
+      "contextWindow": 131072,
+      "maxTokens": 32768,
+      "cost": {
+        "input": 0.001,
+        "output": 0.002,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      }
+    },
+    {
+      "id": "glm-5.1:cloud",
+      "provider": "ollama-cloud",
+      "reasoning": true,
+      "vision": true,
+      "tools": true,
+      "input": [
+        "text",
+        "image"
+      ],
+      "contextWindow": 32768,
+      "maxTokens": 16384,
+      "cost": {
+        "input": 0.001,
+        "output": 0.002,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      }
+    },
+    {
+      "id": "kimi-k2.6:cloud",
+      "provider": "ollama-cloud",
+      "reasoning": true,
+      "vision": false,
+      "tools": true,
+      "input": [
+        "text"
+      ],
+      "contextWindow": 131072,
+      "maxTokens": 32768,
+      "cost": {
+        "input": 0.001,
+        "output": 0.002,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      }
+    }
+  ]
+}

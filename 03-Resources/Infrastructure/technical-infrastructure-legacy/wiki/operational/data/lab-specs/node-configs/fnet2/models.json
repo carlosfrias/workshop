@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-05-02T18:20:00Z",
+  "node": "fnet2",
+  "node_ram_gb": "15",
+  "safe_model_size_gb": 9,
+  "providers": [
+    {
+      "id": "ollama",
+      "type": "local",
+      "url": "http://localhost:11434"
+    },
+    {
+      "id": "ollama-cloud",
+      "type": "cloud",
+      "url": "https://api.ollama.cloud"
+    }
+  ],
+  "models": [
+    {
+      "id": "qwen3.5:4b",
+      "provider": "ollama",
+      "tags": ["local", "fast", "lightweight"],
+      "size": "3.4GB",
+      "capabilities": {
+        "tools": true,
+        "vision": false,
+        "contextSize": 131072
+      },
+      "description": "Fast local model for trivial/simple tasks"
+    },
+    {
+      "id": "qwen3:8b",
+      "provider": "ollama",
+      "tags": ["local", "balanced"],
+      "size": "5.2GB",
+      "capabilities": {
+        "tools": true,
+        "vision": false,
+        "contextSize": 32768
+      },
+      "description": "Balanced local model for simple/medium tasks"
+    }
+  ]
+}

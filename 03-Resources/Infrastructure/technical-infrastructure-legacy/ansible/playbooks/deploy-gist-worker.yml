@@ -1,0 +1,77 @@
+---
+- name: Deploy Gist Worker to Lab Nodes
+  hosts: lab_nodes
+  become: true
+  vars:
+    gist_worker_gist_id: "0c517214489cb78c0484ca661f3d8463"
+    gist_worker_poll_interval: 30
+    gist_worker_dir: /srv/gist-tasks
+
+  tasks:
+    - name: Ensure gist-tasks directory exists
+      ansible.builtin.file:
+        path: "{{ gist_worker_dir }}/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - pending
+        - running
+        - completed
+        - results
+
+    - name: Copy gist-worker.py
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../scripts/gist-worker.py"
+        dest: /usr/local/bin/gist-worker.py
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Install systemd service template
+      ansible.builtin.template:
+        src: gist-worker@.service.j2
+        dest: /etc/systemd/system/gist-worker@.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Install systemd timer
+      ansible.builtin.template:
+        src: gist-worker.timer.j2
+        dest: /etc/systemd/system/gist-worker.timer
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Enable and start timer for this node
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Enable and start timer for all-node tasks
+      ansible.builtin.systemd:
+        name: "gist-worker@all.timer"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Verify timer is active
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart gist-worker timer
+      ansible.builtin.systemd:
+        name: "gist-worker@{{ inventory_hostname }}.timer"
+        state: restarted

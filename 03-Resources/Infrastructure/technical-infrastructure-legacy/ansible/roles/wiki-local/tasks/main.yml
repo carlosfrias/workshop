@@ -1,0 +1,83 @@
+---
+# Trading Desk Wiki — Local VitePress server controller
+# Routes to start, stop, restart, or toggle based on wiki_state variable.
+# Now runs from the project root with unified wiki content.
+
+- name: "[TI-WIKI] Verify Node.js is installed"
+  ansible.builtin.command: node --version
+  changed_when: false
+
+- name: "[TI-WIKI] Verify npm is installed"
+  ansible.builtin.command: npm --version
+  changed_when: false
+
+- name: "[TI-WIKI] Set default state if not provided"
+  ansible.builtin.set_fact:
+    wiki_state: "{{ wiki_state | default('toggle', true) }}"
+
+- name: "[TI-WIKI] Detect current server state"
+  ansible.builtin.import_tasks: check.yml
+
+- name: "[TI-WIKI] Determine effective state"
+  ansible.builtin.set_fact:
+    _wiki_effective_state: >
+      {% if wiki_state == 'status' %}status
+      {% elif wiki_state == 'restart' %}restart
+      {% elif wiki_state == 'start' %}start
+      {% elif wiki_state == 'stop' %}stop
+      {% elif _wiki_server_up %}stop
+      {% else %}start{% endif %}
+
+- name: "[TI-WIKI] Trim trailing newline from effective state"
+  ansible.builtin.set_fact:
+    _wiki_effective_state: "{{ _wiki_effective_state | trim }}"
+
+- name: "[TI-WIKI] Report detected state"
+  ansible.builtin.debug:
+    msg:
+      - "Detected server: {{ 'running' if _wiki_server_up else 'stopped' }}"
+      - "Requested state: {{ wiki_state | default('toggle') }}"
+      - "Effective action: {{ _wiki_effective_state }}"
+
+# ──────────────────────────────────────────────────────────────
+# STOP
+# ──────────────────────────────────────────────────────────────
+- name: "[TI-WIKI] Stop server"
+  ansible.builtin.import_tasks: stop.yml
+  when: _wiki_effective_state == 'stop'
+
+# ──────────────────────────────────────────────────────────────
+# START  (includes stale-server stop before start)
+# ──────────────────────────────────────────────────────────────
+- name: "[TI-WIKI] Stop stale server before start"
+  ansible.builtin.import_tasks: stop.yml
+  when: _wiki_effective_state == 'start' and _wiki_server_up
+
+- name: "[TI-WIKI] Start server"
+  ansible.builtin.import_tasks: start.yml
+  when: _wiki_effective_state == 'start'
+
+# ──────────────────────────────────────────────────────────────
+# RESTART  (unconditional stop + start)
+# ──────────────────────────────────────────────────────────────
+- name: "[TI-WIKI] Stop for restart"
+  ansible.builtin.import_tasks: stop.yml
+  when: _wiki_effective_state == 'restart'
+
+- name: "[TI-WIKI] Start server after restart"
+  ansible.builtin.import_tasks: start.yml
+  when: _wiki_effective_state == 'restart'
+
+# ──────────────────────────────────────────────────────────────
+# STATUS
+# ──────────────────────────────────────────────────────────────
+- name: "[TI-WIKI] Show status"
+  ansible.builtin.debug:
+    msg:
+      - "{% if _wiki_server_up %}✅ Wiki is RUNNING{% else %}🛑 Wiki is STOPPED{% endif %}"
+      - "   Port:   {{ vitepress_port }}"
+      - "   URL:    http://localhost:{{ vitepress_port }}/"
+      - "   PID:    {{ _wiki_pid if _wiki_pid else 'N/A' }}"
+      - "   Log:    {{ wiki_log_file }}"
+      - "   Root:   {{ wiki_root }}"
+  when: wiki_state | default('toggle') == 'status' or _wiki_effective_state == 'status'

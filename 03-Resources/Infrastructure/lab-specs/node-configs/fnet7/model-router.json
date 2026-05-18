@@ -1,0 +1,35 @@
+{
+  "router_profiles": {
+    "auto": {
+      "description": "Automatic routing based on complexity",
+      "TRIVIAL": "qwen3.5:4b",
+      "SIMPLE": "qwen3:8b",
+      "MEDIUM": "gemma4:e4b",
+      "HARD": "kimi-k2.6:cloud"
+    },
+    "local": {
+      "description": "Local models only",
+      "TRIVIAL": "qwen3.5:4b",
+      "SIMPLE": "qwen3:8b",
+      "MEDIUM": "gemma4:e4b",
+      "HARD": "gemma4:e4b"
+    },
+    "cloud": {
+      "description": "Cloud models for all tasks",
+      "TRIVIAL": "qwen3.5:397b-cloud",
+      "SIMPLE": "qwen3.5:397b-cloud",
+      "MEDIUM": "qwen3.5:397b-cloud",
+      "HARD": "kimi-k2.6:cloud"
+    },
+    "fast": {
+      "description": "Fastest model per complexity tier",
+      "TRIVIAL": "qwen3.5:4b",
+      "SIMPLE": "qwen3:8b",
+      "MEDIUM": "gemma4:e4b",
+      "HARD": "kimi-k2.6:cloud"
+    }
+  },
+  "default_profile": "auto",
+  "node_id": "fnet7",
+  "node_name": "Worker Node 7"
+}

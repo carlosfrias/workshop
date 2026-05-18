@@ -1,0 +1,39 @@
+---
+# cleanup.yml — Remove all Ollama models for testing reset
+
+- name: "Cleanup | Stop Ollama service"
+  ansible.builtin.systemd:
+    name: ollama
+    state: stopped
+  ignore_errors: true
+
+- name: "Cleanup | Remove all models via API"
+  ansible.builtin.uri:
+    url: "http://localhost:11434/api/delete"
+    method: DELETE
+    body: '{"name": "{{ item }}"}'
+    body_format: json
+    status_code: [200, 404]
+  loop: "{{ _models | default([]) }}"
+  ignore_errors: true
+
+- name: "Cleanup | Purge model blobs and manifests"
+  ansible.builtin.shell: |
+    sudo rm -rf /usr/share/ollama/.ollama/models/manifests/registry.ollama.ai/library/*
+    sudo rm -rf /usr/share/ollama/.ollama/models/blobs/*
+  ignore_errors: true
+  changed_when: true
+
+- name: "Cleanup | Restart Ollama service"
+  ansible.builtin.systemd:
+    name: ollama
+    state: started
+
+- name: "Cleanup | Verify empty state"
+  ansible.builtin.command: ollama list
+  register: empty_list
+  changed_when: false
+
+- name: "Cleanup | Report empty state"
+  ansible.builtin.debug:
+    msg: "Node {{ inventory_hostname }} is clean. Models: {{ empty_list.stdout_lines | default([]) | length }} listed"

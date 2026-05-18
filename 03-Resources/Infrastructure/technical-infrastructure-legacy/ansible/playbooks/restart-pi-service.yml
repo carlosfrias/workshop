@@ -1,0 +1,36 @@
+---
+# restart-pi-service.yml - Restart crashed pi-agent via systemd
+- name: Restart pi-agent service
+  hosts: lab_nodes
+  become: yes
+  tasks:
+    - name: Restart pi-agent
+      ansible.builtin.systemd:
+        name: pi-agent
+        state: restarted
+        enabled: yes
+      register: restart
+
+    - name: Wait for service
+      ansible.builtin.wait_for:
+        path: /var/log/pi-agent.log
+        timeout: 10
+      ignore_errors: yes
+
+    - name: Verify running
+      ansible.builtin.systemd:
+        name: pi-agent
+      register: service_status
+      changed_when: false
+
+    - name: Report
+      ansible.builtin.set_fact:
+        restart_result:
+          node_id: "{{ inventory_hostname }}"
+          restarted: "{{ restart.changed }}"
+          active: "{{ service_status.status.ActiveState | default('unknown') == 'active' }}"
+          status: "{{ 'ok' if service_status.status.ActiveState | default('') == 'active' else 'failed' }}"
+  post_tasks:
+    - name: Output JSON
+      ansible.builtin.debug:
+        msg: "{{ restart_result | to_json }}"

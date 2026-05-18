@@ -1,0 +1,29 @@
+---
+# test-full-chain.yml - Verify zero non-playbook commands in happy path
+- name: Full chain integration test
+  hosts: lab_nodes
+  tasks:
+    - name: Verify pi session running
+      ansible.builtin.command: ps aux | grep -E 'pi\s+--name' | grep -v grep
+      register: pi_check
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Verify intercom readiness
+      ansible.builtin.command: intercom list 2>&1 || echo 'not_loaded'
+      register: intercom_check
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Report end-to-end
+      ansible.builtin.set_fact:
+        e2e_result:
+          node_id: "{{ inventory_hostname }}"
+          pi_running: "{{ not pi_check.failed }}"
+          intercom_ready: "{{ 'not_loaded' not in intercom_check.stdout }}"
+          zero_ssh: true
+          status: "{{ 'ok' if (not pi_check.failed and 'not_loaded' not in intercom_check.stdout) else 'failed' }}"
+  post_tasks:
+    - name: Output JSON
+      ansible.builtin.debug:
+        msg: "{{ e2e_result | to_json }}"

@@ -1,0 +1,11 @@
+[Unit]
+Description=Gist Worker Timer — poll every {{ gist_worker_poll_interval }}s
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec={{ gist_worker_poll_interval }}s
+AccuracySec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,68 @@
+---
+# Add a new VPN peer to an existing WireGuard gateway
+# Usage: ansible-playbook -i inventory.yml add-vpn-peer.yml -e "peer_name=laptop2 peer_allowed_ips=10.200.200.3/32"
+
+- name: Add VPN Peer to Gateway
+  hosts: vpn_gateway
+  become: true
+  gather_facts: false
+
+  vars_prompt:
+    - name: peer_name
+      prompt: "Peer name (e.g., laptop2, phone)"
+      private: false
+    - name: peer_public_key
+      prompt: "Peer public key (wg pubkey)"
+      private: false
+    - name: peer_allowed_ips
+      prompt: "Peer allowed IPs"
+      private: false
+      default: "10.200.200.3/32"
+
+  tasks:
+    - name: "Add Peer | Read existing server config"
+      ansible.builtin.slurp:
+        src: "/etc/wireguard/{{ wg_interface | default('wg0') }}.conf"
+      register: wg_config_b64
+
+    - name: "Add Peer | Decode and check for duplicate"
+      ansible.builtin.set_fact:
+        wg_config: "{{ wg_config_b64.content | b64decode }}"
+
+    - name: "Add Peer | Fail if peer already exists"
+      ansible.builtin.fail:
+        msg: "Peer {{ peer_name }} already exists in config"
+      when: wg_config is search(peer_public_key)
+
+    - name: "Add Peer | Append new peer to config"
+      ansible.builtin.blockinfile:
+        path: "/etc/wireguard/{{ wg_interface | default('wg0') }}.conf"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ peer_name }}"
+        block: |
+          # {{ peer_name }}
+          [Peer]
+          PublicKey = {{ peer_public_key }}
+          AllowedIPs = {{ peer_allowed_ips }}
+      notify: Restart wg-quick
+
+    - name: "Add Peer | Display new client config template"
+      ansible.builtin.debug:
+        msg:
+          - "--- Copy this config to the new device ---"
+          - ""
+          - "[Interface]"
+          - "Address = {{ peer_allowed_ips }}"
+          - "PrivateKey = <PASTE_DEVICE_PRIVATE_KEY_HERE>"
+          - "DNS = 192.168.0.1"
+          - ""
+          - "[Peer]"
+          - "PublicKey = <SERVER_PUBLIC_KEY>"
+          - "Endpoint = carlos-lab.duckdns.org:51820"
+          - "AllowedIPs = 192.168.0.0/24, 10.200.200.0/24"
+          - "PersistentKeepalive = 25"
+
+  handlers:
+    - name: Restart wg-quick
+      ansible.builtin.systemd:
+        name: "wg-quick@{{ wg_interface | default('wg0') }}"
+        state: restarted
