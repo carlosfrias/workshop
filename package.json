@@ -1,0 +1,16 @@
+{
+  "name": "trading-desk-wiki",
+  "version": "1.0.0",
+  "description": "Unified wiki for the AI-orchestrated trading workspace",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev --host",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "mermaid": "^11.15.0",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
+}

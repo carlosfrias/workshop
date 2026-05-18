@@ -156,4 +156,4 @@ workshop/
 
 ---
 
-*Last updated: 2026-05-18 — merged ai-trading-workspace*
+*Last updated: 2026-05-18 — merged ai-trading-workspace into workshop; trading keywords now route here*
