@@ -1,0 +1,24 @@
+# Credentials
+.env
+*.env
+credentials.json
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# MkDocs
+site/site/
+site/.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scraped content (large — gitignore by default, add explicitly when needed)
+data/courses/
