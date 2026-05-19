@@ -55,7 +55,7 @@
 
     - name: Copy Docker Compose file
       ansible.builtin.copy:
-        src: ../infrastructure/docker/nextcloud-docker-compose.yml
+        src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/docker/nextcloud-docker-compose.yml"
         dest: "{{ nextcloud_base_dir }}/docker-compose.yml"
         owner: root
         group: root
@@ -74,14 +74,14 @@
 
     - name: Wait for NextCloud to be ready
       ansible.builtin.uri:
-        url: "http://{{ ansible_host }}:8080"
-        status_code: 200
-        timeout: 120
+        url: "http://{{ ansible_host }}:8081"
+        status_code: [200, 302, 400]
+        timeout: 180
       register: nextcloud_status
-      retries: 12
+      retries: 18
       delay: 10
       until: nextcloud_status is success
 
     - name: Report deployment status
       ansible.builtin.debug:
-        msg: "NextCloud deployed successfully at http://{{ ansible_host }}:8080"
+        msg: "NextCloud deployed successfully at http://{{ ansible_host }}:8081"
