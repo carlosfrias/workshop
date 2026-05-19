@@ -151,7 +151,7 @@ pi-intercom status
 
 # Start named sessions
 /name orchestrator
-/model ollama-cloud/qwen3.5:397b
+/model ollama/qwen3.5:397b
 
 /name worker-1
 /model ollama/qwen3.5:4b
@@ -171,7 +171,7 @@ intercom({ action: "list" })
 
 ```bash
 # Start sessions (4 terminals)
-pi && /name orchestrator && /model ollama-cloud/qwen3.5:397b
+pi && /name orchestrator && /model ollama/qwen3.5:397b
 pi && /name worker-1 && /model ollama/qwen3.5:4b
 pi && /name worker-2 && /model ollama/qwen3:8b
 pi && /name lab-worker && /model ollama/gemma4:e4b

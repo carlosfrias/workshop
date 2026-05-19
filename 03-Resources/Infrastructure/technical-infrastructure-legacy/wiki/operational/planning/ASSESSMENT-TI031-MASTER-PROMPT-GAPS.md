@@ -223,13 +223,13 @@ Infrastructure: ollama/qwen3:8b
 ```yaml
 Bookkeeping:
   healthy: ollama/gemma4:e4b
-  stressed: ollama-cloud/qwen3.5:397b
-  critical: ollama-cloud/kimi-k2.6
+  stressed: ollama/qwen3.5:397b
+  critical: ollama/kimi-k2.6
 
 Position monitoring:
   healthy: ollama/qwen3.5:4b
-  stressed: ollama-cloud/qwen3.5:397b
-  critical: ollama-cloud/kimi-k2.6
+  stressed: ollama/qwen3.5:397b
+  critical: ollama/kimi-k2.6
 ```
 
 **Solution:** Add health state to model routing decisions.

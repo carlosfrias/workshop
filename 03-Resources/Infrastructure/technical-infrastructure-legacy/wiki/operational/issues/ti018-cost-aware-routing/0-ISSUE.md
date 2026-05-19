@@ -1,8 +1,17 @@
 # TI-018: Cost-Aware Routing + Billing Model
 
+**[MIGRATED 2026-05-19]** This issue has been converted to a project-blueprint compliant project:
+- **Documentation:** `../../personal-vault/01-Projects/cost-aware-routing/`
+- **Code:** `../../workshop/01-Projects/cost-aware-routing/`
+- **Thread:** `../../personal-vault/01-Projects/cost-aware-routing/threads/cost-aware-routing/0-THREAD.md`
+
+This file is preserved for historical reference. All new work happens in the project directories above.
+
+---
+
 **Issue Home:** [0-ISSUE.md](./0-ISSUE.md)
-**Status:** TBD
-**Priority:** TBD
+**Status:** MIGRATED
+**Priority:** See project README.md
 
 ---
 

@@ -41,14 +41,14 @@ ollama/gemma4:e4b (thinking: off)
 
 | Route | Model | Keywords | Domains | Thinking |
 |-------|-------|----------|---------|----------|
-| reasoning | ollama-cloud/qwen3.5:397b | analyze, evaluate, decide... | market-research, position-management | medium |
+| reasoning | ollama/qwen3.5:397b | analyze, evaluate, decide... | market-research, position-management | medium |
 | structured | ollama/gemma4:e4b | log, record, reconcile... | bookkeeping | off |
 | monitoring | ollama/qwen3.5:4b | status, check, ping... | — | off |
 | infrastructure | ollama/qwen3:8b | server, deploy, network... | — | off |
 | trivial | ollama/qwen3.5:4b | — | — | off |
 | simple | ollama/qwen3:8b | — | — | low |
 | medium | ollama/gemma4:e4b | — | — | medium |
-| hard | ollama-cloud/kimi-k2.6 | — | — | high |
+| hard | ollama/kimi-k2.6 | — | — | high |
 
 **Total:** 8 routes configured
 
@@ -67,7 +67,7 @@ ollama/gemma4:e4b (thinking: off)
 
 ### reasoning
 
-- **Model:** ollama-cloud/qwen3.5:397b
+- **Model:** ollama/qwen3.5:397b
 - **Thinking Level:** medium
 - **Priority:** 1
 - **Keywords:** analyze, evaluate, decide, synthesize, research, plan

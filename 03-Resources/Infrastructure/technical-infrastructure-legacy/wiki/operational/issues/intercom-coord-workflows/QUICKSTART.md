@@ -32,7 +32,7 @@ Open **4 separate terminals**:
 cd /Users/friasc/Dropbox/workshop
 pi
 /name orchestrator
-/model ollama-cloud/qwen3.5:397b
+/model ollama/qwen3.5:397b
 
 # Terminal 2: Worker 1 (Medium Cloud)
 cd /Users/friasc/Dropbox/workshop

@@ -9,7 +9,7 @@ Use this prompt to refine or reset the model routing configuration for the Tradi
 **Objective:** Optimize the routing of tasks to models based on cognitive capacity (parameter count) and specific task requirements.
 
 **Requirements:**
-1. **High-Capacity Integration:** Identify and add high-capacity models (typically >290B parameters) from the provided cloud provider (e.g., `ollama-cloud`) into `models.json`.
+1. **High-Capacity Integration:** Identify and add high-capacity models (typically >290B parameters) from the provided cloud provider (e.g., `ollama`) into `models.json`.
 2. **Tiered Routing:** Define three distinct reasoning tiers in `model-router.json`:
    - `ultra-reasoning`: Top-tier (1T+ params), high thinking, for mission-critical design.
    - `reasoning`: Mid-tier (600B+ params), medium thinking, for complex analysis.

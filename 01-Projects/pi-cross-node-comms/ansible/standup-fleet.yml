@@ -1,0 +1,444 @@
+---
+# Standup Fleet — Full coms-net Hub + Lab Readiness Playbook
+#
+# Single-playbook orchestrator that:
+#   Phase 1: Deploys and starts the coms-net hub server on fnet2
+#   Phase 2: Ensures pi is installed and current on every lab node
+#   Phase 3: Ensures Ollama is installed, running, and target models are pulled
+#   Phase 4: Deploys the coms-net extension to every lab node
+#   Phase 5: Starts pi agents on every lab node, registered with the hub
+#   Phase 6: Validates fleet — prunes unreachable nodes, reports final status
+#
+# Run from the macOS orchestrator:
+#   cd workshop/01-Projects/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml standup-fleet.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
+#
+# Down-node handling:
+#   - Nodes that fail SSH or any health task are added to the `down_nodes` group
+#   - Down nodes are removed from hub registration (deleted from /v1/agents)
+#   - Down nodes are skipped in subsequent phases
+#   - Nodes that come back up during the run are re-included automatically
+
+- name: STANDUP FLEET
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Display banner
+      ansible.builtin.debug:
+        msg:
+          - "═══════════════════════════════════════════════════"
+          - "  coms-net FLEET STANDUP"
+          - "  Phase 1: Hub Server (fnet2)"
+          - "  Phase 2: pi Agent (all nodes)"
+          - "  Phase 3: Ollama + Models (all nodes)"
+          - "  Phase 4: Extension Deploy (all nodes)"
+          - "  Phase 5: Agent Launch (all nodes)"
+          - "  Phase 6: Fleet Validation + Prune"
+          - "═══════════════════════════════════════════════════"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 1: Hub Server — fnet2 only
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 1 - Hub Server on fnet2
+  hosts: fnet2
+  gather_facts: yes
+
+  vars:
+    hub_host: "0.0.0.0"
+    hub_port: "8080"
+    hub_project: "lab"
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    extension_src: "{{ playbook_dir }}/../"
+
+  tasks:
+    - name: Install Bun on fnet2
+      ansible.builtin.shell: |
+        curl -fsSL https://bun.sh/install | bash
+      args:
+        creates: "{{ ansible_env.HOME }}/.bun/bin/bun"
+      changed_when: true
+
+    - name: Create server directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.pi/coms-net/server"
+        state: directory
+        mode: '0755'
+
+    - name: Copy hub server code
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/server/coms-net-server.ts"
+        dest: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
+        mode: '0755'
+
+    - name: Stop existing hub
+      ansible.builtin.shell: |
+        [ -f /tmp/coms-net-hub.pid ] && kill $(cat /tmp/coms-net-hub.pid) 2>/dev/null || true
+        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | sed -n 's/.*pid=\([0-9]*\).*/\1/p' || true)
+        [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
+        rm -f /tmp/coms-net-hub.pid
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Wait for port to release
+      ansible.builtin.wait_for:
+        port: "{{ hub_port }}"
+        state: stopped
+        timeout: 10
+      ignore_errors: yes
+
+    - name: Start coms-net hub
+      block:
+        - name: Launch hub server
+          ansible.builtin.shell: |
+            export BUN_INSTALL="{{ ansible_env.HOME }}/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+            export PI_COMS_NET_AUTH_TOKEN="{{ coms_token }}"
+            export PI_COMS_NET_HOST="{{ hub_host }}"
+            export PI_COMS_NET_PORT="{{ hub_port }}"
+            export PI_COMS_NET_PROJECT="{{ hub_project }}"
+            nohup bun run "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts" > /tmp/coms-net-hub.log 2>&1 &
+            echo $! > /tmp/coms-net-hub.pid
+            sleep 3
+            curl -sf http://localhost:{{ hub_port }}/health
+          register: hub_launch
+          changed_when: true
+
+        - name: Verify hub health
+          ansible.builtin.uri:
+            url: "http://localhost:{{ hub_port }}/health"
+            status_code: 200
+          register: hub_health
+          retries: 10
+          delay: 2
+          until: hub_health.status == 200
+
+        - name: Report hub ready
+          ansible.builtin.debug:
+            msg:
+              - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }})"
+              - "   Server ID: {{ hub_health.json.server_id }}"
+      rescue:
+        - name: Dump hub log for diagnostics
+          ansible.builtin.command: cat /tmp/coms-net-hub.log
+          changed_when: false
+          failed_when: false
+
+        - name: Check if bun binary exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.bun/bin/bun"
+          register: bun_binary
+          failed_when: false
+
+        - name: Check if server code exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
+          register: server_code
+          failed_when: false
+
+        - name: Diagnostic report
+          ansible.builtin.fail:
+            msg:
+              - "❌ Hub failed to start on fnet2"
+              - "   Bun binary: {{ 'FOUND' if bun_binary.stat.exists else 'MISSING — install Bun manually' }}"
+              - "   Server code: {{ 'FOUND' if server_code.stat.exists else 'MISSING — check extension_src path' }}"
+              - "   Auth token: {{ 'SET (' + coms_token[:8] + '...) if coms_token else 'EMPTY — set PI_COMS_NET_AUTH_TOKEN or use -e flag' }}"
+              - "   Hub log above this message. Common fixes:"
+              - "     1. Token empty → pass -e 'coms_token=<token>'"
+              - "     2. Bun missing → run: curl -fsSL https://bun.sh/install | bash"
+              - "     3. Port in use → kill process on port {{ hub_port }} or wait for release"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 2: pi Agent — all lab nodes (idempotent install/upgrade)
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 2 - pi Availability on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    pi_version_target: "0.74.0"
+
+  tasks:
+    - name: Check current pi version
+      ansible.builtin.shell: pi --version 2>&1
+      register: pi_current
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Check Node.js version
+      ansible.builtin.command: node --version
+      register: node_current
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Install Node.js 20+ if missing (Ubuntu)
+      ansible.builtin.shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+      when: >
+        node_current.failed or
+        (node_current.stdout is defined and
+         (node_current.stdout | regex_replace('^v', '')) is version('20.0.0', '<'))
+      changed_when: true
+
+    - name: Install or upgrade pi
+      ansible.builtin.shell: |
+        npm uninstall -g @mariozechner/pi-coding-agent @earendil-works/pi-coding-agent 2>/dev/null || true
+        npm install -g @earendil-works/pi-coding-agent
+      when: >
+        pi_current.failed or
+        (pi_current.stdout is defined and
+         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<'))
+      changed_when: true
+
+    - name: Verify pi installation
+      ansible.builtin.shell: pi --version 2>&1
+      register: pi_verify
+      changed_when: false
+
+    - name: Report pi status
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} — pi {{ pi_verify.stdout | default(pi_verify.stderr, true) | trim }}"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: Ollama + Target Models — all lab nodes
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 3 - Ollama + Models on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    target_models:
+      - "qwen3.5:4b"
+      - "qwen3:8b"
+      - "gemma4:e4b"
+
+  tasks:
+    - name: Check if Ollama is installed
+      ansible.builtin.command: ollama --version
+      register: ollama_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Install Ollama
+      ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
+      when: ollama_check.rc != 0
+      changed_when: true
+
+    - name: Ensure Ollama systemd service is running
+      ansible.builtin.systemd:
+        name: ollama
+        enabled: true
+        state: started
+      when: ansible_service_mgr == 'systemd'
+      ignore_errors: yes
+
+    - name: Wait for Ollama API
+      ansible.builtin.uri:
+        url: http://localhost:11434/api/tags
+        status_code: 200
+      register: api_ready
+      retries: 15
+      delay: 5
+      until: api_ready.status == 200
+
+    - name: Pull target models
+      ansible.builtin.command: ollama pull {{ item }}
+      register: model_pull
+      retries: 3
+      delay: 30
+      until: model_pull.rc == 0
+      loop: "{{ target_models }}"
+
+    - name: List installed models
+      ansible.builtin.command: ollama list
+      register: model_list
+      changed_when: false
+
+    - name: Report Ollama status
+      ansible.builtin.debug:
+        msg:
+          - "✅ {{ inventory_hostname }} — Ollama ready"
+          - "   Models: {{ model_list.stdout_lines | join(', ') }}"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 4: Extension Deploy — all lab nodes
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 4 - coms-net Extension on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    extension_src: "{{ playbook_dir }}/../"
+
+  tasks:
+    - name: Create extension directories
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - src/skills/pi-cross-node-comms
+        - server
+
+    - name: Copy extension files
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+        mode: '0644'
+      loop:
+        - src/index.ts
+        - src/themeMap.ts
+        - src/skills/pi-cross-node-comms/SKILL.md
+        - package.json
+
+    - name: Install extension via pi
+      ansible.builtin.command:
+        cmd: pi install .
+        chdir: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+      register: pi_install
+      changed_when: "'Installed' in pi_install.stdout"
+
+    - name: Report extension ready
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} — extension installed"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 5: Start Agents — all lab nodes
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 5 - Launch Agents on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    hub_url: "http://192.168.0.142:8080"
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_project: "lab"
+
+  tasks:
+    - name: Kill any existing agent on this node
+      ansible.builtin.shell: |
+        pkill -f "pi -e.*coms-net" 2>/dev/null || true
+        pkill -f "pi.*--name.*{{ inventory_hostname }}" 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Start pi agent with coms-net
+      ansible.builtin.shell: |
+        cd {{ ansible_env.HOME }}/pi-cross-node-comms
+        nohup pi -e src/index.ts \
+          --name {{ inventory_hostname }} \
+          --project {{ hub_project }} \
+          --server-url {{ hub_url }} \
+          --auth-token {{ coms_token }} \
+          --purpose "lab worker — {{ inventory_hostname }}" \
+          --model ollama/qwen3.5:4b \
+          -p "You are {{ inventory_hostname }}, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a D-E-V Workflow Task envelope, execute the sub-task precisely and return ONLY the output in the specified format. When you receive other prompts, report your hostname, CPU cores, RAM, disk, and ollama models, then stay online and wait for tasks. If you cannot complete a task, respond with: FAIL: [reason]\n\nD-E-V Envelope Format — when you see this, follow it exactly:\n## D-E-V Workflow Task\n**Plan ID:** [plan reference]\n**Sub-Task #:** [number]\n**Task:** [your instruction]\n**Expected Output Format:** [required format]\n**Verification Criteria:** [what will be checked]\n**Your Role:** Execute the sub-task precisely. Return ONLY the output in the expected format. No extra commentary." \
+          > /tmp/pi-agent-{{ inventory_hostname }}.log 2>&1 &
+        echo $! > /tmp/pi-agent-{{ inventory_hostname }}.pid
+        sleep 2
+        echo "Agent started on {{ inventory_hostname }} (PID $(cat /tmp/pi-agent-{{ inventory_hostname }}.pid))"
+      changed_when: true
+      register: agent_start
+      async: 30
+      poll: 0
+
+    - name: Report agent launch
+      ansible.builtin.debug:
+        msg: "🚀 Agent launched on {{ inventory_hostname }}"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 6: Fleet Validation + Prune Down Nodes
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# PHASE 6: Fleet Validation + Prune Down Nodes
+# Uses curl instead of ansible.builtin.uri to avoid ssl dependency on macOS
+
+- name: PHASE 6 - Fleet Validation + Prune Down Nodes
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_url: "http://192.168.0.142:8080"
+
+  tasks:
+    - name: Wait for agents to register on hub
+      ansible.builtin.shell: |
+        for i in $(seq 1 30); do
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          if [ "$count" -ge 1 ]; then
+            echo "Agents registered: $count"
+            exit 0
+          fi
+          sleep 3
+        done
+        echo "No agents registered after 90 seconds"
+        exit 1
+      register: agent_wait
+      changed_when: false
+
+    - name: Check which lab nodes are reachable via SSH
+      ansible.builtin.shell: |
+        for host in fnet1 fnet2 fnet3 fnet4 fnet5 fnet6 fnet7; do
+          if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$host" true 2>/dev/null; then
+            echo "$host UP"
+          else
+            echo "$host DOWN"
+          fi
+        done
+      register: ssh_checks
+      changed_when: false
+      failed_when: false
+
+    - name: Build list of down node names
+      ansible.builtin.set_fact:
+        down_node_names: "{{ ssh_checks.stdout_lines | select('match', '.*DOWN') | map('regex_replace', ' DOWN$', '') | list }}"
+
+    - name: Prune down nodes from hub
+      ansible.builtin.shell: |
+        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "
+          import json, sys
+          agents = json.load(sys.stdin).get('agents', [])
+          down = {{ down_node_names | to_json }}
+          for a in agents:
+              if a['name'] in down:
+                  print(a['session_id'])
+        " 2>/dev/null); do
+          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=lab" 2>/dev/null || true
+        done
+      ignore_errors: yes
+
+    - name: Get final agent list
+      ansible.builtin.shell: |
+        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
+      register: final_agents
+      changed_when: false
+
+    - name: Display fleet status
+      ansible.builtin.debug:
+        msg:
+          - "============================================================="
+          - "  FLEET STANDUP COMPLETE"
+          - "  Hub:      {{ hub_url }}"
+          - "  Project:  lab"
+          - "  Agents:   see output above"
+          - ""
+          - "  Down nodes pruned: {{ down_node_names | join(', ') | default('none') }}"
+          - "============================================================="

@@ -515,9 +515,12 @@ python3 gist_lag_monitor.py --lag
 
 ### TI-006: NextCloud Installation
 **Created:** 2026-05-01
-**Status:** Proposed
-**Priority:** 🟢 Low
-**Details:** Install NextCloud on appropriate node (fnet2 was designated). Prerequisites already in autoinstall packages.
+**Updated:** 2026-05-19
+**Status:** In Progress
+**Priority:** 🟡 Medium (upgraded from Low)
+**Project:** `workshop/01-Projects/nextcloud/`
+**Vault:** `personal-vault/01-Projects/nextcloud/`
+**Details:** Install NextCloud on fnet2 (192.168.0.142). Prerequisites in autoinstall packages. Full project scaffolded with Ansible playbook, Docker Compose, and wiki. Deploy phase not yet started — awaiting secrets generation and dry-run.
 
 ---
 

@@ -90,7 +90,7 @@ Before any infrastructure task touching ≥2 nodes, verify TI-011:
 
 **If health check returns "critical" or "stressed":**
 - **Decomposition is automatic** — do not proceed with local execution
-- **Route to cloud models** — use `ollama-cloud/qwen3.5:397b` or higher tier
+- **Route to cloud models** — use `ollama/qwen3.5:397b` or higher tier
 - **Log the decision** — append to `wiki/operational/sessions/health-decisions.jsonl`
 
 **If any other check fails:** Stop. Fix framework before proceeding.

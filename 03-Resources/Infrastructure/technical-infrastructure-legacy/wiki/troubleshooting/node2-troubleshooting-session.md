@@ -235,7 +235,7 @@ sleep 5  # Wait for routes to clear
 // Wrong (created providers.json separately)
 {
   "providers": {
-    "cloud": "ollama-cloud",  // String, not object
+    "cloud": "ollama",  // String, not object
     "local": "ollama"
   }
 }

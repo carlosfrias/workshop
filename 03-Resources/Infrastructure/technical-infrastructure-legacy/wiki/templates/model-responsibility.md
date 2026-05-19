@@ -99,14 +99,14 @@ For the full orchestration guide, see [`{{AGENTS_FILE}}`](./{{AGENTS_FILE}}).
 
 | Placeholder | Description | Example |
 |-------------|-------------|---------|
-| `{{HIGH_CLOUD_MODEL}}` | Premium cloud model for planning | `ollama-cloud/kimi-k2.6` |
-| `{{MEDIUM_CLOUD_MODEL}}` | Standard cloud model for analysis | `ollama-cloud/deepseek-v4-pro` |
-| `{{LOW_CLOUD_MODEL}}` | Cloud model for orchestration | `ollama-cloud/qwen3.5:397b` |
+| `{{HIGH_CLOUD_MODEL}}` | Premium cloud model for planning | `ollama/kimi-k2.6` |
+| `{{MEDIUM_CLOUD_MODEL}}` | Standard cloud model for analysis | `ollama/deepseek-v4-pro` |
+| `{{LOW_CLOUD_MODEL}}` | Cloud model for orchestration | `ollama/qwen3.5:397b` |
 | `{{HIGH_LOCAL_MODEL}}` | High-capacity local model | `ollama/qwen3:8b` |
 | `{{MEDIUM_LOCAL_MODEL}}` | Standard local model | `ollama/gemma4:e4b` |
 | `{{LOW_LOCAL_MODEL}}` | Low-capacity local model | `ollama/qwen3.5:4b` |
 | `{{LOCAL_PREFIX}}` | Prefix distinguishing local models | `ollama/` |
-| `{{CLOUD_PREFIX}}` | Prefix distinguishing cloud models | `ollama-cloud/` |
+| `{{CLOUD_PREFIX}}` | Prefix distinguishing cloud models | `ollama/` |
 | `{{DISPATCH_METHOD}}` | How orchestrator sends work to lab nodes | `SSH` or `pi-intercom` |
 | `{{EVIDENCE_METHOD}}` | How evidence is collected | `SSH/SCP` |
 | `{{ORCHESTRATOR_OS}}` | Orchestrator operating system | `Mac` |

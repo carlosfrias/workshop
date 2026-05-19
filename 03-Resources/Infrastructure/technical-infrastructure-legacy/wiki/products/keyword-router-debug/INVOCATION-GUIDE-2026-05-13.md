@@ -508,6 +508,6 @@ Please adopt and continue orchestration.
 
 ---
 
-**Prepared by:** High Cloud Model (`ollama-cloud/kimi-k2.6`)  
+**Prepared by:** High Cloud Model (`ollama/kimi-k2.6`)  
 **Location:** `technical-infrastructure/wiki/products/keyword-router-debug/INVOCATION-GUIDE-2026-05-13.md`  
 **Next step:** User switches to `/router profile auto` + `/router tier medium` and prompts the low cloud model to begin Step 0.

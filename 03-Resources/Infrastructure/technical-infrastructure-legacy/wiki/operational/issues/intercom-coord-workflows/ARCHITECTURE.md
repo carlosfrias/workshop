@@ -302,9 +302,9 @@ sequenceDiagram
 ### High Cloud (Orchestrator)
 
 **Models:**
-- `ollama-cloud/qwen3.5:397b`
-- `ollama-cloud/kimi-k2.6`
-- `ollama-cloud/deepseek-v4-pro`
+- `ollama/qwen3.5:397b`
+- `ollama/kimi-k2.6`
+- `ollama/deepseek-v4-pro`
 
 **Capabilities:**
 - Complex reasoning

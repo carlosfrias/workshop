@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost-Aware Routing — Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242838;
+    --text: #e1e4ed;
+    --text2: #8b8fa3;
+    --accent: #6366f1;
+    --accent2: #22d3ee;
+    --local: #34d399;
+    --cloud: #f59e0b;
+    --danger: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 8px; }
+  h2 { font-size: 1.1rem; color: var(--text2); margin: 24px 0 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .header { margin-bottom: 24px; }
+  .header .subtitle { color: var(--text2); font-size: 0.85rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card .label { color: var(--text2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+  .card .value { font-size: 1.75rem; font-weight: 700; margin-top: 4px; }
+  .card .sub { color: var(--text2); font-size: 0.8rem; margin-top: 4px; }
+  .card.cost .value { color: var(--accent2); }
+  .card.local .value { color: var(--local); }
+  .card.cloud .value { color: var(--cloud); }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  canvas { max-height: 300px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--surface2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+  }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--surface2); }
+  tr:hover { background: var(--surface2); }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .tag.local { background: rgba(52,211,153,0.15); color: var(--local); }
+  .tag.cloud { background: rgba(245,158,11,0.15); color: var(--cloud); }
+  .venue-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .venue-bar .local { background: var(--local); }
+  .venue-bar .cloud { background: var(--cloud); }
+  @media (max-width: 768px) {
+    .charts { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💰 Cost-Aware Routing Dashboard</h1>
+  <div class="subtitle">TI-018 • Generated 2026-05-19 14:12 • 129 turns logged</div>
+</div>
+
+<div class="cards">
+  <div class="card cost">
+    <div class="label">Total Cost</div>
+    <div class="value">$70.7669</div>
+    <div class="sub">129 turns</div>
+  </div>
+  <div class="card local">
+    <div class="label">Local Cost</div>
+    <div class="value">$0.0586</div>
+    <div class="sub">0% of total</div>
+  </div>
+  <div class="card cloud">
+    <div class="label">Cloud Cost</div>
+    <div class="value">$70.7083</div>
+    <div class="sub">100% of total</div>
+  </div>
+  <div class="card">
+    <div class="label">Total Tokens</div>
+    <div class="value">17.6M</div>
+    <div class="sub">17.5M in + 0.1M out</div>
+  </div>
+</div>
+
+<div class="venue-bar">
+  <div class="local" style="width: 0.08274209864111853%"></div>
+  <div class="cloud" style="width: 99.91725790135892%"></div>
+</div>
+
+<h2>Cost Over Time</h2>
+<div class="charts">
+  <div class="chart-card full">
+    <canvas id="costOverTime"></canvas>
+  </div>
+</div>
+
+<h2>By Model</h2>
+<div class="charts">
+  <div class="chart-card">
+    <canvas id="costByModel"></canvas>
+  </div>
+  <div class="chart-card">
+    <canvas id="turnsByModel"></canvas>
+  </div>
+</div>
+
+<h2>Usage Patterns</h2>
+<div class="charts">
+  <div class="chart-card">
+    <canvas id="costByHour"></canvas>
+  </div>
+  <div class="chart-card">
+    <canvas id="venueOverTime"></canvas>
+  </div>
+</div>
+
+<h2>Models — Detail</h2>
+<div class="chart-card" style="margin-bottom: 24px;">
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Venue</th>
+        <th>Turns</th>
+        <th>Input Tokens</th>
+        <th>Output Tokens</th>
+        <th>Cost</th>
+        <th>Cost/Turn</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>glm-5.1:cloud</td>
+        <td><span class="tag cloud">cloud</span></td>
+        <td>128</td>
+        <td>17,493,967</td>
+        <td>61,038</td>
+        <td>$70.7083</td>
+        <td>$0.5524</td>
+      </tr>
+      <tr>
+        <td>unknown</td>
+        <td><span class="tag local">local</span></td>
+        <td>1</td>
+        <td>7,917</td>
+        <td>3,867</td>
+        <td>$0.0586</td>
+        <td>$0.0586</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Sessions — Top 10 by Cost</h2>
+<div class="chart-card" style="margin-bottom: 24px;">
+  <table>
+    <thead>
+      <tr><th>Session</th><th>Turns</th><th>Models</th><th>Cost</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>019e4076-f4c...</td>
+        <td>128</td>
+        <td>glm-5.1:cloud</td>
+        <td>$70.7083</td>
+      </tr>
+      <tr>
+        <td>019e416c-f63...</td>
+        <td>1</td>
+        <td>unknown</td>
+        <td>$0.0586</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Top 20 Most Expensive Turns</h2>
+<div class="chart-card" style="margin-bottom: 24px;">
+  <table>
+    <thead>
+      <tr><th>#</th><th>Timestamp</th><th>Model</th><th>Input</th><th>Output</th><th>Cost</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>1</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>193,935</td>
+        <td>935</td>
+        <td>$0.7870</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>188,534</td>
+        <td>2,141</td>
+        <td>$0.7798</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>192,247</td>
+        <td>715</td>
+        <td>$0.7776</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>193,386</td>
+        <td>323</td>
+        <td>$0.7774</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>193,747</td>
+        <td>158</td>
+        <td>$0.7769</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>193,001</td>
+        <td>347</td>
+        <td>$0.7762</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>2026-05-19T17:58</td>
+        <td>glm-5.1:cloud</td>
+        <td>184,569</td>
+        <td>2,986</td>
+        <td>$0.7741</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>2026-05-19T18:00</td>
+        <td>glm-5.1:cloud</td>
+        <td>191,724</td>
+        <td>484</td>
+        <td>$0.7727</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>191,485</td>
+        <td>201</td>
+        <td>$0.7684</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>190,997</td>
+        <td>198</td>
+        <td>$0.7664</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>191,253</td>
+        <td>80</td>
+        <td>$0.7660</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>190,703</td>
+        <td>133</td>
+        <td>$0.7644</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>190,843</td>
+        <td>65</td>
+        <td>$0.7642</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>188,485</td>
+        <td>42</td>
+        <td>$0.7544</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>188,315</td>
+        <td>56</td>
+        <td>$0.7539</td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td>2026-05-19T17:59</td>
+        <td>glm-5.1:cloud</td>
+        <td>188,221</td>
+        <td>53</td>
+        <td>$0.7535</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td>2026-05-19T17:58</td>
+        <td>glm-5.1:cloud</td>
+        <td>187,890</td>
+        <td>66</td>
+        <td>$0.7524</td>
+      </tr>
+      <tr>
+        <td>18</td>
+        <td>2026-05-19T17:58</td>
+        <td>glm-5.1:cloud</td>
+        <td>187,592</td>
+        <td>56</td>
+        <td>$0.7510</td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td>2026-05-19T17:58</td>
+        <td>glm-5.1:cloud</td>
+        <td>183,536</td>
+        <td>441</td>
+        <td>$0.7394</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>2026-05-19T17:58</td>
+        <td>glm-5.1:cloud</td>
+        <td>184,192</td>
+        <td>158</td>
+        <td>$0.7387</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+// Cost Over Time
+new Chart(document.getElementById('costOverTime'), {
+  type: 'line',
+  data: {
+    labels: ["2026-05-19"],
+    datasets: [{
+      label: 'Daily Cost ($)',
+      data: [70.7669],
+      borderColor: '#6366f1',
+      backgroundColor: 'rgba(99,102,241,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { title: { display: true, text: 'Cost ($)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Cost by Model
+new Chart(document.getElementById('costByModel'), {
+  type: 'bar',
+  data: {
+    labels: ["glm-5.1:cloud", "unknown"],
+    datasets: [{
+      label: 'Cost ($)',
+      data: [70.7083, 0.0586],
+      backgroundColor: model_names.map(m => m.includes(':cloud') || m.toLowerCase().includes('cloud') ? 'rgba(245,158,11,0.7)' : 'rgba(52,211,153,0.7)'),
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { title: { display: true, text: 'Cost ($)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// Turns by Model
+new Chart(document.getElementById('turnsByModel'), {
+  type: 'bar',
+  data: {
+    labels: ["glm-5.1:cloud", "unknown"],
+    datasets: [{
+      label: 'Turns',
+      data: [128, 1],
+      backgroundColor: 'rgba(99,102,241,0.6)',
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// Cost by Hour
+new Chart(document.getElementById('costByHour'), {
+  type: 'bar',
+  data: {
+    labels: ["13", "14", "15", "17", "18"],
+    datasets: [{
+      label: 'Cost ($)',
+      data: [10.8506, 2.9723, 11.8309, 40.3868, 4.7263],
+      backgroundColor: 'rgba(34,211,238,0.6)',
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { title: { display: true, text: 'Cost ($)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { title: { display: true, text: 'Hour of Day' }, grid: { display: false } }
+    }
+  }
+});
+
+// Venue Over Time (stacked)
+new Chart(document.getElementById('venueOverTime'), {
+  type: 'bar',
+  data: {
+    labels: ["2026-05-19"],
+    datasets: [
+      {
+        label: 'Local',
+        data: [0.0586],
+        backgroundColor: 'rgba(52,211,153,0.7)',
+        borderRadius: 6,
+      },
+      {
+        label: 'Cloud',
+        data: [70.7083],
+        backgroundColor: 'rgba(245,158,11,0.7)',
+        borderRadius: 6,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { stacked: true, title: { display: true, text: 'Cost ($)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { stacked: true, grid: { display: false } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

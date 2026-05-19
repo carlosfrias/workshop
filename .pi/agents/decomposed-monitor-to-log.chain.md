@@ -1,6 +1,6 @@
 ---
 name: decomposed-monitor-to-log
-description: Monitor positions and log status using decompose → execute → verify pattern (fully local execution)
+description: Monitor positions and log status using decompose → fleet-dispatch → verify → log pattern with three-tier cascade (fleet → intercom → subagent)
 steps:
   - agent: decomposer
     task: |
@@ -9,24 +9,31 @@ steps:
       {task}
 
       Produce a structured decomposition plan with verification criteria for each sub-task.
-      Target local model execution where possible.
+      Target Agent labels are capability labels (not dispatch addresses).
+      The fleet-dispatcher will route each sub-task through the best available tier.
     cwd: .
-  - agent: position-monitor
+  - agent: fleet-dispatcher
     task: |
-      Execute the following sub-task from the decomposition plan:
+      Route the following decomposition plan through the three-tier cascade (fleet → intercom → subagent):
 
       {previous}
 
-      Follow the expected output format specified in the plan. Be precise and complete.
-    cwd: ./position-management
+      For each sub-task:
+      1. Check fleet availability via coms_net_list()
+      2. If fleet available, dispatch to fleet node (Tier 1)
+      3. If no fleet, check intercom sessions (Tier 2)
+      4. If no intercom, use subagent (Tier 3)
+      5. Collect all results regardless of tier
+      6. Produce Fleet-Dispatch Results with tier summary and sub-task results
+    cwd: .
   - agent: verifier
     task: |
-      Verify the following output from position-monitor:
+      Verify the following fleet-dispatch results against the original decomposition criteria:
 
       Task: {task}
       Output: {previous}
 
-      Apply the verification criteria from the decomposition plan.
+      Validate each sub-task result regardless of which tier executed it.
       Produce a verification report with Pass/Fail/Partial recommendation.
     cwd: .
   - agent: bookkeeping
@@ -38,4 +45,3 @@ steps:
       Only proceed if verification result is PASS or PARTIAL (with noted caveats).
       If verification failed, report the failure and do not log.
     cwd: ./bookkeeping
----

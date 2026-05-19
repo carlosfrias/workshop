@@ -15,7 +15,7 @@
 | **Ansible Vault** | [wiki/guides/ansible-vault.md](wiki/guides/ansible-vault.md) | vault, encrypt, secrets, ansible_become_pass | ~30 lines |
 | **Ansible Testing** | [wiki/guides/ansible-testing.md](wiki/guides/ansible-testing.md) | syntax-check, -vvv, playbook test, script test | ~60 lines |
 | **TI-011 Orchestration** | [wiki/guides/ti011-orchestration.md](wiki/guides/ti011-orchestration.md) | meta-orchestration, classify, decompose, route, escalate | ~100 lines |
-| **Orchestrator Node** | [wiki/guides/orchestrator-conventions.md](wiki/guides/orchestrator-conventions.md) | orchestrator, Mac, ctrl-p, ollama-cloud, health | ~80 lines |
+| **Orchestrator Node** | [wiki/guides/orchestrator-conventions.md](wiki/guides/orchestrator-conventions.md) | orchestrator, Mac, ctrl-p, ollama, health | ~80 lines |
 | **Playbook Executor** | [packages/playbook-executor/README.md](packages/playbook-executor/README.md) | playbook-executor, run playbook, execute, service recovery, health-aware, run the, start the, launch the, serve wiki, run wiki, start wiki, deploy pi, install pi, update packages, upgrade packages, backup data, snapshot, restart ollama, reset ollama, fix ollama, shutdown lab, power off, configure ssh, setup vpn, add vpn peer, fix broken links, capacity report, hardware report, gather hardware, optimize lab, run pilot, benchmark lab, test pi, validate router, migrate worker, deploy worker, deploy gist worker, deploy chromadb, full pi validation | ~80 lines |
 | **Rules** | [wiki/guides/rules.md](wiki/guides/rules.md) | must always, must never, rules | ~30 lines |
 | **Quality Checklist** | [wiki/guides/quality-checklist.md](wiki/guides/quality-checklist.md) | checklist, complete, session docs, testing | ~50 lines |

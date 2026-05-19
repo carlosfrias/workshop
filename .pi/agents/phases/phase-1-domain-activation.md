@@ -20,10 +20,10 @@ Before any work: scan user prompt for keywords matching the **Domain Routing Tab
 
 | Route | Model | Triggers |
 |-------|-------|----------|
-| ultra-reasoning | ollama-cloud/kimi-k2.6 | think deeply, comprehensive, thorough |
-| reasoning | ollama-cloud/qwen3.5:397b | analyze, evaluate, decide, research, plan |
-| coding | ollama-cloud/deepseek-v4-pro | code, implement, develop, debug |
-| vision | ollama-cloud/qwen3-vl:235b | image, screenshot, chart, visual |
+| ultra-reasoning | ollama/kimi-k2.6 | think deeply, comprehensive, thorough |
+| reasoning | ollama/qwen3.5:397b | analyze, evaluate, decide, research, plan |
+| coding | ollama/deepseek-v4-pro | code, implement, develop, debug |
+| vision | ollama/qwen3-vl:235b | image, screenshot, chart, visual |
 | structured | ollama/gemma4:e4b | log, reconcile, parse, format, ledger |
 | monitoring | ollama/qwen3.5:4b | status, check, ping, health, monitor |
 | infrastructure | ollama/qwen3:8b | server, deploy, network, ansible, node, orchestration |

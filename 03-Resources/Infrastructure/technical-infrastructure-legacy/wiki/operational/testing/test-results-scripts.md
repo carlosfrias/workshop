@@ -206,37 +206,37 @@ python3 technical-infrastructure/scripts/cloud_escalation.py --task "test" --sim
 **Output:**
 ```
 🚀 Executing at low tier
-   Model: ollama-cloud/qwen3.5:397b
+   Model: ollama/qwen3.5:397b
    Estimated cost: $0.0110
    ❌ FAILED: Simulated failure at low tier
 🔄 Retry 1/2 at low tier
 
 🚀 Executing at low tier
-   Model: ollama-cloud/qwen3.5:397b
+   Model: ollama/qwen3.5:397b
    Estimated cost: $0.0110
    ❌ FAILED: Simulated failure at low tier
 ⚠️  Escalated: low → medium (Simulated failure at low tier)
 
 🚀 Executing at medium tier
-   Model: ollama-cloud/qwen3.5:397b
+   Model: ollama/qwen3.5:397b
    Estimated cost: $0.0110
    ❌ FAILED: Simulated failure at medium tier
 🔄 Retry 1/2 at medium tier
 
 🚀 Executing at medium tier
-   Model: ollama-cloud/qwen3.5:397b
+   Model: ollama/qwen3.5:397b
    Estimated cost: $0.0110
    ❌ FAILED: Simulated failure at medium tier
 ⚠️  Escalated: medium → high (Simulated failure at medium tier)
 
 🚀 Executing at high tier
-   Model: ollama-cloud/kimi-k2.6
+   Model: ollama/kimi-k2.6
    Estimated cost: $0.0550
    ❌ FAILED: Simulated failure at high tier
 🔄 Retry 1/2 at high tier
 
 🚀 Executing at high tier
-   Model: ollama-cloud/kimi-k2.6
+   Model: ollama/kimi-k2.6
    Estimated cost: $0.0550
    ❌ FAILED: Simulated failure at high tier
 ❌ Max tier reached: high (Simulated failure at high tier)

@@ -1,0 +1,73 @@
+;; AI Cost Model Ledger
+;; Separate from main.beancount — estimated/derived data, NOT financial audit
+;; All dates in YYYY-MM-DD
+;; All monetary values in USD unless specified
+
+;; ---------------------------------------------------------------------------
+;; OPTIONS
+;; ---------------------------------------------------------------------------
+option "operating_currency" "USD"
+option "title" "AI Inference Cost Model"
+
+;; ---------------------------------------------------------------------------
+;; ACCOUNTS — AI Compute Costs
+;; ---------------------------------------------------------------------------
+
+;; Actual spend from cloud APIs (hard numbers from billing)
+2026-01-01 open Expenses:AI:Compute:Cloud:Anthropic              USD
+2026-01-01 open Expenses:AI:Compute:Cloud:OpenAI                  USD
+2026-01-01 open Expenses:AI:Compute:Cloud:Ollama-Cloud            USD
+
+;; Derived spend for local models (electricity + hardware amortization)
+2026-01-01 open Expenses:AI:Compute:Local:Electricity              USD
+2026-01-01 open Expenses:AI:Compute:Local:Hardware-Depreciation    USD
+
+;; Quality-adjusted cost (derived: raw cost / quality score per task type)
+2026-01-01 open Expenses:AI:Quality-Adjusted:Code-Generation       USD
+2026-01-01 open Expenses:AI:Quality-Adjusted:Analysis              USD
+2026-01-01 open Expenses:AI:Quality-Adjusted:Monitoring            USD
+
+;; Routing efficiency (derived: cost saved by choosing optimal tier)
+2026-01-01 open Income:AI:Routing-Savings                          USD
+
+;; Budget tracking
+2026-01-01 open Assets:AI:Budget                                    USD
+2026-01-01 open Liabilities:AI:Overage                              USD
+
+;; Mapping: actual cost sources (where money leaves)
+2026-01-01 open Expenses:AI:API-Keys:Anthropic                      USD
+2026-01-01 open Expenses:AI:API-Keys:OpenAI                        USD
+
+;; Equity
+2026-01-01 open Equity:AI:Opening-Balances                         USD
+
+;; ---------------------------------------------------------------------------
+;; COMMODITIES for non-USD tracking
+;; ---------------------------------------------------------------------------
+2026-01-01 commodity USD
+  name: "US Dollar"
+
+2026-01-01 commodity TOKENS
+  name: "AI Tokens"
+
+;; ---------------------------------------------------------------------------
+;; PRICE DIRECTIVES — from billing_tiers.json
+;; These define the cost model: price per 1000 tokens by model+venue
+;; ---------------------------------------------------------------------------
+
+;; Local models — derived cost (electricity + hardware amortization)
+2026-01-01 price TOKENS  0.0050 USD  ;;; qwen3.5:4b local, $0.005/1k tokens
+2026-01-01 price TOKENS  0.0060 USD  ;;; qwen3:8b local, $0.006/1k tokens
+2026-01-01 price TOKENS  0.0050 USD  ;;; gemma4:e4b local, $0.005/1k tokens
+
+;; Cloud models — actual API cost
+2026-01-01 price TOKENS  0.0150 USD  ;;; gemma4:31b-cloud, $0.015/1k tokens
+2026-01-01 price TOKENS  0.0500 USD  ;;; kimi-k2.6:cloud, $0.05/1k tokens
+
+;; ---------------------------------------------------------------------------
+;; INITIAL BUDGET (adjust as needed)
+;; ---------------------------------------------------------------------------
+
+2026-01-01 * "Initial AI budget allocation"
+  Assets:AI:Budget          100.00 USD
+  Equity:AI:Opening-Balances  -100.00 USD

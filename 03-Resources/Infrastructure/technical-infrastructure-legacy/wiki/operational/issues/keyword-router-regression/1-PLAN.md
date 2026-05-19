@@ -51,7 +51,7 @@ This plan is owned by the **high cloud model** (`kimi-k2.6`). The high cloud mod
 
 ## Model Responsibility
 
-This plan is owned, maintained, and updated by the **high cloud model** (`ollama-cloud/kimi-k2.6`). No other tier may modify the plan without high cloud model approval.
+This plan is owned, maintained, and updated by the **high cloud model** (`ollama/kimi-k2.6`). No other tier may modify the plan without high cloud model approval.
 
 **Orchestration Skill:** The low cloud model uses the **decompose-execute-verify** skill (`/Users/friasc/.pi/agent/git/github.com/carlosfrias/decompose-execute-verify/skills/decompose-execute-verify/SKILL.md`) for structured decomposition, execution dispatch, and verification gates. See the skill file for decomposer agent, verifier agent, and pre-built chain definitions.
 
@@ -59,14 +59,14 @@ This plan is owned, maintained, and updated by the **high cloud model** (`ollama
 
 | Tier | Model | Role | Executes Code? | Typical Assignment |
 |------|-------|------|---------------|-------------------|
-| **High Cloud** | `ollama-cloud/kimi-k2.6` | Plan Owner & Decomposer | **NO** — planning only | Complex architecture, plan updates, decomposition design |
-| **Medium Cloud** | `ollama-cloud/deepseek-v4-pro` | High-Frequency Decomposition Detection Assistant | **NO** — analysis only | Analyzes decomposition trends, recommends granularity adjustments, produces deeper decompositions when ratio > 60% |
-| **Low Cloud** | `ollama-cloud/qwen3.5:397b` | Orchestrator, Escalation Handler, Node Recovery Dispatcher | **YES** — last resort only | Orchestration, 2x decomposition, node recovery dispatch, direct execution when local pool exhausted |
+| **High Cloud** | `ollama/kimi-k2.6` | Plan Owner & Decomposer | **NO** — planning only | Complex architecture, plan updates, decomposition design |
+| **Medium Cloud** | `ollama/deepseek-v4-pro` | High-Frequency Decomposition Detection Assistant | **NO** — analysis only | Analyzes decomposition trends, recommends granularity adjustments, produces deeper decompositions when ratio > 60% |
+| **Low Cloud** | `ollama/qwen3.5:397b` | Orchestrator, Escalation Handler, Node Recovery Dispatcher | **YES** — last resort only | Orchestration, 2x decomposition, node recovery dispatch, direct execution when local pool exhausted |
 | **High Local** | `ollama/qwen3:8b` | Complex Execution | **YES** | Complex classifier logic, multi-module refactoring, cloud escalation implementation |
 | **Medium Local** | `ollama/gemma4:e4b` | Standard Execution | **YES** | Standard test stub writing, implementation, integration wiring |
 | **Low Local** | `ollama/qwen3.5:4b` | Simple Execution | **YES** | Simple test stubs, config validation, log parsing, quick fixes |
 
-**Execution Rule:** **Only local models (with `ollama/` prefix) execute on Lab Nodes.** Cloud models (`ollama-cloud/` prefix) never run locally — Medium Cloud does analysis only; Low Cloud orchestrates and dispatches to lab nodes via SSH. The Orchestrator Node (Mac) does not execute tests or write code.
+**Execution Rule:** **Only local models (with `ollama/` prefix) execute on Lab Nodes.** Cloud models (`ollama/` prefix) never run locally — Medium Cloud does analysis only; Low Cloud orchestrates and dispatches to lab nodes via SSH. The Orchestrator Node (Mac) does not execute tests or write code.
 
 ### Decomposition & Escalation Flow
 
@@ -1062,8 +1062,8 @@ Before `pi-keyword-router` can be re-enabled, the following must pass on the **L
 
 ## Session Notes
 
-**Plan Owner:** High Cloud Model (`ollama-cloud/kimi-k2.6`) — planning and decomposition only; never executes.  
-**Orchestrator:** Low Cloud Model (`ollama-cloud/qwen3.5:397b`) — routes steps, assigns to appropriate local tier, escalates via 2x decomposition, dispatches node recovery, executes only as last resort.  
+**Plan Owner:** High Cloud Model (`ollama/kimi-k2.6`) — planning and decomposition only; never executes.  
+**Orchestrator:** Low Cloud Model (`ollama/qwen3.5:397b`) — routes steps, assigns to appropriate local tier, escalates via 2x decomposition, dispatches node recovery, executes only as last resort.  
 **Primary Executor:** Medium Local Model (`ollama/gemma4:e4b`) — standard execution; writes stubs, implements, refactors, tests on Lab Node.  
 **Secondary Executors:** Low Local (`qwen3.5:4b`) — simple tasks; High Local (`qwen3:8b`) — complex tasks. **Medium Cloud** (`deepseek-v4-pro`) — analysis only, never executes locally.  
 **Anti-Hallucination:** Low cloud verifier re-runs all test claims before accepting completion.  

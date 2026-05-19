@@ -44,28 +44,28 @@
 
 | Tier | Model | Role | Executes Code? | Typical Assignment |
 |------|-------|------|---------------|-------------------|
-| **High Cloud** | `ollama-cloud/kimi-k2.6` | Plan Owner & Decomposer | **NO** — planning only | Complex architecture, plan updates, decomposition design |
-| **Medium Cloud** | `ollama-cloud/deepseek-v4-pro` | High-Frequency Decomposition Detection Assistant | **NO** — analysis only | Analyzes decomposition trends, recommends granularity adjustments, produces deeper decompositions when ratio > 60% |
-| **Low Cloud** | `ollama-cloud/qwen3.5:397b` | Orchestrator, Escalation Handler, Node Recovery Dispatcher | **YES** — last resort only | Orchestration, 2x decomposition, node recovery dispatch, direct execution when local pool exhausted |
+| **High Cloud** | `ollama/kimi-k2.6` | Plan Owner & Decomposer | **NO** — planning only | Complex architecture, plan updates, decomposition design |
+| **Medium Cloud** | `ollama/deepseek-v4-pro` | High-Frequency Decomposition Detection Assistant | **NO** — analysis only | Analyzes decomposition trends, recommends granularity adjustments, produces deeper decompositions when ratio > 60% |
+| **Low Cloud** | `ollama/qwen3.5:397b` | Orchestrator, Escalation Handler, Node Recovery Dispatcher | **YES** — last resort only | Orchestration, 2x decomposition, node recovery dispatch, direct execution when local pool exhausted |
 | **High Local** | `ollama/qwen3:8b` | Complex Execution | **YES** | Complex classifier logic, multi-module refactoring, cloud escalation implementation |
 | **Medium Local** | `ollama/gemma4:e4b` | Standard Execution | **YES** | Standard test stub writing, implementation, integration wiring |
 | **Low Local** | `ollama/qwen3.5:4b` | Simple Execution | **YES** | Simple test stubs, config validation, log parsing, quick fixes |
 
-**Execution Rule:** **Only local models (with `ollama/` prefix) execute on Lab Nodes.** Cloud models (`ollama-cloud/` prefix) never run locally — Medium Cloud does analysis only; Low Cloud orchestrates and dispatches to lab nodes via pi-intercom. The Orchestrator Node (Mac) does not execute tests or write code.
+**Execution Rule:** **Only local models (with `ollama/` prefix) execute on Lab Nodes.** Cloud models (`ollama/` prefix) never run locally — Medium Cloud does analysis only; Low Cloud orchestrates and dispatches to lab nodes via pi-intercom. The Orchestrator Node (Mac) does not execute tests or write code.
 
 ---
 
 ## Decomposition & Escalation Flow
 
 ```
-High Cloud Model (ollama-cloud/kimi-k2.6) on Orchestrator (Mac)
+High Cloud Model (ollama/kimi-k2.6) on Orchestrator (Mac)
     │
     ├── Owns 1-PLAN.md
     ├── Owns AGENTS.md
     └── Decomposes into local-model-sized steps
               │
               ▼
-    Medium Cloud Model (ollama-cloud/deepseek-v4-pro) on Orchestrator (Mac)
+    Medium Cloud Model (ollama/deepseek-v4-pro) on Orchestrator (Mac)
         │
         ├── Monitors decomposition ratio (rolling 10-min window)
         ├── When ratio > 60%: signals Low Cloud → engage deeper decomposition
@@ -73,7 +73,7 @@ High Cloud Model (ollama-cloud/kimi-k2.6) on Orchestrator (Mac)
         └── Reports to High Cloud if ratio stays elevated > 20 min
               │
               ▼
-    Low Cloud Model (ollama-cloud/qwen3.5:397b) on Orchestrator (Mac)
+    Low Cloud Model (ollama/qwen3.5:397b) on Orchestrator (Mac)
         │
         ├── Reads AGENTS.md
         ├── Checks Medium Cloud signal (high-freq mode yes/no)
@@ -107,7 +107,7 @@ High Cloud Model (ollama-cloud/kimi-k2.6) on Orchestrator (Mac)
 - Must Always: Own the plan, own `AGENTS.md`, decompose into local-model-sized steps, define acceptance criteria.
 - Must Never: Execute code, write test stubs, modify source files, run commands on any node.
 
-**Medium Cloud Model (`ollama-cloud/deepseek-v4-pro`):**
+**Medium Cloud Model (`ollama/deepseek-v4-pro`):**
 - Must Always: Monitor decomposition ratio from session notes; when ratio > 60% over 10 min, produce deeper decomposition recommendations (3x-4x) and signal Low Cloud to engage high-frequency mode; report persistent elevation (> 20 min) to High Cloud.
 - Must Never: Execute code, directly modify source files, or skip notifying Low Cloud when high-frequency mode is warranted.
 
@@ -606,7 +606,7 @@ technical-infrastructure/packages/pi-intercom/
 
 ## Orchestrator Dispatch Protocol
 
-The **low cloud orchestrator** (`ollama-cloud/qwen3.5:397b`) runs on the **Orchestrator Node** (Mac). It does **not** execute code or tests itself. Instead, it:
+The **low cloud orchestrator** (`ollama/qwen3.5:397b`) runs on the **Orchestrator Node** (Mac). It does **not** execute code or tests itself. Instead, it:
 
 1. **Selects the target lab node** based on the assigned model tier and current node health.
 2. **Dispatches the task via `pi-intercom`** to the selected lab node's named session.
@@ -644,7 +644,7 @@ ssh fnet3 "cd ~/workshop/technical-infrastructure/packages/decompose-execute-ver
 3. **Check node health** — query the node's ollama status and available RAM.
 4. **Select least-loaded qualifying node** — prefer the node with the most free RAM among those that have the required model.
 5. **If no node has the required model** — dispatch playbook-executor to pull the model on the healthiest available node, then assign.
-6. **If all qualifying nodes are saturated** — escalate to the next model tier (from node-capacity-map.md routing matrix) or invoke ollama-cloud/deepseek-v4-pro for deeper decomposition.
+6. **If all qualifying nodes are saturated** — escalate to the next model tier (from node-capacity-map.md routing matrix) or invoke ollama/deepseek-v4-pro for deeper decomposition.
 
 ## Health Check Before Dispatch
 
@@ -706,14 +706,14 @@ For full recovery protocol, see [`AGENTS.md`](./AGENTS.md).
 
 ## High-Frequency Decomposition Detection
 
-The **medium cloud model** (`ollama-cloud/deepseek-v4-pro`) and the **low cloud model** (`ollama-cloud/qwen3.5:397b`) collaborate to detect and respond to excessive decomposition rates. The medium cloud focuses on **analysis and recommendation**; the low cloud focuses on **action**.
+The **medium cloud model** (`ollama/deepseek-v4-pro`) and the **low cloud model** (`ollama/qwen3.5:397b`) collaborate to detect and respond to excessive decomposition rates. The medium cloud focuses on **analysis and recommendation**; the low cloud focuses on **action**.
 
 ## Roles
 
 | Model | Role | Executes Code? |
 |-------|------|---------------|
-| **Medium Cloud** (`ollama-cloud/deepseek-v4-pro`) | Analyzes decomposition trends, produces deeper decomposition plans, signals Low Cloud | **NO** |
-| **Low Cloud** (`ollama-cloud/qwen3.5:397b`) | Receives signal, engages deeper decomposition, logs metrics, reports to user | **YES** (action only) |
+| **Medium Cloud** (`ollama/deepseek-v4-pro`) | Analyzes decomposition trends, produces deeper decomposition plans, signals Low Cloud | **NO** |
+| **Low Cloud** (`ollama/qwen3.5:397b`) | Receives signal, engages deeper decomposition, logs metrics, reports to user | **YES** (action only) |
 
 ## Detection Protocol
 
@@ -790,10 +790,10 @@ For the full report template and rules, see [`AGENTS.md`](./AGENTS.md).
 
 ## Session Notes
 
-**Plan Owner:** High Cloud Model (ollama-cloud/kimi-k2.6) — planning and decomposition only; never executes.  
-**Orchestrator:** Low Cloud Model (ollama-cloud/qwen3.5:397b) — routes steps, assigns to appropriate local tier, escalates via 2x decomposition, dispatches node recovery, executes only as last resort.  
+**Plan Owner:** High Cloud Model (ollama/kimi-k2.6) — planning and decomposition only; never executes.  
+**Orchestrator:** Low Cloud Model (ollama/qwen3.5:397b) — routes steps, assigns to appropriate local tier, escalates via 2x decomposition, dispatches node recovery, executes only as last resort.  
 **Primary Executor:** Medium Local Model (ollama/gemma4:e4b) — standard execution; writes stubs, implements, refactors, tests on Lab Node.  
-**Secondary Executors:** Low Local (ollama/qwen3.5:4b) — simple tasks; High Local (ollama/qwen3:8b) — complex tasks. **Medium Cloud** (ollama-cloud/deepseek-v4-pro) — analysis only, never executes locally.  
+**Secondary Executors:** Low Local (ollama/qwen3.5:4b) — simple tasks; High Local (ollama/qwen3:8b) — complex tasks. **Medium Cloud** (ollama/deepseek-v4-pro) — analysis only, never executes locally.  
 **Anti-Hallucination:** Low cloud verifier re-runs all test claims before accepting completion.  
 **Review required:** Yes — user must approve final integration report.  
 **Next action:** Complete P6 assembly and transition to P7 closeout.

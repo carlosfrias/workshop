@@ -1,0 +1,76 @@
+---
+# NextCloud Deployment Playbook
+# TI-006: Install NextCloud on fnet2
+#
+# Usage:
+#   Dry run:  ansible-playbook -i inventory.ini deploy-nextcloud.yml --check --diff --ask-vault-pass
+#   Apply:   ansible-playbook -i inventory.ini deploy-nextcloud.yml --ask-vault-pass
+#
+# Prerequisites:
+#   - fnet2 reachable via SSH (verified separately)
+#   - Docker installed (in autoinstall packages)
+#   - /srv/nextcloud/ directories created by this playbook
+
+- name: Deploy NextCloud on fnet2
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - vars/vault.yml
+  vars:
+    nextcloud_base_dir: /srv/nextcloud
+    nextcloud_data_dir: /srv/nextcloud/data
+    nextcloud_db_dir: /srv/nextcloud/db
+    nextcloud_config_dir: /srv/nextcloud/config
+
+  tasks:
+    - name: Verify Docker is running
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+      check_mode: false
+
+    - name: Create NextCloud directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "1000"
+        group: "1000"
+        mode: "0755"
+      loop:
+        - "{{ nextcloud_base_dir }}"
+        - "{{ nextcloud_data_dir }}"
+        - "{{ nextcloud_db_dir }}"
+        - "{{ nextcloud_config_dir }}"
+
+    - name: Copy Docker Compose file
+      ansible.builtin.copy:
+        src: ../infrastructure/docker/nextcloud-docker-compose.yml
+        dest: "{{ nextcloud_base_dir }}/docker-compose.yml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Deploy NextCloud stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nextcloud_base_dir }}"
+        files:
+          - docker-compose.yml
+        state: present
+      environment:
+        NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password }}"
+        NEXTCLOUD_DB_PASSWORD: "{{ nextcloud_db_password }}"
+        NEXTCLOUD_DB_ROOT_PASSWORD: "{{ nextcloud_db_root_password }}"
+
+    - name: Wait for NextCloud to be ready
+      ansible.builtin.uri:
+        url: "http://{{ ansible_host }}:8080"
+        status_code: 200
+        timeout: 120
+      register: nextcloud_status
+      retries: 12
+      delay: 10
+      until: nextcloud_status is success
+
+    - name: Report deployment status
+      ansible.builtin.debug:
+        msg: "NextCloud deployed successfully at http://{{ ansible_host }}:8080"

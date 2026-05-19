@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-14
 **Session ID:** 019e2836-cb49-716e-99f5-bbc4ef2bd079
-**Plan Owner:** ollama-cloud/kimi-k2.6 (Mac Orchestrator)
-**Orchestrator:** ollama-cloud/qwen3.5:397b (via intercom coordination, with gemma4:31b-cloud fallback for direct execution)
+**Plan Owner:** ollama/kimi-k2.6 (Mac Orchestrator)
+**Orchestrator:** ollama/qwen3.5:397b (via intercom coordination, with gemma4:31b-cloud fallback for direct execution)
 **Execution:** ollama/gemma4:e4b (via subagent dispatch for file edits)
 **Lab Nodes:** fnet3 (primary executor for SSHFS-mounted file operations)
 

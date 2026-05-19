@@ -1,0 +1,80 @@
+---
+# Start pi + coms-net agents on all lab nodes
+#
+# Each node starts a pi session with the coms-net extension,
+# registers with the hub, and stays online until killed.
+#
+# Prerequisites: deploy-fleet.yml must have been run first.
+#
+# Usage:
+#   cd workspace/01-Projects/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml start-agents.yml
+
+- name: Start coms-net Agents on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: no
+  strategy: free
+
+  vars:
+    hub_url: "http://192.168.0.142:8080"
+    coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
+    hub_project: "lab"
+
+  tasks:
+    - name: Kill any existing agent on this node
+      ansible.builtin.shell: |
+        pkill -f "pi -e.*coms-net" 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Start pi agent with coms-net
+      ansible.builtin.shell: |
+        cd {{ ansible_env.HOME }}/pi-cross-node-comms
+        nohup pi -e src/index.ts \
+          --name {{ inventory_hostname }} \
+          --project {{ hub_project }} \
+          --server-url {{ hub_url }} \
+          --auth-token {{ coms_token }} \
+          --purpose "lab worker — {{ ollama_models | default('qwen3.5:4b') }}" \
+          --model ollama/qwen3.5:4b \
+          -p "You are {{ inventory_hostname }}, a lab worker node. Report your presence to the hub: your hostname, available CPU cores, RAM, disk, and ollama models. Then stay online and wait for tasks from the orchestrator." \
+          > /tmp/pi-agent-{{ inventory_hostname }}.log 2>&1 &
+        echo $! > /tmp/pi-agent-{{ inventory_hostname }}.pid
+        sleep 2
+        echo "Agent started on {{ inventory_hostname }} (PID $(cat /tmp/pi-agent-{{ inventory_hostname }}.pid))"
+      changed_when: true
+      register: agent_start
+      async: 30
+      poll: 0
+
+    - name: Report agent launch
+      ansible.builtin.debug:
+        msg: "🚀 Agent launched on {{ inventory_hostname }} — name={{ inventory_hostname }}"
+
+- name: Wait for all agents to register
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Wait for agents to appear on hub
+      ansible.builtin.uri:
+        url: "http://192.168.0.142:8080/v1/agents"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ coms_token }}"
+      register: agent_list
+      retries: 15
+      delay: 3
+      until: "(agent_list.json.agents | default([]) | length) >= 7"
+
+    - name: Report fleet status
+      ansible.builtin.debug:
+        msg:
+          - "═══════════════════════════════════════════════════"
+          - "  FLEET ONLINE — {{ agent_list.json.agents | length }} agents registered"
+          - ""
+          - "{% for agent in agent_list.json.agents %}"
+          - "  {{ agent.name }}: {{ agent.purpose }} ({{ agent.model }})"
+          - "{% endfor %}"
+          - "═══════════════════════════════════════════════════"

@@ -20,8 +20,8 @@
 
 | Placeholder | Description | Example |
 |-------------|-------------|---------|
-| `{{PLAN_OWNER}}` | Plan owner role and model | `High Cloud Model (ollama-cloud/kimi-k2.6)` |
-| `{{ORCHESTRATOR}}` | Orchestrator role and model | `Low Cloud Model (ollama-cloud/qwen3.5:397b)` |
+| `{{PLAN_OWNER}}` | Plan owner role and model | `High Cloud Model (ollama/kimi-k2.6)` |
+| `{{ORCHESTRATOR}}` | Orchestrator role and model | `Low Cloud Model (ollama/qwen3.5:397b)` |
 | `{{DECOMP_MULTIPLIER}}` | Decomposition factor on failure | `2` |
 | `{{PRIMARY_EXECUTOR}}` | Primary execution model | `Medium Local Model (ollama/gemma4:e4b)` |
 | `{{SECONDARY_EXECUTORS}}` | Other execution models | `Low Local (qwen3.5:4b) — simple tasks; High Local (qwen3:8b) — complex tasks` |

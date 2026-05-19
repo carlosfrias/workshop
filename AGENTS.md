@@ -36,10 +36,10 @@ This file is a **router only**. Load the phase file matching your current cognit
 
 | Route | Model | Triggers |
 |-------|-------|----------|
-| ultra-reasoning | ollama-cloud/kimi-k2.6 | think deeply, comprehensive, thorough |
-| reasoning | ollama-cloud/qwen3.5:397b | analyze, evaluate, decide, research, plan |
-| coding | ollama-cloud/deepseek-v4-pro | code, implement, develop, debug |
-| vision | ollama-cloud/qwen3-vl:235b | image, screenshot, chart, visual |
+| ultra-reasoning | ollama/kimi-k2.6 | think deeply, comprehensive, thorough |
+| reasoning | ollama/qwen3.5:397b | analyze, evaluate, decide, research, plan |
+| coding | ollama/deepseek-v4-pro | code, implement, develop, debug |
+| vision | ollama/qwen3-vl:235b | image, screenshot, chart, visual |
 | structured | ollama/gemma4:e4b | log, reconcile, parse, format, ledger |
 | monitoring | ollama/qwen3.5:4b | status, check, ping, health, monitor |
 | infrastructure | ollama/qwen3:8b | server, deploy, network, ansible, node, orchestration |
@@ -54,11 +54,14 @@ This file is a **router only**. Load the phase file matching your current cognit
 | kingdom, warfare, leadership, mike brewer, nancy, training, curriculum, flashcard, study aid, mkdocs, deliverance, demonology | `./01-Projects/kingdom-warfare-leadership/AGENTS.md` |
 | doc-standards, enablement, scaffold, project template, topology, documentation standard, prompt thread, workbench, focus | `./01-Projects/doc-standards-enablement/AGENTS.md` |
 | project-blueprint, blueprint, orchestration, domain routing, agent definition, structural routing, wiki, post-completion, golden path, learning loop, library | `./01-Projects/project-blueprint/AGENTS.md` |
-| decompose, execute, verify, decomposition, cost-optimization, verification | `./01-Projects/decompose-execute-verify/AGENTS.md` or `.pi/agents/decomposer.md` |
+| decompose, execute, verify, decomposition, cost-optimization, verification, fleet-dispatcher, cascade | `./01-Projects/decompose-execute-verify/AGENTS.md` or `.pi/agents/decomposer.md` or `.pi/agents/fleet-dispatcher.md` |
 | health, monitor, RAM, CPU, swap, system status, resource, saturation | `./01-Projects/health-monitor/AGENTS.md` |
 | model, pilot, ollama, local model, model routing, models.json | `./01-Projects/local-model-pilot/AGENTS.md` |
 | node, router, routing plan, node scoring, execution location | `./01-Projects/node-router/AGENTS.md` |
 | sshfs, mount, remote, lab node, workspace mount | `./01-Projects/sshfs-accessible/AGENTS.md` |
+| cost, billing, tier, margin, invoice, cost-aware, cost model, cost per token, depreciation, power cost, billing engine, cost tracker, cost status, cost audit | `./01-Projects/cost-aware-routing/AGENTS.md` |
+| nextcloud, cloud storage, file sync, collaboration, private cloud, fnet2, nc config, nc deploy, nc ansible | `./01-Projects/nextcloud/AGENTS.md` |
+| workflow, orchestration, cadence, temporal, taskwarrior, research workflow, durable execution, evaluate orchestration, obsidian tasks, obsidian projects, obsidian bases, obsidian CLI, dataview | `./01-Projects/workflow-orchestration-research/AGENTS.md` |
 
 ---
 
@@ -74,6 +77,7 @@ This file is a **router only**. Load the phase file matching your current cognit
 | network troubleshooting, node offline, driver issue | `./03-Resources/Infrastructure/technical-infrastructure-legacy/prompts/network-troubleshooting.md` |
 | scripts, automation, tooling, data processing | `./03-Resources/Trading/scripts/` |
 | lab specs, hardware, node configuration | `./03-Resources/Infrastructure/lab-specs/` |
+| nextcloud, file sync, private cloud, ansible nextcloud | `./01-Projects/nextcloud/AGENTS.md` |
 | legacy designs, architecture docs | `./03-Resources/Infrastructure/technical-infrastructure-legacy/` |
 
 After reading the domain file, follow its instructions. Then load the appropriate phase file.
@@ -120,8 +124,14 @@ workshop/
 │   ├── health-monitor/                # Resource monitoring
 │   ├── local-model-pilot/             # Ollama LLM routing
 │   ├── node-router/                   # Execution location scoring
-│   └── sshfs-accessible/              # Remote workspace mounts
-├── 02-Areas/Trading/                  # Trading operations
+│   ├── sshfs-accessible/              # Remote workspace mounts
+│   ├── cost-aware-routing/            # Cost model, billing tiers, calculator
+│   ├── nextcloud/                     # NextCloud installation on fnet2
+│   │   ├── AGENTS.md                  # Project router
+│   │   ├── infrastructure/            # Docker Compose, configs
+│   │   ├── ansible/                   # Ansible playbooks
+│   │   └── wiki/                      # Project wiki
+│   └── workflow-orchestration-research/
 │   ├── bookkeeping/                   # Ledger, P&L, reconciliation
 │   ├── market-research/               # Analysis, signals, backtesting
 │   └── position-management/           # Orders, risk, allocation

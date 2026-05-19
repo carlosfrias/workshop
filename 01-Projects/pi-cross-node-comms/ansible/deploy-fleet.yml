@@ -1,0 +1,158 @@
+---
+# Full coms-net Fleet Deployment
+#
+# 1. Deploys hub server to fnet2 (installs Bun, starts hub)
+# 2. Copies extension files to all lab nodes
+# 3. Installs extension via pi on each node
+# 4. Registers lab nodes as agents (optional — use start-agents.yml)
+#
+# Run from macOS orchestrator:
+#   cd workspace/01-Projects/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml deploy-fleet.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (auto-generated if unset)
+
+- name: Deploy coms-net Fleet
+  hosts: all
+  gather_facts: yes
+  strategy: linear
+
+  vars:
+    hub_host: "0.0.0.0"
+    hub_port: "8080"
+    hub_project: "lab"
+    coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
+    # Paths on the orchestrator
+    ansible_playbook_dir: "{{ playbook_dir | default(lookup('env', 'PWD')) }}"
+    extension_src: "{{ ansible_playbook_dir }}/../"
+
+  # ========================================================================
+  # Phase 1: Hub Server → fnet2 only
+  # ========================================================================
+  - name: ── PHASE 1: Hub Server on fnet2 ──
+    when: inventory_hostname == 'fnet2'
+    block:
+      - name: Install Bun on fnet2
+        ansible.builtin.shell: |
+          curl -fsSL https://bun.sh/install | bash
+        args:
+          creates: "{{ ansible_env.HOME }}/.bun/bin/bun"
+        changed_when: true
+
+      - name: Create server directory
+        ansible.builtin.file:
+          path: "{{ ansible_env.HOME }}/.pi/coms-net/server"
+          state: directory
+          mode: '0755'
+
+      - name: Copy hub server code
+        ansible.builtin.copy:
+          src: "{{ extension_src }}/server/coms-net-server.ts"
+          dest: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
+          mode: '0755'
+
+      - name: Stop existing hub
+        ansible.builtin.shell: |
+          [ -f /tmp/coms-net-hub.pid ] && kill $(cat /tmp/coms-net-hub.pid) 2>/dev/null || true
+          pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | sed -n 's/.*pid=\([0-9]*\).*/\1/p' || true)
+          [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
+          rm -f /tmp/coms-net-hub.pid
+          true
+        changed_when: false
+        failed_when: false
+
+      - name: Start coms-net hub
+        ansible.builtin.shell: |
+          export BUN_INSTALL="{{ ansible_env.HOME }}/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          nohup bun run "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts" > /tmp/coms-net-hub.log 2>&1 &
+          echo $! > /tmp/coms-net-hub.pid
+          sleep 3
+          curl -s http://localhost:{{ hub_port }}/health
+        environment:
+          PI_COMS_NET_AUTH_TOKEN: "{{ coms_token }}"
+          PI_COMS_NET_HOST: "{{ hub_host }}"
+          PI_COMS_NET_PORT: "{{ hub_port }}"
+          PI_COMS_NET_PROJECT: "{{ hub_project }}"
+        changed_when: true
+
+      - name: Verify hub health
+        ansible.builtin.uri:
+          url: "http://localhost:{{ hub_port }}/health"
+          status_code: 200
+        register: hub_health
+        retries: 10
+        delay: 2
+        until: hub_health.status == 200
+
+      - name: Report hub ready
+        ansible.builtin.debug:
+          msg:
+            - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }})"
+            - "   Server ID: {{ hub_health.json.server_id }}"
+
+  # ========================================================================
+  # Phase 2: Extension → all lab nodes
+  # ========================================================================
+  - name: ── PHASE 2: Extension on lab nodes ──
+    when: "'lab_nodes' in group_names"
+    block:
+      - name: Create extension directories
+        ansible.builtin.file:
+          path: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+          state: directory
+          mode: '0755'
+        loop:
+          - src/skills/pi-cross-node-comms
+          - server
+
+      - name: Copy extension files
+        ansible.builtin.copy:
+          src: "{{ extension_src }}/{{ item }}"
+          dest: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+          mode: '0644'
+        loop:
+          - src/index.ts
+          - src/themeMap.ts
+          - src/skills/pi-cross-node-comms/SKILL.md
+          - package.json
+
+      - name: Install extension via pi
+        ansible.builtin.command:
+          cmd: pi install .
+          chdir: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+        register: pi_install
+        changed_when: "'Installed' in pi_install.stdout"
+
+      - name: Report node ready
+        ansible.builtin.debug:
+          msg: "✅ {{ inventory_hostname }} — extension installed"
+
+  # ========================================================================
+  # Phase 3: Final status
+  # ========================================================================
+  - name: ── PHASE 3: Status Report ──
+    hosts: localhost
+    connection: local
+    gather_facts: no
+    tasks:
+      - name: Check hub from macOS
+        ansible.builtin.uri:
+          url: "http://192.168.0.142:{{ hub_port }}/health"
+          status_code: 200
+        retries: 5
+        delay: 3
+
+      - name: Fleet deployed
+        ansible.builtin.debug:
+          msg:
+            - "═══════════════════════════════════════════════════"
+            - "  coms-net FLEET DEPLOYED"
+            - "  Hub:    http://192.168.0.142:{{ hub_port }}"
+            - "  Token:  {{ coms_token[:8] }}..."
+            - "  Project: {{ hub_project }}"
+            - ""
+            - "  Start agents on lab nodes:"
+            - "    ansible-playbook -i inventory.yml start-agents.yml"
+            - "═══════════════════════════════════════════════════"

@@ -81,9 +81,9 @@ cp lab-specs/node-capacity-summary.json technical-infrastructure/operational/dat
       "low":    { "model": "ollama/qwen3:8b",   "thinking": "off" }
     },
     "cloud": {
-      "high":   { "model": "ollama-cloud/kimi-k2.6:cloud", "thinking": "high" },
-      "medium": { "model": "ollama-cloud/gemma4:31b-cloud", "thinking": "medium" },
-      "low":    { "model": "ollama-cloud/glm-5.1:cloud", "thinking": "off" }
+      "high":   { "model": "ollama/kimi-k2.6:cloud", "thinking": "high" },
+      "medium": { "model": "ollama/gemma4:31b-cloud", "thinking": "medium" },
+      "low":    { "model": "ollama/glm-5.1:cloud", "thinking": "off" }
     },
     "fast": {
       "high":   { "model": "ollama/qwen3.5:4b", "thinking": "off" },

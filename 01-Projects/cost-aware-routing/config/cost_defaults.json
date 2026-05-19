@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-05-02",
+  "hardware_costs": {
+    "tiers": [
+      {"max_ram_gb": 16, "cost_usd": 500},
+      {"max_ram_gb": 32, "cost_usd": 800},
+      {"max_ram_gb": 999, "cost_usd": 1200}
+    ]
+  },
+  "power": {
+    "average_draw_kwh": 0.15,
+    "electricity_rate_usd_per_kwh": 0.12,
+    "cost_per_hour": 0.018
+  },
+  "depreciation": {
+    "method": "straight_line",
+    "years": 3,
+    "hours_per_year": 8760
+  }
+}

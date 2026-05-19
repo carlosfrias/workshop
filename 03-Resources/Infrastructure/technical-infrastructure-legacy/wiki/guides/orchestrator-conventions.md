@@ -10,11 +10,11 @@ The orchestrator's model configuration lives in `~/.pi/agent/models.json` and mu
 
 ### Problem Pattern (TI-021)
 
-The `pi-ollama-cloud` extension dynamically registers cloud models (without `:cloud` suffix) under the `ollama-cloud` provider. These models appear in Ctrl+P alongside the manually-configured models in `models.json` (with `:cloud` suffix under `ollama` provider), creating duplicates and confusion.
+The `pi-ollama` extension dynamically registers cloud models (without `:cloud` suffix) under the `ollama` provider. These models appear in Ctrl+P alongside the manually-configured models in `models.json` (with `:cloud` suffix under `ollama` provider), creating duplicates and confusion.
 
 ### Solution
 
-1. Remove `pi-ollama-cloud` from `~/.pi/agent/settings.json` packages
+1. Remove `pi-ollama` from `~/.pi/agent/settings.json` packages
 2. Create `~/.pi/agent/keyword-router.json` using `ollama` provider and `:cloud`-suffixed models (matching `models.json`)
 3. Restart pi
 
@@ -22,7 +22,7 @@ The `pi-ollama-cloud` extension dynamically registers cloud models (without `:cl
 
 `scripts/fix-orchestrator-ctrl-p.py`:
 - Backs up `settings.json`
-- Removes `pi-ollama-cloud` extension reference
+- Removes `pi-ollama` extension reference
 - Creates `keyword-router.json` with correct provider/model mappings
 - Prints verification of models in `models.json`
 

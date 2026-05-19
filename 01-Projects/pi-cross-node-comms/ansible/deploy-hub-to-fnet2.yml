@@ -1,0 +1,162 @@
+---
+# Deploy coms-net hub server to fnet2
+#
+# Installs Bun → copies hub server code → starts hub → verifies
+#
+# Run ON the macOS orchestrator:
+#   cd workspace/01-Projects/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml deploy-hub-to-fnet2.yml
+#
+# Prerequisites:
+#   - SSH key access to fnet2
+#   - coms-net-server.ts at workspace/01-Projects/pi-cross-node-comms/server/
+
+- name: Deploy coms-net Hub Server to fnet2
+  hosts: fnet2
+  gather_facts: yes
+
+  vars:
+    hub_host: "0.0.0.0"
+    hub_port: "8080"
+    hub_project: "lab"
+    coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
+    # Source paths — on the macOS orchestrator (deploy from here)
+    server_src: "{{ playbook_dir }}/../server/coms-net-server.ts"
+    # Destination paths — on fnet2
+    server_dest: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
+
+  tasks:
+    # ======================================================================
+    # 1. Install Bun
+    # ======================================================================
+    - name: Check if Bun is already installed
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.bun/bin/bun --version"
+      register: bun_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Install Bun runtime
+      ansible.builtin.shell: |
+        curl -fsSL https://bun.sh/install | bash
+      when: bun_check.rc != 0
+      changed_when: true
+
+    - name: Verify Bun installed
+      ansible.builtin.command: "{{ ansible_env.HOME }}/.bun/bin/bun --version"
+      register: bun_version
+      changed_when: false
+
+    - name: Report Bun version
+      ansible.builtin.debug:
+        msg: "✅ Bun {{ bun_version.stdout }} installed on fnet2"
+
+    # ======================================================================
+    # 2. Deploy Hub Server Code
+    # ======================================================================
+    - name: Ensure server directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.pi/coms-net/server"
+        state: directory
+        mode: '0755'
+
+    - name: Copy hub server source
+      ansible.builtin.copy:
+        src: "{{ server_src }}"
+        dest: "{{ server_dest }}"
+        mode: '0755'
+
+    - name: Verify server code present
+      ansible.builtin.stat:
+        path: "{{ server_dest }}"
+      register: server_file
+
+    - name: Fail if server code missing
+      ansible.builtin.fail:
+        msg: "Server code not found at {{ server_dest }}"
+      when: not server_file.stat.exists
+
+    # ======================================================================
+    # 3. Stop Any Existing Hub
+    # ======================================================================
+    - name: Stop existing hub if running
+      ansible.builtin.shell: |
+        if [ -f /tmp/coms-net-hub.pid ]; then
+          pid=$(cat /tmp/coms-net-hub.pid)
+          kill "$pid" 2>/dev/null || true
+          rm -f /tmp/coms-net-hub.pid
+        fi
+        # Also kill anything on our port
+        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | sed -n 's/.*pid=\([0-9]*\).*/\1/p' || true)
+        [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
+        true
+      changed_when: false
+
+    - name: Wait for port to release
+      ansible.builtin.wait_for:
+        port: "{{ hub_port }}"
+        state: stopped
+        timeout: 10
+
+    # ======================================================================
+    # 4. Start Hub Server
+    # ======================================================================
+    - name: Start coms-net hub server
+      ansible.builtin.shell: |
+        export BUN_INSTALL="{{ ansible_env.HOME }}/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+        export PI_COMS_NET_AUTH_TOKEN="{{ coms_token }}"
+        export PI_COMS_NET_HOST="{{ hub_host }}"
+        export PI_COMS_NET_PORT="{{ hub_port }}"
+        export PI_COMS_NET_PROJECT="{{ hub_project }}"
+        nohup bun run "{{ server_dest }}" > /tmp/coms-net-hub.log 2>&1 &
+        echo $! > /tmp/coms-net-hub.pid
+        sleep 3
+        curl -s http://localhost:{{ hub_port }}/health
+      register: hub_start
+      changed_when: true
+
+    - name: Report hub health
+      ansible.builtin.debug:
+        msg: "✅ Hub started on fnet2 — {{ hub_start.stdout }}"
+
+    # ======================================================================
+    # 5. Verify Connectivity
+    # ======================================================================
+    - name: Wait for hub health endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ hub_port }}/health"
+        status_code: 200
+      register: hub_health
+      retries: 10
+      delay: 2
+      until: hub_health.status == 200
+
+    - name: Display hub details
+      ansible.builtin.debug:
+        msg:
+          - "============================================================="
+          - "✅ coms-net hub RUNNING on fnet2"
+          - "   Address:    http://192.168.0.142:{{ hub_port }}"
+          - "   Server ID:  {{ hub_health.json.server_id }}"
+          - "   Started at: {{ hub_health.json.started_at }}"
+          - "   Project:    {{ hub_project }}"
+          - "   Token:      {{ coms_token[:8] }}..."
+          - "   From macOS: curl http://192.168.0.142:{{ hub_port }}/health"
+          - "============================================================="
+
+    # ======================================================================
+    # 6. Verify Agent Registration Works
+    # ======================================================================
+    - name: Test agent listing endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ hub_port }}/v1/agents"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ coms_token }}"
+      register: agent_test
+      retries: 3
+      delay: 2
+
+    - name: Report auth verification
+      ansible.builtin.debug:
+        msg: "✅ Agent endpoint reachable — {{ agent_test.json.agents | default([]) | length }} agents registered"

@@ -14,10 +14,10 @@ Dynamically routes prompts to the appropriate model (local or cloud) based on pr
 
 | Route | Provider | Model | Thinking | Priority | Key Triggers |
 |-------|----------|-------|----------|----------|--------------|
-| ultra-reasoning | ollama-cloud | kimi-k2.6 (1042B) | high | 2 | think deeply, comprehensive, thorough |
-| reasoning | ollama-cloud | qwen3.5:397b (397B) | medium | 1 | analyze, evaluate, decide, research |
-| coding | ollama-cloud | deepseek-v4-pro (158B) | medium | 0 | code, implement, develop, debug |
-| vision | ollama-cloud | qwen3-vl:235b (235B) | medium | 0 | image, screenshot, chart |
+| ultra-reasoning | ollama | kimi-k2.6 (1042B) | high | 2 | think deeply, comprehensive, thorough |
+| reasoning | ollama | qwen3.5:397b (397B) | medium | 1 | analyze, evaluate, decide, research |
+| coding | ollama | deepseek-v4-pro (158B) | medium | 0 | code, implement, develop, debug |
+| vision | ollama | qwen3-vl:235b (235B) | medium | 0 | image, screenshot, chart |
 | structured | ollama | gemma4:e4b (32B) | off | 0 | log, reconcile, parse, format |
 | monitoring | ollama | qwen3.5:4b (4B) | off | 0 | status, check, ping, health |
 | infrastructure | ollama | qwen3:8b (8B) | off | 0 | server, deploy, dns, network |

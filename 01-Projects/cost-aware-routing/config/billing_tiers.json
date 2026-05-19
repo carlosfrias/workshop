@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-05-02",
+  "tiers": [
+    {
+      "id": "local_basic",
+      "name": "Local Basic",
+      "model": "qwen3.5:4b",
+      "venue": "local",
+      "price_per_1k_tokens": 0.0050,
+      "margin_pct": 40,
+      "provider": "ollama"
+    },
+    {
+      "id": "local_standard",
+      "name": "Local Standard",
+      "model": "qwen3:8b",
+      "venue": "local",
+      "price_per_1k_tokens": 0.0060,
+      "margin_pct": 50,
+      "provider": "ollama"
+    },
+    {
+      "id": "local_premium",
+      "name": "Local Premium",
+      "model": "gemma4:e4b",
+      "venue": "local",
+      "price_per_1k_tokens": 0.0050,
+      "margin_pct": 56,
+      "provider": "ollama"
+    },
+    {
+      "id": "cloud_standard",
+      "name": "Cloud Standard",
+      "model": "gemma4:31b-cloud",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0150,
+      "margin_pct": 33,
+      "provider": "ollama-cloud"
+    },
+    {
+      "id": "cloud_premium",
+      "name": "Cloud Premium",
+      "model": "kimi-k2.6:cloud",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0500,
+      "margin_pct": 20,
+      "provider": "ollama-cloud"
+    }
+  ]
+}

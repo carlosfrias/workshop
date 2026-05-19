@@ -42,9 +42,9 @@
 
 | Tier | Model | Role | Executes Code? | Typical Assignment |
 |------|-------|------|---------------|-------------------|
-| **High Cloud** | `ollama-cloud/kimi-k2.6` | Plan Owner & Decomposer | **NO** | Architecture and logic flows |
-| **Medium Cloud** | `ollama-cloud/deepseek-v4-pro` | Analysis Assistant | **NO** | Performance analysis |
-| **Low Cloud** | `ollama-cloud/qwen3.5:397b` | Orchestrator | **YES** (last resort) | Coordination and dispatch |
+| **High Cloud** | `ollama/kimi-k2.6` | Plan Owner & Decomposer | **NO** | Architecture and logic flows |
+| **Medium Cloud** | `ollama/deepseek-v4-pro` | Analysis Assistant | **NO** | Performance analysis |
+| **Low Cloud** | `ollama/qwen3.5:397b` | Orchestrator | **YES** (last resort) | Coordination and dispatch |
 | **High Local** | `ollama/qwen3:8b` | Complex Execution | **YES** | Complex bash scripts |
 | **Medium Local** | `ollama/gemma4:e4b` | Standard Execution | **YES** | Installation tasks |
 | **Low Local** | `ollama/qwen3.5:4b` | Simple Execution | **YES** | Connectivity pings |
@@ -296,7 +296,7 @@ Statuses:
 
 ## Session Notes
 
-**Plan Owner:** High Cloud Model (ollama-cloud/kimi-k2.6)
+**Plan Owner:** High Cloud Model (ollama/kimi-k2.6)
 **Orchestrator:** User session `subagent-chat-019e299a` (qwen3.5:397b-cloud)
 **Plan Executor:** This session `ti041-plan-executor` (kimi-k2.6:cloud)
 **Execution Model:** Trigger playbook → playbook-executor dispatches → structured JSON returned.

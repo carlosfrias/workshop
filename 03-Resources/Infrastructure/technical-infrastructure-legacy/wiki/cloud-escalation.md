@@ -23,9 +23,9 @@ The Cloud Escalation System provides **automatic tiered escalation** when local 
 
 | Tier | Model | Cost per 1K Tokens | Priority | Use Case |
 |------|-------|-------------------|----------|----------|
-| **Low** | `ollama-cloud/qwen3.5:397b` | $0.011 | Normal | Standard tasks, cost-sensitive |
-| **Medium** | `ollama-cloud/qwen3.5:397b` | $0.011 | High | Priority tasks, same model |
-| **High** | `ollama-cloud/kimi-k2.6` | $0.055 | Critical | Complex reasoning, maximum capability |
+| **Low** | `ollama/qwen3.5:397b` | $0.011 | Normal | Standard tasks, cost-sensitive |
+| **Medium** | `ollama/qwen3.5:397b` | $0.011 | High | Priority tasks, same model |
+| **High** | `ollama/kimi-k2.6` | $0.055 | Critical | Complex reasoning, maximum capability |
 
 **Cost Comparison:**
 - Low/Medium tier: $0.011 per 1K tokens (~5x cheaper than high tier)
@@ -218,7 +218,7 @@ All escalations are logged to `cloud-escalation.jsonl`:
   "timestamp": "2026-05-05T14:30:00Z",
   "task_id": "deploy_app_001",
   "tier": "low",
-  "model": "ollama-cloud/qwen3.5:397b",
+  "model": "ollama/qwen3.5:397b",
   "tokens": 2000,
   "cost": 0.022,
   "status": "failed",

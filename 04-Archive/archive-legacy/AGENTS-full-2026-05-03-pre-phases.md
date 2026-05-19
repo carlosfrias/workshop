@@ -80,10 +80,10 @@ The `pi-keyword-router` extension automatically routes prompts to the appropriat
 
 | Route | Provider | Model | Thinking | Priority | Key Triggers |
 |-------|----------|-------|----------|----------|---------------|
-| ultra-reasoning | ollama-cloud | kimi-k2.6 (1042B) | high | 2 | think deeply, comprehensive, thorough, mission-critical, deep dive |
-| reasoning | ollama-cloud | qwen3.5:397b (397B) | medium | 1 | analyze, evaluate, decide, research, signal, risk, plan, decompose |
-| coding | ollama-cloud | deepseek-v4-pro (158B) | medium | 0 | code, implement, develop, program, script, debug code |
-| vision | ollama-cloud | qwen3-vl:235b (235B) | medium | 0 | image, screenshot, chart, diagram, visual, analyze chart |
+| ultra-reasoning | ollama | kimi-k2.6 (1042B) | high | 2 | think deeply, comprehensive, thorough, mission-critical, deep dive |
+| reasoning | ollama | qwen3.5:397b (397B) | medium | 1 | analyze, evaluate, decide, research, signal, risk, plan, decompose |
+| coding | ollama | deepseek-v4-pro (158B) | medium | 0 | code, implement, develop, program, script, debug code |
+| vision | ollama | qwen3-vl:235b (235B) | medium | 0 | image, screenshot, chart, diagram, visual, analyze chart |
 | structured | ollama | gemma4:e4b (32B) | off | 0 | log, reconcile, parse, format, ledger, balance |
 | monitoring | ollama | qwen3.5:4b (4B) | off | 0 | status, check, ping, health, monitor, report |
 | infrastructure | ollama | qwen3:8b (8B) | off | 0 | server, connect, deploy, dns, network, troubleshoot, ansible, ollama, model, node, cluster, orchestration, orchestrate, route, routing, classify, classification, complexity, decompose, decomposition, fan out, distribute, distribution, workload, queue, worker, task, submit, collect, sync, artifact, performance, latency, framework, meta- |
@@ -105,7 +105,7 @@ The `pi-keyword-router` extension automatically routes prompts to the appropriat
 <!-- model-route: ultra-reasoning -->
 <!-- model-route: reasoning -->
 <!-- model-route: coding -->
-<!-- model: ollama-cloud/kimi-k2.6 thinking: high -->
+<!-- model: ollama/kimi-k2.6 thinking: high -->
 ```
 
 Commands: `/model-route` (status), `/model-route-off` (disable), `/model-route-on` (enable)
@@ -117,7 +117,7 @@ Commands: `/model-route` (status), `/model-route-off` (disable), `/model-route-o
 | Model Router (global) | `~/.pi/agent/model-router.json` | Keyword routing config |
 | Model Router (project) | `.pi/model-router.json` | Project-level overrides |
 | Models | `~/.pi/agent/models.json` | Model provider & capability definitions |
-| Cloud Cache | `~/.pi/agent/cache/ollama-cloud-models.json` | Cloud model capabilities |
+| Cloud Cache | `~/.pi/agent/cache/ollama-models.json` | Cloud model capabilities |
 
 **See `technical-infrastructure/wiki/model-routing-guide.md` for full documentation.**
 

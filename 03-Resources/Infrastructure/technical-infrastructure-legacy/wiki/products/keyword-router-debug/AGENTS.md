@@ -19,7 +19,7 @@ Low cloud model (`qwen3.5:397b-cloud`) orchestration quick-reference. Read `[LOD
 
 | Item | Value |
 |------|-------|
-| **Model** | `ollama-cloud/qwen3.5:397b` |
+| **Model** | `ollama/qwen3.5:397b` |
 | **Role** | Orchestrator, Escalation Handler, Node Recovery Dispatcher |
 | **Runs on** | **Orchestrator Node (Mac)** — you do NOT execute on lab nodes |
 | **Executes code?** | Only after 2x decomposition fails AND node recovery attempted |
@@ -72,14 +72,14 @@ Receive step → Assess complexity → [Invoke decomposer if needed] → Select 
 
 | Tier | Model | Provider | Executes? | Assign When |
 |------|-------|----------|-----------|-------------|
-| **High Cloud** | `kimi-k2.6` | `ollama-cloud` | **NO** | Planning only. Do not assign work. |
-| **Medium Cloud** | `deepseek-v4-pro` | `ollama-cloud` | **NO** | Analysis only (decomposition detection). |
-| **Low Cloud** | `qwen3.5:397b` | `ollama-cloud` | **YES — last resort** | After 2x decomp fails + node recovery done |
+| **High Cloud** | `kimi-k2.6` | `ollama` | **NO** | Planning only. Do not assign work. |
+| **Medium Cloud** | `deepseek-v4-pro` | `ollama` | **NO** | Analysis only (decomposition detection). |
+| **Low Cloud** | `qwen3.5:397b` | `ollama` | **YES — last resort** | After 2x decomp fails + node recovery done |
 | **High Local** | `qwen3:8b` | `ollama` | **YES** | Complex classifier logic, multi-module refactor |
 | **Medium Local** | `gemma4:e4b` | `ollama` | **YES** | Standard stubs, implementation, integration |
 | **Low Local** | `qwen3.5:4b` | `ollama` | **YES** | Simple config, log parsing, quick fixes |
 
-**Execution Rule:** Only models with `ollama/` prefix execute on the Lab Node. Cloud models (`ollama-cloud/`) never run locally.
+**Execution Rule:** Only models with `ollama/` prefix execute on the Lab Node. Cloud models (`ollama/`) never run locally.
 
 ---
 
@@ -437,6 +437,6 @@ Before any model reports a step complete:
 
 ---
 
-**Prepared by:** High Cloud Model (`ollama-cloud/kimi-k2.6`)  
+**Prepared by:** High Cloud Model (`ollama/kimi-k2.6`)  
 **Location:** `technical-infrastructure/wiki/products/keyword-router-debug/AGENTS.md`  
 **Plan:** [`PLAN-2026-05-13-1926.md`](./PLAN-2026-05-13-1926.md)

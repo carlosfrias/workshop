@@ -1,0 +1,165 @@
+---
+# Deploy coms-net — Cross-Node pi Communication
+# Copies extension files to lab nodes, installs, starts hub server
+#
+# Usage:
+#   cd technical-infrastructure/ansible
+#   ansible-playbook -i inventory.yml playbooks/deploy-coms-net.yml
+#
+# Prerequisites:
+#   - Lab nodes must have pi installed (already all on 0.74.0)
+#   - Hub server requires Bun runtime on the host (installed via this playbook)
+#   - Set PI_COMS_NET_AUTH_TOKEN env var or generate via vault
+#
+# Architecture:
+#   macOS orchestrator → coms-net hub (Bun :8080) ← pi sessions on lab nodes
+
+- name: Deploy coms-net to Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
+    hub_host: "192.168.0.148"
+    hub_port: "8080"
+    extension_src: "{{ playbook_dir }}/../../../01-Projects/pi-cross-node-comms"
+
+  tasks:
+    # ========================================================================
+    # Phase 1: Copy Extension Files
+    # ========================================================================
+    - name: Create extension directory on lab node
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/pi-cross-node-comms/src/skills/pi-cross-node-comms"
+        state: directory
+        mode: '0755'
+
+    - name: Create server directory on lab node
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/pi-cross-node-comms/server"
+        state: directory
+        mode: '0755'
+
+    - name: Copy extension source files
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+        mode: '0644'
+      loop:
+        - src/index.ts
+        - src/themeMap.ts
+        - src/skills/pi-cross-node-comms/SKILL.md
+        - package.json
+
+    - name: Copy hub server source (for future hub migration)
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/server/coms-net-server.ts"
+        dest: "{{ ansible_env.HOME }}/pi-cross-node-comms/server/coms-net-server.ts"
+        mode: '0644'
+
+    # ========================================================================
+    # Phase 2: Install Extension via pi
+    # ========================================================================
+    - name: Install pi-cross-node-comms extension
+      ansible.builtin.command:
+        cmd: pi install .
+        chdir: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+      register: install_result
+      changed_when: "'Installed' in install_result.stdout"
+
+    - name: Verify extension installed
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} — pi-cross-node-comms installed"
+
+    # ========================================================================
+    # Phase 3: Deploy Hub Server (delegated to orchestrator for now)
+    # ========================================================================
+    - name: Ensure Bun is installed on orchestrator
+      ansible.builtin.shell: |
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+        which bun || curl -fsSL https://bun.sh/install | bash
+      delegate_to: localhost
+      run_once: true
+      changed_when: false
+
+    - name: Create coms-net config directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.pi/coms-net/projects/lab"
+        state: directory
+        mode: '0700'
+      delegate_to: localhost
+      run_once: true
+
+    - name: Save auth token
+      ansible.builtin.copy:
+        content: "{{ coms_token }}"
+        dest: "{{ ansible_env.HOME }}/.pi/coms-net/projects/lab/lab-token.txt"
+        mode: '0600'
+      delegate_to: localhost
+      run_once: true
+
+    # ========================================================================
+    # Phase 4: Start Hub Server
+    # ========================================================================
+    - name: Kill existing hub server if running
+      ansible.builtin.shell: pkill -f coms-net-server || true
+      delegate_to: localhost
+      run_once: true
+      changed_when: false
+
+    - name: Start coms-net hub server
+      ansible.builtin.shell: |
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+        nohup bun "{{ extension_src }}/server/coms-net-server.ts" \
+          --host 0.0.0.0 \
+          --port {{ hub_port }} \
+          --project lab \
+          > /tmp/coms-net-hub.log 2>&1 &
+        sleep 2
+        curl -s http://localhost:{{ hub_port }}/health
+      environment:
+        PI_COMS_NET_AUTH_TOKEN: "{{ coms_token }}"
+      delegate_to: localhost
+      run_once: true
+      changed_when: true
+
+    - name: Verify hub is running
+      ansible.builtin.uri:
+        url: "http://localhost:{{ hub_port }}/health"
+      delegate_to: localhost
+      run_once: true
+      register: hub_health
+      retries: 5
+      delay: 2
+      until: hub_health.status == 200
+
+    - name: Report hub status
+      ansible.builtin.debug:
+        msg:
+          - "===================================================="
+          - "Hub server running on {{ hub_host }}:{{ hub_port }}"
+          - "Token: {{ com_token }}"
+          - "Project: lab"
+          - "===================================================="
+
+    # ========================================================================
+    # Phase 5: Verify Agent Connectivity
+    # ========================================================================
+    - name: Verify agents can connect to hub
+      ansible.builtin.uri:
+        url: "http://localhost:{{ hub_port }}/v1/agents"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ coms_token }}"
+      delegate_to: localhost
+      run_once: true
+      register: agent_list
+      retries: 3
+      delay: 2
+
+    - name: Display agent connectivity results
+      ansible.builtin.debug:
+        msg: "✅ Hub accessible — {{ agent_list.json.agents | default([]) | length }} agents registered"

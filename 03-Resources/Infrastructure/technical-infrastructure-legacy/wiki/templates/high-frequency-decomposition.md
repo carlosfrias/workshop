@@ -50,8 +50,8 @@ For the full detection and reporting protocol, see [`{{AGENTS_MD_PATH}}`](./{{AG
 
 | Placeholder | Description | Example |
 |-------------|-------------|---------|
-| `{{MEDIUM_CLOUD_MODEL}}` | Cloud model for analysis | `ollama-cloud/deepseek-v4-pro` |
-| `{{LOW_CLOUD_MODEL}}` | Cloud model for orchestration | `ollama-cloud/qwen3.5:397b` |
+| `{{MEDIUM_CLOUD_MODEL}}` | Cloud model for analysis | `ollama/deepseek-v4-pro` |
+| `{{LOW_CLOUD_MODEL}}` | Cloud model for orchestration | `ollama/qwen3.5:397b` |
 | `{{CHECK_INTERVAL}}` | Minutes between ratio checks | `10` |
 | `{{RATIO_FORMULA}}` | How to calculate decomposition ratio | `ratio = (tasks_decomposed in last 10 min) / (total_tasks_assigned in last 10 min)` |
 | `{{HIGH_THRESHOLD}}` | Threshold for high-frequency mode | `60%` |

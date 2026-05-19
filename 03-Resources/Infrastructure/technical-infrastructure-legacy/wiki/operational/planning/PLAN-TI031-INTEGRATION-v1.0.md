@@ -162,7 +162,7 @@ def make_routing_decision(health_status, task_complexity):
     elif health_status['status'] == 'stressed':
         return {
             'action': 'decompose_and_offload',
-            'target_model': 'ollama-cloud/qwen3.5:397b',
+            'target_model': 'ollama/qwen3.5:397b',
             'decomposition_required': True,
             'decomposition_type': '2x_binary',
             'cloud_tier': 'low'
@@ -171,7 +171,7 @@ def make_routing_decision(health_status, task_complexity):
     else:  # critical
         return {
             'action': 'decompose_and_offload',
-            'target_model': 'ollama-cloud/kimi-k2.6',
+            'target_model': 'ollama/kimi-k2.6',
             'decomposition_required': True,
             'decomposition_type': '2x_binary',
             'cloud_tier': 'high'
@@ -541,9 +541,9 @@ class CloudTier(Enum):
     HIGH = "high"
 
 TIER_MODELS = {
-    CloudTier.LOW: "ollama-cloud/qwen3.5:397b",      # $0.011/1K tokens
-    CloudTier.MEDIUM: "ollama-cloud/qwen3.5:397b",   # Same model, priority boost
-    CloudTier.HIGH: "ollama-cloud/kimi-k2.6"         # $0.055/1K tokens
+    CloudTier.LOW: "ollama/qwen3.5:397b",      # $0.011/1K tokens
+    CloudTier.MEDIUM: "ollama/qwen3.5:397b",   # Same model, priority boost
+    CloudTier.HIGH: "ollama/kimi-k2.6"         # $0.055/1K tokens
 }
 
 TIER_COSTS = {

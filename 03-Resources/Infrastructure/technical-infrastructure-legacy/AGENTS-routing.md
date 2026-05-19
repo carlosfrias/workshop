@@ -60,14 +60,14 @@ Adaptive feedback loop
 
 | Route | Provider/Model | Keywords | Use For |
 |-------|---------------|----------|---------|
-| reasoning | ollama-cloud/qwen3.5:397b | analyze, evaluate, decompose, plan, verify | Complex analysis |
+| reasoning | ollama/qwen3.5:397b | analyze, evaluate, decompose, plan, verify | Complex analysis |
 | structured | ollama/gemma4:e4b | log, reconcile, parse, format, ledger | Bookkeeping ops |
 | monitoring | ollama/qwen3.5:4b | status, check, ping, health, monitor | Status checks |
 | infrastructure | ollama/qwen3:8b | server, deploy, network, orchestration, task | Infra ops |
 | trivial | ollama/qwen3.5:4b | trivial, ping, echo, list, format | Quick tasks |
 | simple | ollama/qwen3:8b | write script, basic, bounded | Small scripts |
 | medium | ollama/gemma4:e4b | multi-step, plan, design | Medium tasks |
-| hard | ollama-cloud/kimi-k2.6 | novel, creative, deep dive, comprehensive | Complex tasks |
+| hard | ollama/kimi-k2.6 | novel, creative, deep dive, comprehensive | Complex tasks |
 
 ### Explicit Tags
 

@@ -333,7 +333,7 @@ class UnifiedDecisionEngine:
         sub_tasks = binary_decompose(task_name, complexity, depth=2)
         return {
             'action': 'decompose_and_route',
-            'target_model': 'ollama-cloud/kimi-k2.6',
+            'target_model': 'ollama/kimi-k2.6',
             'decomposition': '2x_binary',
             'cloud_tier': 'high',
             'estimated_cost': len(sub_tasks) * 0.055 * complexity * 100,
@@ -345,7 +345,7 @@ class UnifiedDecisionEngine:
         sub_tasks = binary_decompose(task_name, complexity, depth=1)
         return {
             'action': 'decompose_and_route',
-            'target_model': 'ollama-cloud/qwen3.5:397b',
+            'target_model': 'ollama/qwen3.5:397b',
             'decomposition': '2x_binary',
             'cloud_tier': 'low',
             'estimated_cost': len(sub_tasks) * 0.011 * complexity * 100,
@@ -481,9 +481,9 @@ class NodeRecoveryWatcher:
 class CloudEscalationManager:
     def __init__(self):
         self.tiers = {
-            'low': 'ollama-cloud/qwen3.5:397b',     # $0.011/1K tokens
-            'medium': 'ollama-cloud/qwen3.5:397b',   # Same, priority boost
-            'high': 'ollama-cloud/kimi-k2.6'         # $0.055/1K tokens
+            'low': 'ollama/qwen3.5:397b',     # $0.011/1K tokens
+            'medium': 'ollama/qwen3.5:397b',   # Same, priority boost
+            'high': 'ollama/kimi-k2.6'         # $0.055/1K tokens
         }
         self.max_attempts_per_tier = 2
     
@@ -703,7 +703,7 @@ Overall Status?
     "action": "decompose_and_route",
     "decomposition": "2x_binary",
     "cloud_tier": "low",
-    "target_model": "ollama-cloud/qwen3.5:397b",
+    "target_model": "ollama/qwen3.5:397b",
     "estimated_cost": 0.33
   },
   "execution_time_ms": 1500

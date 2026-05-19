@@ -69,3 +69,18 @@ Low-capacity models (2–8B parameters) cannot execute Ansible playbooks from na
 | Status snapshots | [status/](./status/) |
 | Prompts | [prompts/](./prompts/) |
 | Back to backlog | [../../BACKLOG.md](../../BACKLOG.md) |
+
+---
+
+## Cross-Reference: pi-cross-node-comms (added 2026-05-18)
+
+3 coms-net playbooks registered in `playbook-index.json`:
+
+| Trigger | Playbook | Domain |
+|---------|----------|--------|
+| `deploy_coms_net` | `deploy-fleet.yml` | Full fleet deploy: hub + extension |
+| `deploy_coms_hub` | `deploy-hub-to-fnet2.yml` | Hub server → fnet2 only |
+| `start_coms_agents` | `start-agents.yml` | pi sessions on 7 lab nodes |
+
+**Vault documentation:** `personal-vault/01-Projects/pi-cross-node-comms/` — assessment, deployment plan, workbench
+**Vault mirror:** `personal-vault/03-Resources/Infrastructure/playbook-executor/` — cross-reference hub

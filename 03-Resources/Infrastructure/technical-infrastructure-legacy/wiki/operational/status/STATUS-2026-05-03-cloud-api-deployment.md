@@ -26,7 +26,7 @@ Deployed to all lab nodes at `~/.pi/agent/models.json`:
 Created `~/.pi/agent/auth.json` on all nodes with:
 ```json
 {
-  "ollama-cloud": {
+  "ollama": {
     "type": "api_key",
     "key": "add5554ce82d4c018d12760589987d56.ytYqhxD-KUnAMfhCzP7zObNJ"
   }

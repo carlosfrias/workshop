@@ -13,7 +13,7 @@
 The orchestrator's model configuration lives in `~/.pi/agent/models.json`. Keep in sync with the lab node philosophy: **only configured models should be available**.
 
 **Fix Pattern for Ctrl+P Duplicates:**
-1. Remove `pi-ollama-cloud` from `~/.pi/agent/settings.json` packages.
+1. Remove `pi-ollama` from `~/.pi/agent/settings.json` packages.
 2. Create `~/.pi/agent/keyword-router.json` using `ollama` provider and `:cloud`-suffixed models.
 3. Restart pi.
 **Fix Script:** `scripts/fix-orchestrator-ctrl-p.py`

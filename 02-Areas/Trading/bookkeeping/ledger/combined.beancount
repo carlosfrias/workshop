@@ -1,0 +1,11 @@
+;; Combined Ledger — AI Cost Model + Trading
+;; ONLY for cross-domain analysis. Do NOT use for financial audit.
+;; For audit: use main.beancount (trading only)
+;; For cost modeling: use ai-cost-model.beancount (AI only)
+;; For "how much did AI cost vs trading P&L?": use THIS file
+
+option "operating_currency" "USD"
+option "title" "Combined: Trading + AI Cost Model"
+
+include "main.beancount"
+include "ai-cost-model.beancount"

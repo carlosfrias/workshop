@@ -20,7 +20,7 @@ These files are loaded on demand when a task matches their keywords. For model r
 | **playbook-executor, run playbook, execute playbook, service recovery, API failure, restart service, node remediation, fnet failure, HTTP 000, health-aware execution, deploy playbook, run the, start the, launch the, serve wiki, run wiki, start wiki, deploy pi, install pi, update packages, upgrade packages, backup data, snapshot, restart ollama, reset ollama, fix ollama, shutdown lab, power off, configure ssh, setup vpn, add vpn peer, fix broken links, capacity report, hardware report, gather hardware, optimize lab, run pilot, benchmark lab, test pi, validate router, migrate worker, deploy worker, deploy gist worker, deploy chromadb, full pi validation** | `./packages/playbook-executor/README.md` |
 | ansible vault, vault password, encrypt secret, ansible_become_pass | `./wiki/guides/ansible-vault.md` |
 | ansible testing, syntax-check, playbook debug, -vvv | `./wiki/guides/ansible-testing.md` |
-| orchestrator health, ctrl-p model cycling, ollama-cloud extension | `./wiki/guides/orchestrator-conventions.md` |
+| orchestrator health, ctrl-p model cycling, ollama extension | `./wiki/guides/orchestrator-conventions.md` |
 | quality checklist, session documentation, testing requirements | `./wiki/guides/quality-checklist.md` |
 | planning gates, latency budget, pivot contingency | `./wiki/guides/planning-gates.md` |
 

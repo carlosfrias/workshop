@@ -96,7 +96,7 @@ The full E2E pipeline works until the decomposer stage. `decompose_llm.py` requi
   "tier": 1,
   "model": "gemma4:cloud",
   "cost": 0,
-  "error": "No API key for provider ollama-cloud",
+  "error": "No API key for provider ollama",
   "raw_response": "..."
 }
 ```
@@ -105,7 +105,7 @@ The watcher correctly detects this error and moves the trigger to `failed/`.
 
 **To complete E2E testing:**
 1. Ensure `GITHUB_TOKEN` or cloud provider API key is set
-2. Verify `ollama-cloud` models are registered in `~/.pi/agent/models.json`
+2. Verify `ollama` models are registered in `~/.pi/agent/models.json`
 3. Run: `python3 decompose-watcher.py --once`
 
 ---

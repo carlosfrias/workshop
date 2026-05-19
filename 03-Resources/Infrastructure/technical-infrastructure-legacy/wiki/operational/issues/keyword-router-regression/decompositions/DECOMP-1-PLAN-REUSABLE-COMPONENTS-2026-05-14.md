@@ -3,8 +3,8 @@
 **Date:** 2026-05-14
 **Phase:** Phase 0
 **Backlog Item:** Extract reusable plan components from `1-PLAN.md`
-**Decomposed by:** High Cloud Model (`ollama-cloud/kimi-k2.6`)
-**Handoff to:** Low Cloud Model (`ollama-cloud/qwen3.5:397b`)
+**Decomposed by:** High Cloud Model (`ollama/kimi-k2.6`)
+**Handoff to:** Low Cloud Model (`ollama/qwen3.5:397b`)
 **Skill:** `decompose-execute-verify`
 **Reference:** [`AGENTS.md`](./AGENTS.md)
 

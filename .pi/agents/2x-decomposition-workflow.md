@@ -4,6 +4,14 @@
 
 When a sub-task fails verification with multiple independent failure modes, the verifier can request a **2x decomposition** — splitting the problematic sub-task into 2-3 more atomic steps.
 
+Since v2 (fleet-dispatcher cascade), the D-E-V pipeline routes sub-tasks through a three-tier cascade:
+
+1. **Tier 1 (fleet):** `coms_net_send` to remote pi agents
+2. **Tier 2 (intercom):** `intercom ask` to local pi sessions
+3. **Tier 3 (subagent):** Built-in `subagent()` tool (always available)
+
+The fleet-dispatcher handles routing and degradation. The decomposer and verifier remain tier-agnostic.
+
 The detailed detection logic, communication templates, and decision guides for this workflow are maintained in the project wiki to keep the agent definition lean.
 
 **Reference:** [`wiki/reference/decomposition-logic.md`](wiki/reference/decomposition-logic.md)
@@ -12,33 +20,40 @@ The detailed detection logic, communication templates, and decision guides for t
 
 ```
 ┌─────────────┐
-│ Decomposer  │ → Creates initial decomposition plan
-└─────────────┘
-       ↓
+│ Decomposer  │ → Creates tier-agnostic decomposition plan
+└──────┬───────┘
+       │
+       ▼
+┌─────────────────────┐
+│ Fleet-Dispatcher    │ → Routes sub-tasks through cascade
+│                     │   Tier 1: coms_net (fleet)
+│                     │   Tier 2: intercom (local sessions)
+│                     │   Tier 3: subagent (always available)
+└──────┬──────────────┘
+       │
+       ▼
 ┌─────────────┐
-│   Executor  │ → Runs sub-task (position-management, position-monitor, etc.)
-└─────────────┘
-       ↓
-┌─────────────┐
-│  Verifier   │ → Checks output against criteria
-└─────────────┘
-       ↓
+│  Verifier    │ → Checks output (tier-agnostic)
+└──────┬───────┘
+       │
     Pass? ────→ Continue to bookkeeping
        │
        │ FAIL (2+ independent failures)
-       ↓
+       ▼
 ┌─────────────────────────────────┐
-│ Verifier detects over-complex   │
+│ Verifier detects over-complex    │
 │ sub-task and sends intercom.ask │
 └─────────────────────────────────┘
-       ↓
+       │
+       ▼
 ┌─────────────────────────────────┐
 │ Orchestrator receives request   │
 │ and decides:                    │
 │ - Re-decompose (launch new chain)│
 │ - Decline (use cloud re-run)     │
 └─────────────────────────────────┘
-       ↓
+       │
+       ▼
 ┌─────────────────────────────────┐
 │ Verifier finalizes report based │
 │ on orchestrator's decision      │
