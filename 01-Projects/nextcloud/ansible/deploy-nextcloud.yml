@@ -2,9 +2,16 @@
 # NextCloud Deployment Playbook
 # TI-006: Install NextCloud on fnet2
 #
+# Vault: ~/.ansible/secure/vault-dev.yml (shared lab vault for DEV env)
+#   Contains: vault_sudo_password, nextcloud_admin_password,
+#             nextcloud_db_password, nextcloud_db_root_password
+#
 # Usage:
-#   Dry run:  ansible-playbook -i inventory.ini deploy-nextcloud.yml --check --diff --ask-vault-pass
-#   Apply:   ansible-playbook -i inventory.ini deploy-nextcloud.yml --ask-vault-pass
+#   Dry run:  ansible-playbook -i inventory.ini deploy-nextcloud.yml --check --diff
+#   Apply:    ansible-playbook -i inventory.ini deploy-nextcloud.yml
+#
+# Requires:  export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
+#   (or ansible.cfg fallback to same path)
 #
 # Prerequisites:
 #   - fnet2 reachable via SSH (verified separately)
@@ -15,7 +22,7 @@
   hosts: nextcloud
   become: true
   vars_files:
-    - vars/vault.yml
+    - ~/.ansible/secure/vault-dev.yml
   vars:
     nextcloud_base_dir: /srv/nextcloud
     nextcloud_data_dir: /srv/nextcloud/data
