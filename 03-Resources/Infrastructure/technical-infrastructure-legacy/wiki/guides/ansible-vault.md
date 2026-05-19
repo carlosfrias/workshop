@@ -2,7 +2,7 @@
 
 **LEGACY — MIGRATE TO:** `personal-vault/03-Resources/Technical-Infrastructure/ansible-vault.md`
 
-Lab node sudo passwords are managed via Ansible Vault. The vault master password lives in `~/.ansible/secure/.vault_pass` (mode 600, gitignored). Encrypted secrets are in `ansible/group_vars/lab_nodes/vault.yml`.
+Lab node sudo passwords are managed via Ansible Vault. The vault master password lives in `~/.ansible/secure/.vault_pass` (mode 600, gitignored). Encrypted secrets are in `ansible/group_vars/lab_nodes/vault.yml` (sudo) and service-specific vault files in `~/.ansible/secure/`.
 
 ## Vault Password Location
 
@@ -13,14 +13,30 @@ This location is:
 - User-specific (not shared across users)
 - Protected with mode 600 (owner read/write only)
 
+## Vault Files
+
+All encrypted vault files use the same password (`~/.ansible/secure/.vault_pass`).
+
+| Vault File | Contents | Location |
+|-----------|----------|----------|
+| `vault.yml` | `vault_sudo_password` (lab sudo) | `group_vars/lab_nodes/vault.yml` |
+| `vault-nextcloud.yml` | NextCloud admin, DB, DB-root passwords | `~/.ansible/secure/vault-nextcloud.yml` |
+
 ## Running Playbooks with Vault
 
 ```bash
+# Legacy infrastructure playbooks
 cd technical-infrastructure/ansible
 ansible-playbook -i inventory.yml playbooks/PLAYBOOK.yml --vault-password-file ~/.ansible/secure/.vault_pass
-```
 
-All playbooks targeting `lab_nodes` automatically load `ansible_become_pass` from `group_vars/lab_nodes/all.yml`, which references the encrypted `vault_sudo_password` in `vault.yml`.
+# NextCloud playbook (loads both vault files via vars_files)
+cd workshop/01-Projects/nextcloud/ansible
+ansible-playbook -i inventory.ini deploy-nextcloud.yml --vault-password-file ~/.ansible/secure/.vault_pass
+
+# Or via env var (set in .bash_profile)
+export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
+ansible-playbook -i inventory.ini deploy-nextcloud.yml
+```
 
 ## Encrypting a New Secret
 
@@ -47,6 +63,8 @@ ansible-vault view group_vars/lab_nodes/vault.yml --vault-password-file ~/.ansib
 - Rotate vault password annually or when team members leave
 - Store vault password backup in secure location (1Password, etc.)
 - Directory `~/.ansible/secure/` should have mode 700
+- Use service-scoped vault files (e.g., `vault-nextcloud.yml`) rather than one monolithic vault
+- Add new service vaults to the Vault Files table above
 
 ---
 
