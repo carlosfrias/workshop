@@ -2,11 +2,11 @@
 
 **Purpose:** Install and configure NextCloud on lab node fnet2 for private cloud storage, file sync, and collaboration. Covers Ansible automation, service configuration, DNS/VLAN networking, and ongoing operations.
 
-**Status:** Proposed (TI-006) — not yet installed. Prerequisites in autoinstall packages. Designated node: fnet2.
+**Status:** In Progress (TI-006) — scaffolded, awaiting secrets generation and dry-run.
 
 ## [S-TIGHT]
 
-Infrastructure project router. Match keywords to domain, load domain context, execute. No domain-specific content in this file.
+Infrastructure project router. Match keywords to domain, load domain context, execute. No domain-specific content in this file. **All documentation lives in the vault** (`../../personal-vault/01-Projects/nextcloud/`). This project contains code and agent configs only.
 
 ---
 
@@ -19,6 +19,7 @@ Infrastructure project router. Match keywords to domain, load domain context, ex
 - Keep outputs concise, actionable
 - Ansible playbooks in `./ansible/`
 - Config and compose files in `./infrastructure/`
+- **Documentation in vault**, code in workshop — no mixing
 
 ---
 
@@ -29,7 +30,7 @@ Infrastructure project router. Match keywords to domain, load domain context, ex
 | install, configure, deploy, ansible, playbook, docker, compose, nginx, apache, php, mariadb, postgres, redis, SSL, certificate, nextcloud setup, provisioning | `./infrastructure/AGENTS.md` |
 | dns, dnsmasq, VLAN, network, firewall, segmentation, ddns, tplinkdns, router, subnet | `./infrastructure/AGENTS.md` |
 | backup, restore, disaster recovery, migration, sync, depot | `./infrastructure/AGENTS.md` |
-| wiki, documentation, notes, research, planning, session, status, activity log | `./wiki/nextcloud/AGENTS.md` |
+| wiki, documentation, notes, research, planning, session, status, activity log | `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/AGENTS.md` |
 
 **Domain Ambiguity Rule:** If keywords don't clearly match, ask the user which domain they intend. Do not guess.
 
@@ -55,7 +56,7 @@ All nodes run Ubuntu, have Docker + Ollama installed, and are managed via Ansibl
 
 | From | To | Path |
 |------|----|------|
-| Workshop → Vault (docs) | `../../personal-vault/01-Projects/nextcloud/` | Knowledge notes, research, planning |
+| Workshop → Vault (docs) | `../../personal-vault/01-Projects/nextcloud/` | Knowledge notes, research, wiki |
 | Vault → Workshop (code) | `../../workshop/01-Projects/nextcloud/` | Ansible, configs, scripts |
 | Workshop → Lab Specs | `../../workshop/03-Resources/Infrastructure/lab-specs/` | Hardware specs, node capacity |
 | Workshop → TI Backlog | `../../workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/wiki/operational/BACKLOG.md` | TI-006 NextCloud Installation |
@@ -67,9 +68,9 @@ All nodes run Ubuntu, have Docker + Ollama installed, and are managed via Ansibl
 ```
 1. workshop/AGENTS.md                       ← Pick project (infrastructure keywords)
 2. workshop/01-Projects/nextcloud/AGENTS.md  ← YOU ARE HERE (pick domain)
-3. workshop/01-Projects/nextcloud/infrastructure/AGENTS.md  ← Full domain context
+3. workshop/01-Projects/nextcloud/infrastructure/AGENTS.md  ← Full domain context (code)
    OR
-   personal-vault/01-Projects/nextcloud/     ← Knowledge, research, planning docs
+   personal-vault/01-Projects/nextcloud/     ← Knowledge, research, wiki (all docs)
 ```
 
 ---

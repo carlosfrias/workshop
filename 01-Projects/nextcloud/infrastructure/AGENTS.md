@@ -4,7 +4,7 @@ Installation, configuration, deployment, and operations for NextCloud on lab nod
 
 ## [S-TIGHT]
 
-Self-contained domain context. All conventions, rules, quality checks, and documentation protocols for NextCloud infrastructure live here. No supplementary files.
+Self-contained domain context. All conventions, rules, quality checks for NextCloud infrastructure live here. **Documentation lives in the vault** (`../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`). This file covers code and operations only.
 
 ---
 
@@ -12,11 +12,12 @@ Self-contained domain context. All conventions, rules, quality checks, and docum
 
 - **Target node:** fnet2 (`192.168.0.142`)
 - **Ansible playbooks** live in `./ansible/` — one playbook per service or configuration step
-- **Docker Compose** files live in `./infrastructure/` — named by service (e.g., `nextcloud-docker-compose.yml`)
+- **Docker Compose** files live in `./infrastructure/docker/` — named by service
 - **All commands executed via Ansible** from the orchestrator unless explicitly noted
 - **Config backups** stored in `./infrastructure/configs/`
 - **Timestamps:** YYYY-MM-DD HH:MM:SS US Eastern
 - **Test before deploy:** All playbooks run with `--check` first, then `--diff`
+- **Docs in vault:** All wiki activity logs, architecture docs, and research notes go to `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`
 
 ## Architecture Decisions
 
@@ -46,7 +47,7 @@ Self-contained domain context. All conventions, rules, quality checks, and docum
 - Run Ansible playbooks with `--check --diff` before applying
 - Verify fnet2 connectivity (`ssh friasc@192.168.0.142`) before any deployment
 - Commit all playbook changes to git before running
-- Document every configuration change in the wiki activity log
+- Document every configuration change in the vault wiki activity log
 - Use `ansible-vault` for any secrets (database passwords, admin credentials)
 - Test NextCloud web UI accessibility after any deployment step
 - Verify Docker containers are healthy after playbook runs
@@ -57,6 +58,7 @@ Self-contained domain context. All conventions, rules, quality checks, and docum
 - Run playbooks against the wrong node (always verify inventory)
 - Skip the backup step before major configuration changes
 - Delete NextCloud data without confirmation
+- Put documentation files in the workshop — docs go to the vault
 
 ## Quality Checklist
 
@@ -66,7 +68,7 @@ Before considering any task complete, verify:
 - [ ] Docker containers are running and healthy (`docker ps` on fnet2)
 - [ ] NextCloud web UI accessible at `http://192.168.0.142:8080`
 - [ ] File upload/download works
-- [ ] Activity log entry created in wiki
+- [ ] Activity log entry created in vault wiki
 - [ ] Any secrets stored in ansible-vault, not plaintext
 - [ ] Changes committed to git
 
@@ -80,20 +82,17 @@ Before considering any task complete, verify:
 | Hardcoding IP in playbooks | Use Ansible inventory/group_vars |
 | Skipping Redis for performance | Include Redis in the compose stack from the start |
 | Exposing port 443 without proper TLS cert | Use self-signed initially, plan Let's Encrypt for production |
+| Putting documentation in workshop | Docs go to `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/` |
 
 ## Documentation Protocol
 
-After completing any task, document what you did in the project wiki.
-
-### When to Document
-- After making decisions that affect the deployment architecture
-- After running a playbook or configuration change
-- After discovering and resolving issues
-- After creating, modifying, or removing any files or configurations
+After completing any task, document what you did in the **vault wiki** — not in the workshop.
 
 ### Where to Document
-- Write to: `./wiki/nextcloud/infrastructure/Activity Log.md`
-- Cross-reference from: `../../personal-vault/01-Projects/nextcloud/` for knowledge docs
+- **All documentation** → `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`
+  - Activity log: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/infrastructure/Activity Log.md`
+  - Architecture: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/_meta/Architecture.md`
+  - Research: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/research/Activity Log.md`
 
 ### Format
 ```markdown
@@ -108,7 +107,7 @@ After completing any task, document what you did in the project wiki.
 
 ## Cross-Domain References
 
-- Knowledge/research docs: `../../../personal-vault/01-Projects/nextcloud/`
-- Lab hardware specs: `../../../workshop/03-Resources/Infrastructure/lab-specs/`
-- TI backlog: `../../../workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/wiki/operational/BACKLOG.md`
-- Routing table: `../AGENTS.md` (project root)
+- **Knowledge/research docs (vault):** `../../personal-vault/01-Projects/nextcloud/`
+- **Lab hardware specs:** `../../03-Resources/Infrastructure/lab-specs/`
+- **TI backlog:** `../../03-Resources/Infrastructure/technical-infrastructure-legacy/wiki/operational/BACKLOG.md`
+- **Routing table:** `../AGENTS.md` (project root)
