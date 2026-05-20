@@ -1,0 +1,121 @@
+---
+# Backup NextCloud to fnet6:/srv/archive/nextcloud/
+# Enables maintenance mode, rsyncs data/db/config to fnet6, disables maintenance mode
+#
+# Prerequisite: deploy-nextcloud.yml must have been run first
+# Prerequisite: SSH key from fnet1 to fnet6 must be configured
+#
+# Usage:
+#   Via playbook-executor: ./scripts/run-playbook.sh "backup nextcloud"
+#   Direct:  ansible-playbook -i inventory.ini backup-nextcloud.yml
+#   Dry run:  ansible-playbook -i inventory.ini backup-nextcloud.yml --check
+#   Manual:   ssh friasc@192.168.0.141 /srv/nextcloud/backup/backup-nextcloud.sh
+#
+# Requires: export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
+
+- name: Backup NextCloud to fnet6
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    nextcloud_base_dir: /srv/nextcloud
+    backup_script_src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/backup/backup-nextcloud.sh"
+    backup_script_dest: /srv/nextcloud/backup/backup-nextcloud.sh
+    backup_remote_host: friasc@192.168.0.146
+    backup_remote_base: /srv/archive/nextcloud
+
+  tasks:
+    - name: Verify NextCloud is running
+      community.docker.docker_container_info:
+        name: nextcloud-app
+      register: nc_container
+      failed_when: nc_container.container.State.Running != true
+
+    - name: Ensure backup directory exists on fnet1
+      ansible.builtin.file:
+        path: /srv/nextcloud/backup
+        state: directory
+        mode: "0755"
+
+    - name: Copy backup script to fnet1
+      ansible.builtin.copy:
+        src: "{{ backup_script_src }}"
+        dest: "{{ backup_script_dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Verify SSH connectivity from fnet1 to fnet6
+      ansible.builtin.command: >
+        ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=accept-new
+        -i /home/friasc/.ssh/id_ed25519
+        {{ backup_remote_host }} 'hostname'
+      register: ssh_test
+      changed_when: false
+      become: false
+      become_user: friasc
+      failed_when: ssh_test.rc != 0
+
+    - name: Ensure remote backup directory exists on fnet6
+      ansible.builtin.shell: ssh -i /home/friasc/.ssh/id_ed25519 {{ backup_remote_host }} "sudo mkdir -p {{ backup_remote_base }}/data {{ backup_remote_base }}/db {{ backup_remote_base }}/config {{ backup_remote_base }}/logs && sudo chown friasc:friasc {{ backup_remote_base }} {{ backup_remote_base }}/data {{ backup_remote_base }}/db {{ backup_remote_base }}/config {{ backup_remote_base }}/logs"
+      register: remote_dir
+      changed_when: remote_dir.rc == 0
+      become: false
+
+    - name: Enable NextCloud maintenance mode
+      ansible.builtin.command: docker exec nextcloud-app php occ maintenance:mode --on
+      register: maintenance_on
+      changed_when: "'maintenance mode enabled' in maintenance_on.stdout"
+
+    - name: Rsync NextCloud data to fnet6
+      ansible.builtin.command: >
+        rsync -az --delete --compress-level=6 --human-readable
+        /srv/nextcloud/data/
+        {{ backup_remote_host }}:{{ backup_remote_base }}/data/
+        -e 'ssh -i /home/friasc/.ssh/id_ed25519'
+      register: rsync_data
+      changed_when: rsync_data.rc == 0
+      become: false
+
+    - name: Rsync NextCloud database to fnet6
+      ansible.builtin.command: >
+        rsync -az --delete --compress-level=6 --human-readable
+        /srv/nextcloud/db/
+        {{ backup_remote_host }}:{{ backup_remote_base }}/db/
+        -e 'ssh -i /home/friasc/.ssh/id_ed25519'
+      register: rsync_db
+      changed_when: rsync_db.rc == 0
+      become: false
+
+    - name: Rsync NextCloud config to fnet6
+      ansible.builtin.command: >
+        rsync -az --delete --compress-level=6 --human-readable
+        /srv/nextcloud/config/
+        {{ backup_remote_host }}:{{ backup_remote_base }}/config/
+        -e 'ssh -i /home/friasc/.ssh/id_ed25519'
+      register: rsync_config
+      changed_when: rsync_config.rc == 0
+      become: false
+
+    - name: Disable NextCloud maintenance mode
+      ansible.builtin.command: docker exec nextcloud-app php occ maintenance:mode --off
+      register: maintenance_off
+      changed_when: "'maintenance mode disabled' in maintenance_off.stdout"
+
+    - name: Record backup timestamp on fnet6
+      ansible.builtin.shell: >
+        ssh -i /home/friasc/.ssh/id_ed25519
+        {{ backup_remote_host }}
+        "date '+%Y-%m-%d %H:%M:%S' > {{ backup_remote_base }}/last-backup.txt"
+      changed_when: true
+      become: false
+
+    - name: Report backup status
+      ansible.builtin.debug:
+        msg: >
+          NextCloud backup completed.
+          Data: {{ rsync_data.stdout_lines | length }} items synced.
+          DB: {{ rsync_db.stdout_lines | length }} items synced.
+          Config: {{ rsync_config.stdout_lines | length }} items synced.
+          Remote: {{ backup_remote_host }}:{{ backup_remote_base }}
