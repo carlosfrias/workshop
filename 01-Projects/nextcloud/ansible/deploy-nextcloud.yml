@@ -1,6 +1,6 @@
 ---
 # NextCloud Deployment Playbook
-# TI-006: Install NextCloud on fnet2
+# TI-006: Install NextCloud on fnet1 (3TB node)
 #
 # Vault: ~/.ansible/secure/vault-nextcloud.yml (NextCloud secrets)
 #   Sudo: infrastructure-legacy ansible uses ~/.ansible/secure/.vault_pass
@@ -10,18 +10,14 @@
 #   vars_files loads them in order: sudo first, then nextcloud secrets
 #
 # Usage:
+#   Via playbook-executor: ./scripts/run-playbook.sh "deploy nextcloud"
+#   Direct:  ansible-playbook -i inventory.ini deploy-nextcloud.yml
 #   Dry run:  ansible-playbook -i inventory.ini deploy-nextcloud.yml --check --diff
-#   Apply:    ansible-playbook -i inventory.ini deploy-nextcloud.yml
 #
 # Requires:  export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
 #   (or ansible.cfg fallback to same path)
-#
-# Prerequisites:
-#   - fnet2 reachable via SSH (verified separately)
-#   - Docker installed (in autoinstall packages)
-#   - /srv/nextcloud/ directories created by this playbook
 
-- name: Deploy NextCloud on fnet2
+- name: Deploy NextCloud on fnet1
   hosts: nextcloud
   become: true
   vars_files:
@@ -39,6 +35,12 @@
         name: docker
         state: started
       check_mode: false
+
+    - name: Install docker-compose-v2 if missing
+      ansible.builtin.apt:
+        name: docker-compose-v2
+        state: present
+        update_cache: true
 
     - name: Create NextCloud directories
       ansible.builtin.file:

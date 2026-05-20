@@ -1,0 +1,56 @@
+---
+# Uninstall NextCloud from fnet2
+# Removes all containers, volumes, data directories, and compose file
+# Used during migration from fnet2 → fnet1
+#
+# Usage:
+#   Via playbook-executor: ./scripts/run-playbook.sh "uninstall nextcloud"
+#   Direct:  ansible-playbook -i inventory-fnet2-uninstall.ini uninstall-nextcloud.yml
+#
+# Requires: export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
+
+- name: Uninstall NextCloud from fnet2 (migration to fnet1)
+  hosts: nextcloud_cleanup
+  become: true
+  vars:
+    nextcloud_base_dir: /srv/nextcloud
+
+  tasks:
+    - name: Stop and remove NextCloud Docker Compose stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nextcloud_base_dir }}"
+        state: absent
+        remove_volumes: true
+      ignore_errors: true
+
+    - name: Remove NextCloud containers (fallback if compose fails)
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - nextcloud-app
+        - nextcloud-db
+        - nextcloud-redis
+        - nextcloud-cron
+      ignore_errors: true
+
+    - name: Remove NextCloud Docker network
+      community.docker.docker_network:
+        name: nextcloud_nextcloud-net
+        state: absent
+      ignore_errors: true
+
+    - name: Remove NextCloud Docker volume
+      community.docker.docker_volume:
+        name: nextcloud_nextcloud_data
+        state: absent
+      ignore_errors: true
+
+    - name: Remove NextCloud data directories
+      ansible.builtin.file:
+        path: "{{ nextcloud_base_dir }}"
+        state: absent
+
+    - name: Verify NextCloud is removed
+      ansible.builtin.debug:
+        msg: "NextCloud completely removed from {{ inventory_hostname }}"
