@@ -94,4 +94,5 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 |------|---------|
 | Full assessment, pros/cons | `../../personal-vault/01-Projects/pi-cross-node-comms/1-ASSESSMENT.md` |
 | Current state, priorities | `../../personal-vault/01-Projects/pi-cross-node-comms/FOCUS.md` |
+| LOD manifest (low-capacity loading) | `../../personal-vault/01-Projects/pi-cross-node-comms/wiki/reference/LOD-MANIFEST.md` |
 | Unified prompt (v1) | `../../personal-vault/01-Projects/pi-cross-node-comms/threads/pi-cross-node-comms/prompts/01-unified-prompt-v1.md` |

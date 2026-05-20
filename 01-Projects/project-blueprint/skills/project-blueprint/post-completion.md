@@ -118,9 +118,16 @@ EXTRACTED GOLDEN PATH (5 steps):
 5. Write final report
 ```
 
-### Phase 4: Generate Post-Completion AGENTS
+### Phase 4: Generate Post-Completion AGENTS (Versioned)
 
 Use the template at `./templates/AGENTS-post-completion.md`.
+
+**Versioning protocol** (mirrors `unified-prompt-v<N>.md` convention):
+
+1. Detect current version: check for `AGENTS-REFINED-v*.md` in `<domain>/refined-agents/`. Start at v1 or increment.
+2. Write versioned file: `refined-agents/AGENTS-REFINED-v<N>.md` — immutable record
+3. Write latest pointer: `refined-agents/AGENTS-REFINED.md` — always current
+4. Include version reference in header: `**Refined:** YYYY-MM-DD — [[refined-agents/AGENTS-REFINED-v<N>|v<N>]]`
 
 Key sections to populate:
 
@@ -149,7 +156,7 @@ After generating the refined AGENTS.md:
 
 When the user approves merging the refined AGENTS.md:
 
-1. **Backup**: Copy current `AGENTS.md` → `AGENTS-PRE-REFINE-YYYYMMDD.md`
+1. **Version backup**: Copy current `AGENTS.md` → `AGENTS-v<N>.md` (increment from existing AGENTS-v*.md files)
 2. **Replace**: Copy `AGENTS-REFINED.md` → `AGENTS.md`
 3. **Update agent**: Check `.pi/agents/<domain>.md` for stale references
 4. **Update routing**: Verify root `AGENTS.md` still points correctly

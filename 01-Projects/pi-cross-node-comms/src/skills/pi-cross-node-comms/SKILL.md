@@ -7,7 +7,20 @@ description: Cross-node coordination patterns for pi agents connected via a coms
 
 Coordinate with pi sessions running on **different machines** via a shared coms-net hub.
 
-## When to Use
+## [S-TIGHT]
+
+Cross-node pi communication via coms-net hub. 4 tools: list, send, get, await. Never use coms_net_send to reply to inbound messages — reply normally.
+
+## LOD Loading Directive
+
+| Model Tier | Load |
+|------------|------|
+| **Low (<4K)** | CORE + Quick Reference + Configuration |
+| **Medium+** | Full file (~2KB) |
+
+---
+
+## CORE — When to Use + Quick Reference (LOD: Low)
 
 - Multi-machine task distribution (research, execution, monitoring)
 - Fleet coordination (orchestrator + lab workers)
@@ -25,7 +38,7 @@ Coordinate with pi sessions running on **different machines** via a shared coms-
 | Check for reply | `coms_net_get({ msg_id })` | No |
 | Wait for reply | `coms_net_await({ msg_id })` | Yes (up to 30min) |
 
-## Communication Patterns
+## PATTERNS — Communication Patterns (LOD: Medium)
 
 ### Fire-and-Forget (status update)
 
@@ -84,7 +97,7 @@ Orchestrator (macOS)          Hub (Bun server)          Worker (Ubuntu lab)
       │◄── response (SSE) ────────│                          │
 ```
 
-## Configuration
+## CONFIG — Configuration (LOD: Low)
 
 Add to `AGENTS.md` for agents:
 

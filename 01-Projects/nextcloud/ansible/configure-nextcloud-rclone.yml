@@ -1,0 +1,379 @@
+---
+# Configure rclone External Storage Bridge for NextCloud
+# Mounts Dropbox and Google Drive as local FUSE filesystems,
+# then exposes them to NextCloud as "Local" external storage.
+#
+# Target: fnet1 (the NextCloud node)
+#
+# ⚠️ OAuth SETUP: rclone requires browser-based OAuth for Dropbox and
+#   Google Drive. This playbook supports two modes:
+#
+#   MODE 1 — Pre-generate tokens on your Mac (recommended for full automation):
+#     1. Install rclone on Mac: brew install rclone
+#     2. Generate tokens:
+#        rclone authorize "dropbox"
+#        rclone authorize "drive"
+#     3. Pass tokens as Ansible extra vars:
+#        ansible-playbook ... -e "rclone_dropbox_token='{...}'"
+#        ansible-playbook ... -e "rclone_gdrive_token='{...}'"
+#
+#   MODE 2 — Interactive SSH tunnel (if tokens not provided):
+#     1. Playbook pauses with instructions
+#     2. On Mac: ssh -L localhost:53682:localhost:53682 friasc@192.168.0.141
+#     3. On fnet1: rclone config (authorize in your browser)
+#     4. Resume playbook
+#
+# Depends on: deploy-nextcloud.yml (NextCloud must be running)
+#
+# Usage:
+#   Syntax check:  ansible-playbook -i inventory.ini configure-nextcloud-rclone.yml --syntax-check
+#   Dry run:       ansible-playbook -i inventory.ini configure-nextcloud-rclone.yml --check --diff
+#   Apply:         ansible-playbook -i inventory.ini configure-nextcloud-rclone.yml
+#   With tokens:   ansible-playbook -i inventory.ini configure-nextcloud-rclone.yml \
+#                    -e "rclone_dropbox_token='{...}'" -e "rclone_gdrive_token='{...}'"
+
+- name: Install rclone on fnet1
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    # Mount paths (host)
+    rclone_mount_base: /mnt/rclone
+    rclone_dropbox_mount: "{{ rclone_mount_base }}/dropbox"
+    rclone_gdrive_mount: "{{ rclone_mount_base }}/gdrive"
+
+    # Docker paths
+    nextcloud_docker_dir: /srv/nextcloud
+    nextcloud_compose_file: "{{ nextcloud_docker_dir }}/docker-compose.yml"
+
+    # User for systemd services and rclone config
+    rclone_user: friasc
+    rclone_group: friasc
+
+    # Tokens (set via -e or leave empty for interactive mode)
+    rclone_dropbox_token: ""
+    rclone_gdrive_token: ""
+
+    # Backends to configure (set to empty list to skip)
+    # Example: rclone_backends: ["dropbox", "gdrive"]
+    # Example: rclone_backends: ["dropbox"]
+    rclone_backends:
+      - dropbox
+      - gdrive
+
+  tasks:
+    # ── Phase 1: Install rclone ────────────────────────────────────
+
+    - name: Check if rclone is already installed
+      ansible.builtin.command: rclone version
+      register: rclone_installed
+      changed_when: false
+      failed_when: false
+
+    - name: Install rclone via official install script
+      ansible.builtin.shell:
+        cmd: curl -sS https://rclone.org/install.sh | bash
+        creates: /usr/bin/rclone
+      when: rclone_installed.rc != 0
+
+    - name: Verify rclone installation
+      ansible.builtin.command: rclone version
+      register: rclone_version
+      changed_when: false
+
+    - name: Report rclone version
+      ansible.builtin.debug:
+        msg: "rclone {{ rclone_version.stdout_lines[0] }}"
+
+    # ── Phase 2: Create mount directories ──────────────────────────
+
+    - name: Create rclone mount directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ rclone_user }}"
+        group: "{{ rclone_group }}"
+        mode: "0755"
+      loop:
+        - "{{ rclone_mount_base }}"
+        - "{{ rclone_dropbox_mount }}"
+        - "{{ rclone_gdrive_mount }}"
+
+    # ── Phase 3: rclone configuration ─────────────────────────────
+
+    - name: Check for existing rclone config
+      ansible.builtin.stat:
+        path: "/home/{{ rclone_user }}/.config/rclone/rclone.conf"
+      register: rclone_config_file
+
+    - name: Show rclone OAuth setup instructions (interactive mode)
+      when:
+        - not rclone_config_file.stat.exists
+        - rclone_dropbox_token == ""
+        - rclone_gdrive_token == ""
+      ansible.builtin.pause:
+        prompt: |
+          ╔══════════════════════════════════════════════════════════════╗
+          ║  RCLONE OAUTH SETUP REQUIRED                                ║
+          ║                                                            ║
+          ║  rclone needs OAuth tokens for cloud providers. Options:    ║
+          ║                                                            ║
+          ║  A) SSH TUNNEL (interactive, right now):                   ║
+          ║     1. On your Mac, open a NEW terminal and run:           ║
+          ║        ssh -L localhost:53682:localhost:53682 friasc@192.168.0.141 ║
+          ║     2. Back in this terminal on fnet1, run:                ║
+          ║        rclone config                                       ║
+          ║     3. Create remotes named 'dropbox' and 'gdrive'         ║
+          ║     4. Authorize in your browser when prompted             ║
+          ║     5. When done, come back here and press Enter           ║
+          ║                                                            ║
+          ║  B) SKIP for now, re-run with tokens later:                ║
+          ║     Press Ctrl+C, then:                                    ║
+          ║     brew install rclone   (on Mac)                         ║
+          ║     rclone authorize "dropbox"                             ║
+          ║     rclone authorize "drive"                               ║
+          ║     ansible-playbook ... -e "rclone_dropbox_token='...'"   ║
+          ║                          -e "rclone_gdrive_token='...'"    ║
+          ║                                                            ║
+          ║  Press Enter to continue (if OAuth already done),          ║
+          ║  or Ctrl+C to abort and configure later.                   ║
+          ╚══════════════════════════════════════════════════════════════╝
+        minutes: 30
+
+    - name: Configure Dropbox remote (token provided)
+      when:
+        - rclone_dropbox_token != ""
+        - not rclone_config_file.stat.exists or "'dropbox' not in lookup('file', '/home/{{ rclone_user }}/.config/rclone/rclone.conf')"
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p /home/{{ rclone_user }}/.config/rclone
+          rclone config create dropbox dropbox token={{ rclone_dropbox_token | quote }} \
+            config_is_local=false
+      become_user: "{{ rclone_user }}"
+
+    - name: Configure Google Drive remote (token provided)
+      when:
+        - rclone_gdrive_token != ""
+        - not rclone_config_file.stat.exists or "'gdrive' not in lookup('file', '/home/{{ rclone_user }}/.config/rclone/rclone.conf')"
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p /home/{{ rclone_user }}/.config/rclone
+          rclone config create gdrive drive token={{ rclone_gdrive_token | quote }} \
+            config_is_local=false scope=drive
+      become_user: "{{ rclone_user }}"
+
+    - name: Verify rclone remotes
+      when: rclone_config_file.stat.exists
+      ansible.builtin.command: rclone listremotes
+      register: rclone_remotes
+      changed_when: false
+      become_user: "{{ rclone_user }}"
+
+    - name: Report configured remotes
+      ansible.builtin.debug:
+        msg: "Configured rclone remotes: {{ rclone_remotes.stdout_lines | default([]) }}"
+
+    # ── Phase 4: systemd mount services ────────────────────────────
+
+    - name: Create systemd mount service for Dropbox
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=RClone mount of dropbox: remote
+          Documentation=https://rclone.org/docs/
+          After=network-online.target
+          Wants=network-online.target
+          After=rclone-config.service
+          RequiresMountsFor={{ rclone_mount_base }}
+
+          [Service]
+          Type=notify
+          User={{ rclone_user }}
+          Group={{ rclone_group }}
+          ExecStart=/usr/bin/rclone mount dropbox: {{ rclone_dropbox_mount }} \
+            --allow-other \
+            --vfs-cache-mode writes \
+            --vfs-cache-max-size 1G \
+            --vfs-cache-max-age 6h \
+            --dir-cache-time 5m \
+            --log-level INFO \
+            --log-file /var/log/rclone-dropbox.log
+          ExecStop=/bin/fusermount -uz {{ rclone_dropbox_mount }}
+          Restart=always
+          RestartSec=10
+          Environment=HOME=/home/{{ rclone_user }}
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/rclone-mount-dropbox.service
+        owner: root
+        group: root
+        mode: "0644"
+      register: dropbox_service
+      when: "'dropbox' in rclone_backends"
+
+    - name: Create systemd mount service for Google Drive
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=RClone mount of gdrive: remote
+          Documentation=https://rclone.org/docs/
+          After=network-online.target
+          Wants=network-online.target
+          After=rclone-config.service
+          RequiresMountsFor={{ rclone_mount_base }}
+
+          [Service]
+          Type=notify
+          User={{ rclone_user }}
+          Group={{ rclone_group }}
+          ExecStart=/usr/bin/rclone mount gdrive: {{ rclone_gdrive_mount }} \
+            --allow-other \
+            --vfs-cache-mode writes \
+            --vfs-cache-max-size 1G \
+            --vfs-cache-max-age 6h \
+            --dir-cache-time 5m \
+            --log-level INFO \
+            --log-file /var/log/rclone-gdrive.log
+          ExecStop=/bin/fusermount -uz {{ rclone_gdrive_mount }}
+          Restart=always
+          RestartSec=10
+          Environment=HOME=/home/{{ rclone_user }}
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/rclone-mount-gdrive.service
+        owner: root
+        group: root
+        mode: "0644"
+      register: gdrive_service
+      when: "'gdrive' in rclone_backends"
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+      when: dropbox_service.changed or gdrive_service.changed
+
+    - name: Enable and start Dropbox mount service
+      ansible.builtin.systemd:
+        name: rclone-mount-dropbox
+        enabled: true
+        state: started
+      when: "'dropbox' in rclone_backends"
+      ignore_errors: true  # Will fail if rclone config doesn't have 'dropbox' remote
+
+    - name: Enable and start Google Drive mount service
+      ansible.builtin.systemd:
+        name: rclone-mount-gdrive
+        enabled: true
+        state: started
+      when: "'gdrive' in rclone_backends"
+      ignore_errors: true  # Will fail if rclone config doesn't have 'gdrive' remote
+
+    - name: Wait for mounts to be ready
+      ansible.builtin.wait_for:
+        path: "{{ item }}"
+        state: present
+        timeout: 30
+      loop:
+        - "{{ rclone_dropbox_mount }}"
+        - "{{ rclone_gdrive_mount }}"
+      when: "'dropbox' in rclone_backends or 'gdrive' in rclone_backends"
+      ignore_errors: true
+
+    - name: Verify mounts are accessible
+      ansible.builtin.command: "ls {{ item }}"
+      loop:
+        - "{{ rclone_dropbox_mount }}"
+        - "{{ rclone_gdrive_mount }}"
+      register: mount_check
+      changed_when: false
+      failed_when: false
+
+    - name: Report mount status
+      ansible.builtin.debug:
+        msg: |
+          {% for check in mount_check.results %}
+          {{ check.item }}: {{ '✅ mounted' if check.rc == 0 else '❌ not mounted (OAuth may be needed)' }}
+          {% endfor %}
+
+    # ── Phase 5: Update Docker Compose with bind mounts ────────────
+
+    - name: Read current docker-compose.yml
+      ansible.builtin.slurp:
+        src: "{{ nextcloud_compose_file }}"
+      register: current_compose
+
+    - name: Update docker-compose.yml with rclone bind mounts
+      when: "'/mnt/rclone' not in (current_compose.content | b64decode)"
+      ansible.builtin.blockinfile:
+        path: "{{ nextcloud_compose_file }}"
+        marker: "# {mark} RCLONE BIND MOUNTS — managed by configure-nextcloud-rclone"
+        insertafter: "volumes:"
+        block: |
+              - {{ rclone_dropbox_mount }}:{{ rclone_dropbox_mount }}:shared
+              - {{ rclone_gdrive_mount }}:{{ rclone_gdrive_mount }}:shared
+      register: compose_updated
+
+    - name: Redeploy NextCloud with new bind mounts
+      when: compose_updated.changed
+      community.docker.docker_compose_v2:
+        project_src: "{{ nextcloud_docker_dir }}"
+        files:
+          - docker-compose.yml
+        state: present
+        remove_orphans: false
+      environment:
+        NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password | default(omit) }}"
+        NEXTCLOUD_DB_PASSWORD: "{{ nextcloud_db_password | default(omit) }}"
+        NEXTCLOUD_DB_ROOT_PASSWORD: "{{ nextcloud_db_root_password | default(omit) }}"
+
+    # ── Phase 6: NextCloud External Storage config (manual) ────────
+
+    - name: NextCloud external storage configuration instructions
+      ansible.builtin.debug:
+        msg: |
+          ╔══════════════════════════════════════════════════════════════╗
+          ║  NEXTCLOUD EXTERNAL STORAGE SETUP (Manual)                  ║
+          ║                                                            ║
+          ║  After mounts are verified, configure in NextCloud UI:      ║
+          ║                                                            ║
+          ║  1. Browse to https://nextcloud.home                        ║
+          ║  2. Settings → Administration → External Storage            ║
+          ║  3. Add storage for Dropbox:                               ║
+          ║     - Storage type: Local                                  ║
+          ║     - Folder name: Dropbox                                 ║
+          ║     - Configuration: {{ rclone_dropbox_mount }}            ║
+          ║     - Available for: admin, Carlos                         ║
+          ║  4. Add storage for Google Drive:                          ║
+          ║     - Storage type: Local                                  ║
+          ║     - Folder name: GoogleDrive                             ║
+          ║     - Configuration: {{ rclone_gdrive_mount }}             ║
+          ║     - Available for: admin, Carlos                         ║
+          ║  5. Verify: green dot next to each storage                 ║
+          ║                                                            ║
+          ║  Rclone status: systemctl status rclone-mount-dropbox      ║
+          ║  Logs:          journalctl -u rclone-mount-dropbox -f      ║
+          ║                 tail -f /var/log/rclone-dropbox.log        ║
+          ╚══════════════════════════════════════════════════════════════╝
+
+    - name: Final status summary
+      ansible.builtin.debug:
+        msg: |
+          ┌──── RCLONE EXTERNAL STORAGE SETUP COMPLETE ────────────────┐
+          │                                                              │
+          │  rclone version: {{ rclone_version.stdout_lines[0] }}       │
+          │  Remotes: {{ rclone_remotes.stdout_lines | default(['none configured']) | join(', ') }}
+          │                                                              │
+          │  Mount paths:                                                │
+          │    Dropbox:     {{ rclone_dropbox_mount }}                   │
+          │    Google Drive: {{ rclone_gdrive_mount }}                   │
+          │                                                              │
+          │  Services:                                                   │
+          │    systemctl status rclone-mount-dropbox                     │
+          │    systemctl status rclone-mount-gdrive                      │
+          │                                                              │
+          │  Next step: Configure in NextCloud UI → External Storage     │
+          │                                                              │
+          └──────────────────────────────────────────────────────────────┘

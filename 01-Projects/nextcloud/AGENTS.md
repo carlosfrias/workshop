@@ -26,6 +26,7 @@ Infrastructure project router. Match keywords to domain, load domain context, ex
 |----------|---------------|
 | install, configure, deploy, ansible, playbook, docker, compose, nginx, SSL, certificate, nextcloud setup, provisioning, backup, restore, dns, proxy | `./infrastructure/AGENTS-REFINED.md` (post-completion, verified) |
 | `./infrastructure/AGENTS.md` | Original scaffold (pre-deployment, less accurate) |
+| rclone, external storage, dropbox, google drive, gdrive, cloud mount, fuse mount, bridge | `./infrastructure/AGENTS-REFINED-RCLONE.md` (post-completion, verified) |
 | wiki, documentation, notes, research, planning, session, status, activity log | `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/AGENTS.md` |
 
 **Prefer AGENTS-REFINED.md** — it contains the golden path proven by actual deployment, with all resolved ambiguities and common mistakes documented.
@@ -56,6 +57,7 @@ All nodes run Ubuntu, have Docker + Ollama installed, and are managed via Ansibl
 | `configure-nextcloud-dns.yml` | `configure nextcloud dns` (21 triggers) | dnsmasq + /etc/hosts on 7 nodes |
 | `configure-nextcloud-proxy.yml` | `configure nextcloud proxy` (27 triggers) | Nginx + SSL + trusted domains |
 | `backup-nextcloud.yml` | `backup nextcloud` (39 triggers) | rsync to fnet6 with maintenance mode |
+| `configure-nextcloud-rclone.yml` | `configure nextcloud rclone` (26 triggers) | rclone FUSE mounts for Dropbox + Google Drive |
 | `uninstall-nextcloud.yml` | `uninstall nextcloud` (60+ triggers) | Remove from fnet2 |
 
 **Dependency:** DNS playbook MUST run before proxy playbook.
@@ -78,7 +80,9 @@ All nodes run Ubuntu, have Docker + Ollama installed, and are managed via Ansibl
 ```
 1. workshop/AGENTS.md                                    ← Pick project (infrastructure keywords)
 2. workshop/01-Projects/nextcloud/AGENTS.md              ← YOU ARE HERE (pick domain)
-3. workshop/01-Projects/nextcloud/infrastructure/AGENTS-REFINED.md  ← Golden path (proven)
+3. workshop/01-Projects/nextcloud/infrastructure/AGENTS-REFINED.md  ← Golden path (proven, deployment)
+   OR
+   workshop/01-Projects/nextcloud/infrastructure/AGENTS-REFINED-RCLONE.md ← Golden path (proven, rclone external storage)
    OR
    workshop/01-Projects/nextcloud/infrastructure/AGENTS.md          ← Original scaffold (pre-deployment)
    OR

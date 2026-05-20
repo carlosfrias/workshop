@@ -206,10 +206,15 @@ Code, scripts, and data live in the **workshop**:
 "
 
 # FOCUS.md
-write_file "$VAULT_PROJECT/FOCUS.md" "# Current Focus
+write_file "$VAULT_PROJECT/FOCUS.md" "---
+name: $DISPLAY_NAME
+summary: Project scaffolded — define deliverables and priorities
+status: active
+---
+
+# Current Focus
 
 **Thread:** [threads/$PROJECT_NAME/0-THREAD.md](threads/$PROJECT_NAME/0-THREAD.md)
-**Status:** active
 **Last session:** $NOW — Project scaffolded
 
 ## Active work

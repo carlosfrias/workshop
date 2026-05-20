@@ -1,0 +1,149 @@
+---
+# Install Dropbox External Storage App for NextCloud
+# Enables Dropbox as a mountable external storage provider in NextCloud.
+#
+# Target: fnet1 (the NextCloud node)
+# App repo: https://github.com/DJaeger/files_external_dropbox
+#
+# ⚠️ VERSION NOTE: This app's info.xml caps max-version at 30.0.
+#    NextCloud on fnet1 runs v33.0.3. This playbook bumps the constraint.
+#    The app will likely work but has NOT been tested at this version.
+#    If it errors, revert with: unconfigure-nextcloud-dropbox.yml
+#
+# Depends on: deploy-nextcloud.yml (NextCloud must be running)
+#
+# Usage:
+#   Syntax check:  ansible-playbook -i inventory.ini configure-nextcloud-dropbox.yml --syntax-check
+#   Dry run:       ansible-playbook -i inventory.ini configure-nextcloud-dropbox.yml --check --diff
+#   Apply:         ansible-playbook -i inventory.ini configure-nextcloud-dropbox.yml
+#
+# After this playbook, configure Dropbox OAuth in the NextCloud admin UI:
+#   1. Create a Dropbox app at https://dropbox.com/developers
+#   2. Add redirect URI: https://nextcloud.home/index.php/settings/admin/externalstorages
+#   3. In NextCloud: Settings → Administration → External Storage → Add storage → Dropbox V2
+#   4. Enter Client ID (App key) and Client Secret → Grant Access
+
+- name: Install Dropbox External Storage app for NextCloud
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    nextcloud_apps_host_path: /srv/docker-data/volumes/nextcloud_nextcloud_data/_data/apps
+    dropbox_app_repo: https://github.com/DJaeger/files_external_dropbox.git
+    dropbox_app_name: files_external_dropbox
+    dropbox_app_dest: "{{ nextcloud_apps_host_path }}/{{ dropbox_app_name }}"
+    www_data_uid: 33
+    www_data_gid: 33
+
+  tasks:
+    - name: Verify NextCloud app container is running
+      ansible.builtin.command:
+        cmd: docker ps --filter name=nextcloud-app --format "{{ '{{.Status}}' }}"
+      register: container_status
+      changed_when: false
+      failed_when: "'Up' not in container_status.stdout"
+
+    - name: Check if Dropbox app is already installed
+      ansible.builtin.stat:
+        path: "{{ dropbox_app_dest }}/appinfo/info.xml"
+      register: dropbox_app_installed
+
+    - name: Enable files_external app (core)
+      ansible.builtin.shell:
+        cmd: >
+          docker exec -u www-data nextcloud-app php occ app:enable files_external 2>&1
+      register: external_enable
+      changed_when: >
+        'files_external already enabled' not in external_enable.stdout
+        and 'files_external 1' not in external_enable.stdout
+        and external_enable.stdout is defined
+
+    - name: Clone Dropbox external storage app repository
+      ansible.builtin.git:
+        repo: "{{ dropbox_app_repo }}"
+        dest: "{{ dropbox_app_dest }}"
+        version: master
+        force: true
+      register: git_clone
+      notify: set app ownership
+
+    - name: Bump max-version constraint for NextCloud 33 compatibility
+      ansible.builtin.replace:
+        path: "{{ dropbox_app_dest }}/appinfo/info.xml"
+        regexp: 'max-version="30\.0"'
+        replace: 'max-version="33"'
+      register: version_bump
+      when: dropbox_app_installed.stat.exists or git_clone.changed
+
+    - name: Download Composer (if not cached)
+      ansible.builtin.get_url:
+        url: https://getcomposer.org/installer
+        dest: "{{ dropbox_app_dest }}/build/composer-setup.php"
+        mode: "0644"
+      when: git_clone.changed
+
+    - name: Install Composer PHAR
+      ansible.builtin.command:
+        cmd: php composer-setup.php
+        chdir: "{{ dropbox_app_dest }}/build"
+        creates: "{{ dropbox_app_dest }}/build/composer.phar"
+      when: git_clone.changed
+
+    - name: Install Composer dependencies (no dev)
+      ansible.builtin.command:
+        cmd: php build/composer.phar install --no-dev --no-interaction
+        chdir: "{{ dropbox_app_dest }}"
+        creates: "{{ dropbox_app_dest }}/vendor/autoload.php"
+      environment:
+        HOME: /root
+      register: composer_install
+      when: git_clone.changed and dropbox_app_installed.stat.exists is defined
+
+    - name: Enable Dropbox external storage app in NextCloud
+      ansible.builtin.shell:
+        cmd: >
+          docker exec -u www-data nextcloud-app php occ app:enable {{ dropbox_app_name }} 2>&1
+      register: app_enable
+      changed_when: "'already enabled' not in app_enable.stdout"
+      failed_when: >
+        'not installed' in app_enable.stdout
+        or 'Error' in app_enable.stdout
+        or ('failed' in app_enable.stdout and 'already enabled' not in app_enable.stdout)
+
+    - name: Verify Dropbox app is enabled
+      ansible.builtin.command:
+        cmd: docker exec -u www-data nextcloud-app php occ app:list --enabled
+      register: app_list
+      changed_when: false
+
+    - name: Report installation status
+      ansible.builtin.debug:
+        msg: |
+          {% if 'files_external_dropbox' in app_list.stdout %}
+          ✅ Dropbox external storage app is ENABLED.
+
+          Next steps (manual in browser):
+            1. Go to https://dropbox.com/developers → Create App
+               - Choose "Scoped access" → "App folder" or "Full Dropbox"
+               - In OAuth2 Redirect URIs add:
+                 https://nextcloud.home/index.php/settings/admin/externalstorages
+               - Copy App key & App secret
+            2. Go to https://nextcloud.home → Settings → Administration → External Storage
+            3. Add storage → "Dropbox V2"
+               - Folder name: Dropbox
+               - Client ID: (your App key)
+               - Client Secret: (your App secret)
+               - Click "Grant Access" → authorize in Dropbox
+            4. Green dot = success. Dropbox folder appears in Files.
+          {% else %}
+          ❌ Dropbox app is NOT enabled. Check errors above.
+          {% endif %}
+
+  handlers:
+    - name: set app ownership
+      ansible.builtin.file:
+        path: "{{ dropbox_app_dest }}"
+        owner: "{{ www_data_uid }}"
+        group: "{{ www_data_gid }}"
+        recurse: true

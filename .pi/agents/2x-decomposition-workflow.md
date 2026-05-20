@@ -1,6 +1,19 @@
 # 2x Decomposition Workflow
 
-## Overview
+## [S-TIGHT]
+
+When a sub-task fails verification with 2+ independent failure modes, split it into 2-3 more atomic steps. Detailed logic in wiki/reference/decomposition-logic.md.
+
+## LOD Loading Directive
+
+| Model Tier | Load |
+|------------|------|
+| **Low (<4K)** | CORE (Overview + Diagram) |
+| **Medium+** | Full file (~2KB) |
+
+---
+
+## CORE — Overview (LOD: Low)
 
 When a sub-task fails verification with multiple independent failure modes, the verifier can request a **2x decomposition** — splitting the problematic sub-task into 2-3 more atomic steps.
 
@@ -60,7 +73,7 @@ The detailed detection logic, communication templates, and decision guides for t
 └─────────────────────────────────┘
 ```
 
-## Implementation Checklist
+## CHECKLIST — Implementation Checklist (LOD: Medium)
 
 When acting as the orchestrator or verifier in this loop, always refer to the **Validation Matrix** and **Intercom Templates** in [`wiki/reference/decomposition-logic.md`](wiki/reference/decomposition-logic.md).
 

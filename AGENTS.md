@@ -58,10 +58,12 @@ This file is a **router only**. Load the phase file matching your current cognit
 | health, monitor, RAM, CPU, swap, system status, resource, saturation | `./01-Projects/health-monitor/AGENTS.md` |
 | model, pilot, ollama, local model, model routing, models.json | `./01-Projects/local-model-pilot/AGENTS.md` |
 | node, router, routing plan, node scoring, execution location | `./01-Projects/node-router/AGENTS.md` |
+| cross-node, coms-net, coms net, fleet, hub, multi-machine, pi-cross-node, fleet-dispatcher cascade | `./01-Projects/pi-cross-node-comms/AGENTS.md` |
 | sshfs, mount, remote, lab node, workspace mount | `./01-Projects/sshfs-accessible/AGENTS.md` |
 | cost, billing, tier, margin, invoice, cost-aware, cost model, cost per token, depreciation, power cost, billing engine, cost tracker, cost status, cost audit | `./01-Projects/cost-aware-routing/AGENTS.md` |
 | nextcloud, cloud storage, file sync, collaboration, private cloud, fnet2, nc config, nc deploy, nc ansible | `./01-Projects/nextcloud/AGENTS.md` |
 | workflow, orchestration, cadence, temporal, taskwarrior, research workflow, durable execution, evaluate orchestration, obsidian tasks, obsidian projects, obsidian bases, obsidian CLI, dataview | `./01-Projects/workflow-orchestration-research/AGENTS.md` |
+| bible, scripture, study, exegesis, word study, devotional, passage, commentary, Hebrew, Greek, theology, doctrine, his-desk | `./01-Projects/his-desk/AGENTS.md` |
 
 ---
 
@@ -77,7 +79,7 @@ This file is a **router only**. Load the phase file matching your current cognit
 | network troubleshooting, node offline, driver issue | `./03-Resources/Infrastructure/technical-infrastructure-legacy/prompts/network-troubleshooting.md` |
 | scripts, automation, tooling, data processing | `./03-Resources/Trading/scripts/` |
 | lab specs, hardware, node configuration | `./03-Resources/Infrastructure/lab-specs/` |
-| nextcloud, file sync, private cloud, ansible nextcloud | `./01-Projects/nextcloud/AGENTS.md` |
+
 | legacy designs, architecture docs | `./03-Resources/Infrastructure/technical-infrastructure-legacy/` |
 
 After reading the domain file, follow its instructions. Then load the appropriate phase file.
@@ -130,6 +132,13 @@ workshop/
 │   │   ├── AGENTS.md                  # Project router
 │   │   ├── infrastructure/            # Docker Compose, configs
 │   │   ├── ansible/                   # Ansible playbooks
+│   │   └── wiki/                      # Project wiki
+│   ├── his-desk/                      # Bible study project
+│   │   ├── AGENTS.md                  # Project router
+│   │   ├── study/                     # Passage analysis, exegesis
+│   │   ├── devotional/                # Devotional content
+│   │   ├── data/                      # Bible APIs, scrapers
+│   │   ├── site/                      # MkDocs site build
 │   │   └── wiki/                      # Project wiki
 │   └── workflow-orchestration-research/
 │   ├── bookkeeping/                   # Ledger, P&L, reconciliation

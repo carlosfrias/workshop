@@ -1,6 +1,14 @@
 ---
 name: decomposed-trade-to-log
 description: Execute a trade and log it using decompose → fleet-dispatch → verify → log pattern with three-tier cascade (fleet → intercom → subagent)
+---
+
+## [S-TIGHT]
+
+D-E-V chain: decomposer → fleet-dispatcher → verifier → bookkeeping. Low-capacity models: load this file as-is (~1KB).
+
+---
+
 steps:
   - agent: decomposer
     task: |

@@ -1,6 +1,14 @@
 ---
 name: decomposed-monitor-to-log
 description: Monitor positions and log status using decompose → fleet-dispatch → verify → log pattern with three-tier cascade (fleet → intercom → subagent)
+---
+
+## [S-TIGHT]
+
+D-E-V chain: decomposer → fleet-dispatcher → verifier → bookkeeping. Low-capacity models: load this file as-is (~1KB).
+
+---
+
 steps:
   - agent: decomposer
     task: |

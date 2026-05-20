@@ -41,7 +41,7 @@ When a task matches one of these operations, read ONLY the corresponding file. D
 | list domains, show domains, what domains | `./domain-management.md` § List | ~10KB |
 | rename domain, change domain name | `./domain-management.md` § Rename | ~10KB |
 | remove domain, delete domain, archive domain | `./domain-management.md` § Remove | ~10KB |
-| refine AGENTS, post-completion, golden path, learning loop, distill session | `./post-completion.md` | ~8KB |
+| refine AGENTS, post-completion, golden path, learning loop, distill session, close session | `./post-completion.md` | ~8KB |
 | consolidate wiki, migrate wiki, fix wiki layout | `./wiki-integrate.md` | ~5KB |
 | extract domain, export domain, split domain | `./domain-extract.md` | ~5KB |
 | verify, check, checklist, quality, management check | `./checklists.md` | ~2KB |
