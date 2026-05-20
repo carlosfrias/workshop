@@ -1,0 +1,82 @@
+---
+# Configure DNS resolution for nextcloud.home across the lab
+# Adds dnsmasq entry on fnet1 and /etc/hosts entries on all nodes
+#
+# Prerequisite: fnet1 must be accessible and dnsmasq installed
+#
+# Usage:
+#   Via playbook-executor: ./scripts/run-playbook.sh "configure nextcloud dns"
+#   Direct:  ansible-playbook -i inventory.ini configure-nextcloud-dns.yml
+#
+# Note: Also requires adding '192.168.0.141 nextcloud.home' to the
+#       Mac orchestrator's /etc/hosts manually (requires sudo).
+
+- name: Configure DNS resolution for nextcloud.home
+  hosts: lab
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    nextcloud_ip: 192.168.0.141
+    nextcloud_domain: nextcloud.home
+
+  tasks:
+    - name: Add nextcloud.home to /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ nextcloud_ip }} {{ nextcloud_domain }}"
+        state: present
+        regexp: "^{{ nextcloud_ip }}\\s+{{ nextcloud_domain }}"
+
+    - name: Verify DNS resolution
+      ansible.builtin.command: "getent hosts {{ nextcloud_domain }}"
+      register: dns_check
+      changed_when: false
+      failed_when: false
+
+    - name: Report DNS status
+      ansible.builtin.debug:
+        msg: "{% if dns_check.stdout %}{{ nextcloud_domain }} resolves to {{ dns_check.stdout.split()[0] }} on {{ inventory_hostname }}{% else %}{{ nextcloud_domain }} not yet resolved on {{ inventory_hostname }} (will resolve after hosts file update){% endif %}"
+
+- name: Configure dnsmasq on fnet1 for nextcloud.home
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    nextcloud_ip: 192.168.0.141
+    nextcloud_domain: nextcloud.home
+    dnsmasq_conf_dir: /etc/dnsmasq.d
+
+  tasks:
+    - name: Create dnsmasq entry for nextcloud.home
+      ansible.builtin.copy:
+        content: |
+          # NextCloud DNS entry
+          # Resolves nextcloud.home to fnet1
+          address=/{{ nextcloud_domain }}/{{ nextcloud_ip }}
+        dest: "{{ dnsmasq_conf_dir }}/nextcloud.conf"
+        owner: root
+        group: root
+        mode: "0644"
+      register: dnsmasq_conf
+
+    - name: Validate dnsmasq configuration
+      ansible.builtin.command: dnsmasq --test
+      register: dnsmasq_test
+      changed_when: false
+
+    - name: Restart dnsmasq
+      ansible.builtin.systemd:
+        name: dnsmasq
+        state: restarted
+      when: dnsmasq_conf.changed
+
+    - name: Verify dnsmasq resolves nextcloud.home
+      ansible.builtin.command: "dig +short {{ nextcloud_domain }} @127.0.0.1"
+      register: dnsmasq_check
+      changed_when: false
+
+    - name: Report dnsmasq status
+      ansible.builtin.debug:
+        msg: "dnsmasq resolves {{ nextcloud_domain }} to {{ dnsmasq_check.stdout }}"

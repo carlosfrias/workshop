@@ -1,0 +1,117 @@
+---
+# Configure Nginx reverse proxy + SSL for NextCloud
+# Installs Nginx, generates self-signed SSL cert, configures reverse proxy
+#
+# Prerequisite: deploy-nextcloud.yml must have been run first
+#
+# Usage:
+#   Via playbook-executor: ./scripts/run-playbook.sh "configure nextcloud proxy"
+#   Direct:  ansible-playbook -i inventory.ini configure-nextcloud-proxy.yml
+#   Dry run: ansible-playbook -i inventory.ini configure-nextcloud-proxy.yml --check --diff
+#
+# Requires: export ANSIBLE_VAULT_PASSWORD_FILE=~/.ansible/secure/.vault_pass
+
+- name: Configure Nginx reverse proxy for NextCloud
+  hosts: nextcloud
+  become: true
+  vars_files:
+    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+  vars:
+    nginx_ssl_dir: /etc/nginx/ssl
+    nginx_conf_src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/nginx/nextcloud.home.conf"
+    nextcloud_domain: nextcloud.home
+    nextcloud_internal_port: 8081
+    ssl_org: HomeLab
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Create SSL directory
+      ansible.builtin.file:
+        path: "{{ nginx_ssl_dir }}"
+        state: directory
+        mode: "0700"
+
+    - name: Generate self-signed SSL certificate (10-year validity)
+      ansible.builtin.command: >
+        openssl req -x509 -nodes -days 3650 -newkey rsa:2048
+        -keyout {{ nginx_ssl_dir }}/{{ nextcloud_domain }}.key
+        -out {{ nginx_ssl_dir }}/{{ nextcloud_domain }}.crt
+        -subj "/CN={{ nextcloud_domain }}/O={{ ssl_org }}/C=US"
+        -addext "subjectAltName=DNS:{{ nextcloud_domain }},DNS:nextcloud,IP:192.168.0.141"
+      args:
+        creates: "{{ nginx_ssl_dir }}/{{ nextcloud_domain }}.crt"
+
+    - name: Copy Nginx reverse proxy config
+      ansible.builtin.copy:
+        src: "{{ nginx_conf_src }}"
+        dest: /etc/nginx/sites-available/nextcloud.home.conf
+        owner: root
+        group: root
+        mode: "0644"
+      register: nginx_conf
+
+    - name: Enable Nginx site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/nextcloud.home.conf
+        dest: /etc/nginx/sites-enabled/nextcloud.home.conf
+        state: link
+        force: true
+      register: nginx_enable
+
+    - name: Remove default Nginx site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      check_mode: false
+
+    - name: Validate Nginx configuration
+      ansible.builtin.command: nginx -t
+      register: nginx_test
+      changed_when: false
+
+    - name: Reload Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+      when: nginx_conf.changed or nginx_enable.changed
+
+    - name: Ensure Nginx is enabled on boot
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+
+    - name: Configure NextCloud trusted domains
+      ansible.builtin.shell: |
+        docker exec nextcloud-app php occ config:system:set trusted_domains 1 --value='192.168.0.141'
+        docker exec nextcloud-app php occ config:system:set trusted_domains 2 --value='nextcloud.home'
+      register: nc_domains_config
+      changed_when: true
+
+    - name: Configure NextCloud trusted proxy and URL
+      ansible.builtin.shell: |
+        docker exec nextcloud-app php occ config:system:set trusted_proxies 0 --value='127.0.0.1'
+        docker exec nextcloud-app php occ config:system:set trusted_proxies 1 --value='192.168.0.141'
+        docker exec nextcloud-app php occ config:system:set overwrite.cli.url --value='https://nextcloud.home'
+        docker exec nextcloud-app php occ config:system:set overwriteprotocol --value='https'
+      register: nc_proxy_config
+      changed_when: true
+
+    - name: Verify HTTPS is accessible
+      ansible.builtin.uri:
+        url: "https://nextcloud.home/login"
+        validate_certs: false
+        status_code: [200, 302]
+        timeout: 30
+      register: https_check
+      retries: 5
+      delay: 3
+      until: https_check is success
+
+    - name: Report proxy status
+      ansible.builtin.debug:
+        msg: "NextCloud reverse proxy configured. Access at https://nextcloud.home"
