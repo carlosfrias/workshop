@@ -1,113 +1,23 @@
-# NextCloud Infrastructure
+# NextCloud Infrastructure — Routing Stub
 
-Installation, configuration, deployment, and operations for NextCloud on lab node fnet2. Includes Ansible automation, Docker/services, DNS/VLAN networking, backups, and disaster recovery.
+> **Full documentation lives in the vault.** This file is a routing stub only.
+> Read the vault copy for all conventions, rules, and quality checks.
 
-## [S-TIGHT]
-
-Self-contained domain context. All conventions, rules, quality checks for NextCloud infrastructure live here. **Documentation lives in the vault** (`../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`). This file covers code and operations only.
+**Vault location:** `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/infrastructure/AGENTS.md`
+**Golden path (post-completion):** `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/infrastructure/AGENTS-REFINED.md`
 
 ---
 
-## Conventions
+## Quick Reference
 
-- **Target node:** fnet1 (`192.168.0.141`, 3TB primary depot)
-- **Ansible playbooks** live in `./ansible/` — one playbook per service or configuration step
-- **Docker Compose** files live in `./infrastructure/docker/` — named by service
-- **All commands executed via Ansible** from the orchestrator unless explicitly noted
-- **Config backups** stored in `./infrastructure/configs/`
-- **Timestamps:** YYYY-MM-DD HH:MM:SS US Eastern
-- **Test before deploy:** All playbooks run with `--check` first, then `--diff`
-- **Docs in vault:** All wiki activity logs, architecture docs, and research notes go to `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`
+| What | Where |
+|------|-------|
+| Target node | fnet1 (`192.168.0.141`, 3TB primary depot) |
+| Web UI | `https://nextcloud.home` |
+| Playbooks | `./ansible/` (deploy, dns, proxy, backup, uninstall) |
+| Docker Compose | `./infrastructure/docker/nextcloud-docker-compose.yml` |
+| Nginx config | `./infrastructure/nginx/nextcloud.home.conf` |
+| Backup script | `./infrastructure/backup/backup-nextcloud.sh` |
+| Vault secrets | `~/.ansible/secure/vault-nextcloud.yml` |
 
-## Architecture Decisions
-
-### Deployment Method
-- **Docker-based** deployment (not bare-metal) for isolation and reproducibility
-- NextCloud + MariaDB + Redis + Nginx reverse proxy in Docker Compose
-- Ansible automates the full stack from the orchestrator
-
-### Networking
-- NextCloud reachable at `http://192.168.0.141:8081` (LAN)
-- DNS: `cloud.home` or `nextcloud.home` via dnsmasq on the lab network
-- External access deferred (requires OPNsense/Protectli — see TI-008)
-- VLAN segmentation for services (planned, not yet implemented)
-
-### Data
-- NextCloud data directory: `/srv/nextcloud/data/` on fnet2
-- Database: MariaDB container with persistent volume
-- Backup target: fnet1 `/srv/archive/nextcloud/` or fnet3 secondary
-
-### Authentication
-- Local accounts initially (no LDAP)
-- Admin account provisioned via Ansible vault
-
-## Rules
-
-### Must Always
-- Run Ansible playbooks with `--check --diff` before applying
-- Verify fnet1 connectivity (`ssh friasc@192.168.0.141`) before any deployment
-- Commit all playbook changes to git before running
-- Document every configuration change in the vault wiki activity log
-- Use `ansible-vault` for any secrets (database passwords, admin credentials)
-- Test NextCloud web UI accessibility after any deployment step
-- Verify Docker containers are healthy after playbook runs
-
-### Must Never
-- Expose NextCloud to the public internet without OPNsense/Protectli (TI-008)
-- Store secrets in plaintext playbooks — always use `ansible-vault`
-- Run playbooks against the wrong node (always verify inventory)
-- Skip the backup step before major configuration changes
-- Delete NextCloud data without confirmation
-- Put documentation files in the workshop — docs go to the vault
-
-## Quality Checklist
-
-Before considering any task complete, verify:
-
-- [ ] Ansible playbook ran successfully with no errors
-- [ ] Docker containers are running and healthy (`docker ps` on fnet2)
-- [ ] NextCloud web UI accessible at `http://192.168.0.141:8081`
-- [ ] File upload/download works
-- [ ] Activity log entry created in vault wiki
-- [ ] Any secrets stored in ansible-vault, not plaintext
-- [ ] Changes committed to git
-
-## Common Mistakes
-
-| Mistake | Correct Approach |
-|---------|-----------------|
-| Running playbook without `--check` first | Always dry-run with `--check --diff` |
-| Using default NextCloud admin password | Generate and vault-encrypt from day one |
-| Forgetting to create `/srv/nextcloud/data/` with correct permissions | Pre-create directories in playbook |
-| Hardcoding IP in playbooks | Use Ansible inventory/group_vars |
-| Skipping Redis for performance | Include Redis in the compose stack from the start |
-| Exposing port 443 without proper TLS cert | Use self-signed initially, plan Let's Encrypt for production |
-| Putting documentation in workshop | Docs go to `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/` |
-
-## Documentation Protocol
-
-After completing any task, document what you did in the **vault wiki** — not in the workshop.
-
-### Where to Document
-- **All documentation** → `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/`
-  - Activity log: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/infrastructure/Activity Log.md`
-  - Architecture: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/_meta/Architecture.md`
-  - Research: `../../personal-vault/01-Projects/nextcloud/wiki/nextcloud/research/Activity Log.md`
-
-### Format
-```markdown
-### YYYY-MM-DD — {Title}
-
-**Task**: {What was requested}
-**Outcome**: {What was done and result}
-**Rationale**: {Why this approach was chosen}
-**Files changed**: {List of files created/modified}
-**Lessons**: {What to remember for next time}
-```
-
-## Cross-Domain References
-
-- **Knowledge/research docs (vault):** `../../personal-vault/01-Projects/nextcloud/`
-- **Lab hardware specs:** `../../03-Resources/Infrastructure/lab-specs/`
-- **TI backlog:** `../../03-Resources/Infrastructure/technical-infrastructure-legacy/wiki/operational/BACKLOG.md`
-- **Routing table:** `../AGENTS.md` (project root)
+**Prefer AGENTS-REFINED.md** — it contains the golden path proven by actual deployment, with all resolved ambiguities and common mistakes documented.
