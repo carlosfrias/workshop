@@ -10,7 +10,7 @@ Self-contained domain context. All conventions, rules, quality checks for NextCl
 
 ## Conventions
 
-- **Target node:** fnet2 (`192.168.0.142`)
+- **Target node:** fnet1 (`192.168.0.141`, 3TB primary depot)
 - **Ansible playbooks** live in `./ansible/` — one playbook per service or configuration step
 - **Docker Compose** files live in `./infrastructure/docker/` — named by service
 - **All commands executed via Ansible** from the orchestrator unless explicitly noted
@@ -27,7 +27,7 @@ Self-contained domain context. All conventions, rules, quality checks for NextCl
 - Ansible automates the full stack from the orchestrator
 
 ### Networking
-- NextCloud reachable at `http://192.168.0.142:8080` (LAN) initially
+- NextCloud reachable at `http://192.168.0.141:8081` (LAN)
 - DNS: `cloud.home` or `nextcloud.home` via dnsmasq on the lab network
 - External access deferred (requires OPNsense/Protectli — see TI-008)
 - VLAN segmentation for services (planned, not yet implemented)
@@ -45,7 +45,7 @@ Self-contained domain context. All conventions, rules, quality checks for NextCl
 
 ### Must Always
 - Run Ansible playbooks with `--check --diff` before applying
-- Verify fnet2 connectivity (`ssh friasc@192.168.0.142`) before any deployment
+- Verify fnet1 connectivity (`ssh friasc@192.168.0.141`) before any deployment
 - Commit all playbook changes to git before running
 - Document every configuration change in the vault wiki activity log
 - Use `ansible-vault` for any secrets (database passwords, admin credentials)
@@ -66,7 +66,7 @@ Before considering any task complete, verify:
 
 - [ ] Ansible playbook ran successfully with no errors
 - [ ] Docker containers are running and healthy (`docker ps` on fnet2)
-- [ ] NextCloud web UI accessible at `http://192.168.0.142:8080`
+- [ ] NextCloud web UI accessible at `http://192.168.0.141:8081`
 - [ ] File upload/download works
 - [ ] Activity log entry created in vault wiki
 - [ ] Any secrets stored in ansible-vault, not plaintext

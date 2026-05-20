@@ -1,6 +1,6 @@
 ---
 # NextCloud Docker Compose Deployment
-# Target: fnet2 (192.168.0.142)
+# Target: fnet1 (192.168.0.141) — 3TB primary depot node
 # TI-006: NextCloud Installation
 #
 # Secrets are injected via ansible-playbook environment: overrides,

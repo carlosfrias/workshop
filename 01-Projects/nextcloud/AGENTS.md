@@ -15,7 +15,7 @@ Infrastructure project router. Match keywords to domain, load domain context, ex
 - All timestamps in US Eastern (America/New_York)
 - All dates: YYYY-MM-DD
 - Node IPs: `192.168.0.14{1-7}` (fnet1–fnet7)
-- Target node: **fnet2** (`192.168.0.142`, specialization: nextcloud)
+- Target node: **fnet1** (`192.168.0.141`, 3TB primary depot, specialization: primary-depot)
 - Keep outputs concise, actionable
 - Ansible playbooks in `./ansible/`
 - Config and compose files in `./infrastructure/`
@@ -41,7 +41,7 @@ Infrastructure project router. Match keywords to domain, load domain context, ex
 | Node | IP | Specialization | Role |
 |------|-----|---------------|------|
 | fnet1 | 192.168.0.141 | primary-depot | Model depot + worker |
-| **fnet2** | **192.168.0.142** | **nextcloud** | **NextCloud services + worker** |
+| fnet1 | 192.168.0.141 | **primary-depot** | **NextCloud + model depot** |
 | fnet3 | 192.168.0.143 | vector-memory | ChromaDB + RAG |
 | fnet4 | 192.168.0.144 | worker | General worker |
 | fnet5 | 192.168.0.145 | worker | General worker |
