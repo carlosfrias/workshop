@@ -1,0 +1,133 @@
+{
+  "_comment": "Model router for 15Gi RAM nodes (fnet1, fnet7). Tight RAM \u2014 avoids gemma4:e4b as default high-tier to prevent OOM. Use 'flagship' profile to force gemma4 when explicitly needed.",
+  "_tier": "15Gi",
+  "_models": {
+    "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision+thinking",
+    "qwen3:8b": "5.2GB disk, 8.2B params, 40960 ctx, tools+thinking",
+    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking \u2014 TIGHT on 15Gi"
+  },
+  "defaultProfile": "local",
+  "debug": false,
+  "phaseBias": 0.5,
+  "largeContextThreshold": 30000,
+  "rules": [
+    {
+      "matches": [
+        "deploy",
+        "production",
+        "release",
+        "security"
+      ],
+      "tier": "high",
+      "profile": "local",
+      "reason": "Safety-critical tasks need deeper reasoning"
+    },
+    {
+      "matches": [
+        "refactor",
+        "architect",
+        "design",
+        "plan"
+      ],
+      "tier": "high",
+      "profile": "local",
+      "reason": "Complex planning needs best available local model"
+    },
+    {
+      "matches": [
+        "changelog",
+        "comment",
+        "format",
+        "lint",
+        "typos",
+        "list",
+        "count"
+      ],
+      "tier": "low",
+      "reason": "Lightweight tasks use the fast model"
+    }
+  ],
+  "profiles": {
+    "local": {
+      "high": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      },
+      "medium": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "low"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    },
+    "flagship": {
+      "high": {
+        "model": "ollama/gemma4:e4b",
+        "thinking": "low"
+      },
+      "medium": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    },
+    "fast": {
+      "high": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "low"
+      },
+      "medium": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    },
+    "reasoning": {
+      "high": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "high"
+      },
+      "medium": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "medium"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "low"
+      }
+    }
+  },
+  "skills": {
+    "project-blueprint": {
+      "_comment": "Route low-capacity models to linear scripts (no cross-ref navigation)",
+      "_validated": "2026-05-21 Phase 6",
+      "linearThreshold": 32000,
+      "linearSuffix": "-linear",
+      "tiers": {
+        "low": {
+          "model": "ollama/qwen3.5:4b",
+          "promptVariant": "-linear",
+          "reason": "<8K context cannot navigate cross-refs"
+        },
+        "medium": {
+          "model": "ollama/qwen3:8b",
+          "promptVariant": "-linear",
+          "reason": "<32K context: linear scripts validated as safer"
+        },
+        "high": {
+          "model": "ollama/gemma4:e4b",
+          "promptVariant": "-linear",
+          "reason": "TIGHT on 15Gi; linear reduces context pressure"
+        }
+      }
+    }
+  }
+}

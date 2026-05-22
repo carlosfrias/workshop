@@ -2,13 +2,19 @@
   "name": "pi-cross-node-comms",
   "version": "0.1.0",
   "private": true,
-  "description": "Cross-node pi communication — HTTP/SSE hub for multi-machine agent coordination",
+  "description": "Cross-node pi communication \u2014 HTTP/SSE hub for multi-machine agent coordination",
   "type": "module",
   "main": "src/index.ts",
-  "keywords": ["pi-package"],
+  "keywords": [
+    "pi-package"
+  ],
   "pi": {
-    "extensions": ["./src/index.ts"],
-    "skills": ["./src/skills"]
+    "extensions": [
+      "./src/index.ts"
+    ],
+    "skills": [
+      "./src/skills"
+    ]
   },
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "*",
@@ -17,6 +23,7 @@
   },
   "scripts": {
     "server": "bun server/coms-net-server.ts",
-    "test": "echo 'No tests yet — run proof-of-concept manually'"
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   }
 }

@@ -1,178 +1,64 @@
-# Workshop — Unified Root Router
+# Workshop — Root Router Manifest
 
 **Purpose:** Execution workspace for all code, scripts, scrapers, data processing, infrastructure, and build systems.  
-**Counterpart:** `../personal-vault/` — documentation and knowledge management.  
-**Rule:** This file is a router only. Match keywords, route to the correct domain or project.
+**Counterpart:** `../personal-vault/` — documentation and knowledge management.
 
 ## [S-TIGHT]
 
-Unified routing hub. Detects domain from prompt keywords, routes to domain/project agents, loads only the phase file needed for the current cognitive stage. All markdown docs live in personal-vault.
+Unified routing hub. Detects domain from prompt keywords, routes to section files in `routing/`, loads only the section and phase file needed. Do not load all sections at once.
 
 ---
 
-## Phase-Based Instruction Loading
+## Routing Sections
 
-This file is a **router only**. Load the phase file matching your current cognitive stage.
-
-| Phase | File | Purpose | Load When | Size |
-|-------|------|---------|-----------|------|
-| 1 — Domain Activation | `.pi/agents/phases/phase-1-domain-activation.md` | Detect domain from prompt keywords | **Every prompt** | ~630 tokens |
-| 2 — Planning | `.pi/agents/phases/phase-2-planning.md` | Framework readiness, complexity, decomposition | After domain activated | ~850 tokens |
-| 3 — Execution | `.pi/agents/phases/phase-3-execution.md` | Must Always / Must Never, tool rules, safety | During active work | ~2,800 tokens |
-| 4 — Quality Check | `.pi/agents/phases/phase-4-quality-check.md` | Verify checklist before declaring done | After work complete | ~1,300 tokens |
-| 5 — Documentation | `.pi/agents/phases/phase-5-documentation.md` | Session notes, status, backlog | Before ending session | ~700 tokens |
-
-**Index:** `.pi/agents/phases/phase-index.json` — machine-readable phase map.
-
-**Convention:** Only load the phase you need. Do not load all phases in one inference.
-
-**Skill Loading Convention:** Only load the skill matching the active task. Do not load skills speculatively.
+| Section | File | Size | Load When |
+|---------|------|------|-----------|
+| Identity & Phases | [routing/identity-and-phases.md](routing/identity-and-phases.md) | ~2KB | Every session — workspace purpose + phase loading |
+| Model Routing | [routing/model-routing.md](routing/model-routing.md) | ~1.2KB | Need to pick a model or understand execution tiers |
+| Project Map | [routing/project-map.md](routing/project-map.md) | ~3KB | Routing to a specific project AGENTS.md |
+| Domain Routing | [routing/domain-routing.md](routing/domain-routing.md) | ~1.5KB | Routing to Trading areas or Infrastructure resources |
+| Execution & Skills | [routing/execution-and-skills.md](routing/execution-and-skills.md) | ~2.5KB | Starting work — execution pattern + mandatory skill auto-load |
+| Workspace Structure | [routing/workspace-structure.md](routing/workspace-structure.md) | ~4KB | Need directory layout, cross-references, discovery path |
 
 ---
 
-## Quick Reference
+## Load Directive
 
-### Model Routing
-
-| Route | Model | Triggers |
-|-------|-------|----------|
-| ultra-reasoning | ollama/kimi-k2.6 | think deeply, comprehensive, thorough |
-| reasoning | ollama/qwen3.5:397b | analyze, evaluate, decide, research, plan |
-| coding | ollama/deepseek-v4-pro | code, implement, develop, debug |
-| vision | ollama/qwen3-vl:235b | image, screenshot, chart, visual |
-| structured | ollama/gemma4:e4b | log, reconcile, parse, format, ledger |
-| monitoring | ollama/qwen3.5:4b | status, check, ping, health, monitor |
-| infrastructure | ollama/qwen3:8b | server, deploy, network, ansible, node, orchestration |
-| (default) | ollama/gemma4:e4b | — |
+| Model Tier | Max Context | Load These |
+|------------|-------------|------------|
+| Low local (<4K) | 4K | Identity & Phases ONLY. Then load 1 more section based on task. |
+| Medium local (~8K) | 8K | Identity & Phases + 1-2 task-relevant sections. |
+| High local (~32K) | 32K | Identity & Phases + up to 4 sections. |
+| Cloud (>32K) | 32K+ | Load all sections if needed. Prefer targeted sections. |
 
 ---
 
-## Project Map
+## Quick Task Routing
 
-| Keywords | Route To |
-|----------|----------|
-| kingdom, warfare, leadership, mike brewer, nancy, training, curriculum, flashcard, study aid, mkdocs, deliverance, demonology | `./01-Projects/kingdom-warfare-leadership/AGENTS.md` |
-| doc-standards, enablement, scaffold, project template, topology, documentation standard, prompt thread, workbench, focus | `./01-Projects/doc-standards-enablement/AGENTS.md` |
-| project-blueprint, blueprint, orchestration, domain routing, agent definition, structural routing, wiki, post-completion, golden path, learning loop, library | `./01-Projects/project-blueprint/AGENTS.md` |
-| decompose, execute, verify, decomposition, cost-optimization, verification, fleet-dispatcher, cascade | `./01-Projects/decompose-execute-verify/AGENTS.md` or `.pi/agents/decomposer.md` or `.pi/agents/fleet-dispatcher.md` |
-| health, monitor, RAM, CPU, swap, system status, resource, saturation | `./01-Projects/health-monitor/AGENTS.md` |
-| model, pilot, ollama, local model, model routing, models.json | `./01-Projects/local-model-pilot/AGENTS.md` |
-| node, router, routing plan, node scoring, execution location | `./01-Projects/node-router/AGENTS.md` |
-| cross-node, coms-net, coms net, fleet, hub, multi-machine, pi-cross-node, fleet-dispatcher cascade | `./01-Projects/pi-cross-node-comms/AGENTS.md` |
-| sshfs, mount, remote, lab node, workspace mount | `./01-Projects/sshfs-accessible/AGENTS.md` |
-| cost, billing, tier, margin, invoice, cost-aware, cost model, cost per token, depreciation, power cost, billing engine, cost tracker, cost status, cost audit | `./01-Projects/cost-aware-routing/AGENTS.md` |
-| nextcloud, cloud storage, file sync, collaboration, private cloud, fnet2, nc config, nc deploy, nc ansible | `./01-Projects/nextcloud/AGENTS.md` |
-| workflow, orchestration, cadence, temporal, taskwarrior, research workflow, durable execution, evaluate orchestration, obsidian tasks, obsidian projects, obsidian bases, obsidian CLI, dataview | `./01-Projects/workflow-orchestration-research/AGENTS.md` |
-| bible, scripture, study, exegesis, word study, devotional, passage, commentary, Hebrew, Greek, theology, doctrine, his-desk | `./01-Projects/his-desk/AGENTS.md` |
+| What are you trying to do? | Load these sections |
+|----------------------------|---------------------|
+| Start a new session | identity-and-phases.md |
+| Pick which model to use | model-routing.md |
+| Route to a project | project-map.md |
+| Route to a Trading area | domain-routing.md |
+| Begin execution | execution-and-skills.md → then phase files |
+| Edit/create any .md file | execution-and-skills.md (skill auto-load is MANDATORY) |
+| Navigate the workspace | workspace-structure.md |
+| Find cross-reference paths | workspace-structure.md |
 
 ---
-
-## Domain Agent File Routing
-
-| Task keywords | Read this file |
-|----------|---------------|
-| servers, APIs, infrastructure, deployment, monitoring, orchestration, routing, classify, complexity, decompose, queue, worker, task, node, cluster, performance, ansible, script, bash, playbook | `./01-Projects/*/AGENTS.md` or `./03-Resources/Infrastructure/*/AGENTS.md` |
-| trade logging, reconciliation, P&L, accounting, balances, fees | `./02-Areas/Trading/bookkeeping/AGENTS.md` |
-| research, analysis, signals, backtesting, data, indicators | `./02-Areas/Trading/market-research/AGENTS.md` |
-| positions, orders, risk, allocation, sizing, exits, portfolio | `./02-Areas/Trading/position-management/AGENTS.md` |
-| position status, monitoring, risk limits | `./02-Areas/Trading/position-management/AGENTS.md` |
-| network troubleshooting, node offline, driver issue | `./03-Resources/Infrastructure/technical-infrastructure-legacy/prompts/network-troubleshooting.md` |
-| scripts, automation, tooling, data processing | `./03-Resources/Trading/scripts/` |
-| lab specs, hardware, node configuration | `./03-Resources/Infrastructure/lab-specs/` |
-
-| legacy designs, architecture docs | `./03-Resources/Infrastructure/technical-infrastructure-legacy/` |
-
-After reading the domain file, follow its instructions. Then load the appropriate phase file.
-
----
-
-## Default Execution Pattern
-
-| Task Complexity | Default Action | Override |
-|-----------------|---------------|----------|
-| Single turn, well-scoped | Execute directly via model router | User specifies model |
-| Multi-step or complex | `/run decomposer` → local execution → `/run verifier` | User explicitly says "use cloud" |
-| Verification fails | Re-run failing sub-task only on cloud | — |
-
-**Rule:** Do not manually pick models. Let the model router and decomposer make routing decisions.
-
-**Reference:** See `.pi/APPEND_SYSTEM.md` for the full cost-optimized execution framework.
-
----
-
-### Skill Auto-Load Rules — MANDATORY
-
-Before executing any task, check the user prompt and activated domain against this table. If a match is found, **load the skill via `read` before any work begins**. The skill takes precedence over general conventions.
-
-| Trigger (keywords or domain) | Skill to load | Load path |
-|--------------------------------|---------------|-----------|
-| wiki, documentation, docs, markdown, `*.md`, README, status, session-notes, backlog, activity log, manifest, planning doc | **doc-standards** | `/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md` |
-| wiki, documentation, docs, markdown, `*.md`, README, status, session-notes, backlog, activity log, manifest, planning doc | **vault taxonomy mapping** | `../personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md` |
-
-**Hard Rule:** If the task involves creating, editing, or reviewing any file ending in `.md`, BOTH skills MUST be loaded first. Do not skip this step because the task seems "small" or "quick."
-
----
-
-## Workspace Layout
-
-```
-workshop/
-├── AGENTS.md                          ← YOU ARE HERE
-├── 01-Projects/                       # Active project code
-│   ├── kingdom-warfare-leadership/    # Study aids, scrapers, site
-│   ├── doc-standards-enablement/      # Scaffolding, validation
-│   ├── project-blueprint/             # Project orchestration
-│   ├── decompose-execute-verify/      # Cost-optimized execution
-│   ├── health-monitor/                # Resource monitoring
-│   ├── local-model-pilot/             # Ollama LLM routing
-│   ├── node-router/                   # Execution location scoring
-│   ├── sshfs-accessible/              # Remote workspace mounts
-│   ├── cost-aware-routing/            # Cost model, billing tiers, calculator
-│   ├── nextcloud/                     # NextCloud installation on fnet2
-│   │   ├── AGENTS.md                  # Project router
-│   │   ├── infrastructure/            # Docker Compose, configs
-│   │   ├── ansible/                   # Ansible playbooks
-│   │   └── wiki/                      # Project wiki
-│   ├── his-desk/                      # Bible study project
-│   │   ├── AGENTS.md                  # Project router
-│   │   ├── study/                     # Passage analysis, exegesis
-│   │   ├── devotional/                # Devotional content
-│   │   ├── data/                      # Bible APIs, scrapers
-│   │   ├── site/                      # MkDocs site build
-│   │   └── wiki/                      # Project wiki
-│   └── workflow-orchestration-research/
-│   ├── bookkeeping/                   # Ledger, P&L, reconciliation
-│   ├── market-research/               # Analysis, signals, backtesting
-│   └── position-management/           # Orders, risk, allocation
-├── 03-Resources/                      # Reference, infrastructure, legacy
-│   ├── Infrastructure/                # 24 infrastructure packages
-│   ├── Trading/scripts/               # Operational scripts
-│   └── Wiki/                          # Trading desk wiki
-├── .pi/agents/phases/                 # Phase-based routing files
-└── .pi/agents/                        # Agent + chain definitions
-```
-
----
-
-## Cross-Reference
-
-| From | To | Path |
-|------|----|------|
-| Workshop → Docs | `../../personal-vault/01-Projects/{project}/` | Always relative from workshop root |
-| Docs → Workshop | `../../workshop/01-Projects/{project}/` | Always relative from personal-vault root |
-| Workshop → Vault (areas) | `../../personal-vault/02-Areas/` | For domain documentation |
 
 ## Discovery Path
 
 ```
-1. carlos-desktop/AGENTS.md              ← Pick workspace (broad keywords)
-2. workshop/AGENTS.md                    ← YOU ARE HERE (pick project/domain)
-3. workshop/01-Projects/{project}/AGENTS.md ← Tech stack, entry points, code conventions
-   OR
-   workshop/02-Areas/Trading/{area}/AGENTS.md ← Domain rules, workflows
-4. personal-vault/01-Projects/{project}/   ← Documentation, plans, session history
+1. carlos-desktop/AGENTS.md              ← Pick workspace
+2. workshop/AGENTS.md                    ← THIS FILE — pick section
+3. routing/{section}.md                  ← Load only what you need
+4. workshop/01-Projects/{project}/AGENTS.md ← Project rules
+   OR workshop/02-Areas/Trading/{area}/AGENTS.md ← Domain rules
+5. personal-vault/01-Projects/{project}/   ← Documentation, session history
 ```
 
 ---
 
-*Last updated: 2026-05-18 — merged ai-trading-workspace into workshop; trading keywords now route here*
+*Last updated: 2026-05-21 — decomposed monolithic AGENTS.md into routing/ section files*

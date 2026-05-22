@@ -1,0 +1,14 @@
+# Dockerignore — keep the build context lean
+node_modules/
+.git/
+*.md
+wiki/
+threads/
+sessions/
+ansible/
+src/skills/
+scripts/
+.env
+.env.*
+*.log
+tmp/

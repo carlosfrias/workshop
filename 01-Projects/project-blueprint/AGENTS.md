@@ -1,7 +1,7 @@
 # AGENTS.md — Project Blueprint (Workshop)
 
 **Documentation home:** `../../personal-vault/01-Projects/project-blueprint/`  
-**Code workspace:** `../../workshop/technical-infrastructure/packages/project-blueprint/`  
+**Code workspace:** `./`  
 **Workshop root:** `./` (this directory)
 
 ## [S-TIGHT]

@@ -10,9 +10,10 @@ Post-completion architecture fully implemented across agents, skills, and templa
 
 ## Active work
 
-1. **pi install verification** — Test that `pi install` registers all three agents, skills, prompts correctly
-2. **Library UX design** — How to surface completed threads proactively (TUI overlay? message? command?)
-3. **Version bump** — package.json at 1.2.1; needs bump for post-completion feature addition
+1. **pi install verification** — COMPLETED (all agents and skills registered)
+2. **Library UX design** — Designing how to surface completed threads proactively (TUI overlay? message? command?)
+3. **Version bump** — COMPLETED (package.json at 1.3.0)
+4. **Metadata Sync** — Aligning workshop FOCUS.md and AGENTS.md with vault state (IN PROGRESS)
 
 ## Session handoff
 

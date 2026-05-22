@@ -5,14 +5,15 @@
 
 ## [S-TIGHT]
 
-Cross-node pi communication package. Extracted `coms-net` extension and hub server from the pi-vs-cc mono-repo. Includes fleet-dispatcher cascade for bridge decompose-execute-verify to fleet nodes.
+Cross-node pi communication package. Extracted `coms-net` extension and hub server from the pi-vs-cc mono-repo. Includes fleet-dispatcher cascade for bridge decompose-execute-verify to fleet nodes. Hub server is Dockerized (Bun-based container, docker compose managed).
 
 ## Tech Stack
 
 | Component | Technology | Entry |
 |-----------|-----------|-------|
 | Extension (client) | TypeScript | `src/index.ts` |
-| Hub server | TypeScript / Bun | `server/coms-net-server.ts` |
+| Hub server | Bun / Docker | `server/coms-net-server.ts` → `Dockerfile` |
+| Container orchestration | Docker Compose | `docker-compose.yml` |
 | Theme utility | TypeScript | `src/themeMap.ts` |
 | Fleet-Dispatcher | Agent definition | `../../workshop/.pi/agents/fleet-dispatcher.md` |
 
@@ -20,6 +21,9 @@ Cross-node pi communication package. Extracted `coms-net` extension and hub serv
 
 ```
 pi-cross-node-comms/
+├── Dockerfile              # Hub container image
+├── docker-compose.yml      # Hub container config
+├── .dockerignore            # Build context filter
 ├── AGENTS.md                ← YOU ARE HERE
 ├── README.md                ← Quick start
 ├── package.json
@@ -55,9 +59,9 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 
 | Task | Command |
 |------|--------|
-| **Standup fleet (unified)** | `./scripts/run-playbook.sh "stand up the fleet"` or `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` |
+| **Standup fleet (unified)** | `./scripts/run-playbook.sh "stand up the fleet"` or `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` (Phase 1 now deploys hub via Docker) |
 | **D-E-V cascade** | In pi session: decomposer → fleet-dispatcher → verifier → bookkeeping |
-| Start hub server | `bun server/coms-net-server.ts` |
+| Start hub server | `docker compose up -d` (from this directory) or `PI_COMS_NET_AUTH_TOKEN=<token> docker compose up -d` |
 | Install extension | `pi install .` (from this directory) |
 | Launch agent with extension | `pi --server-url http://host:port --name agent-name --project lab` |
 

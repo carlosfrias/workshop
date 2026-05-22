@@ -1,0 +1,1 @@
+/Users/friasc/Dropbox/carlos-desktop/personal-vault/01-Projects/doc-standards-enablement/wiki/doc-standards-enablement/documentation/Workbench Pattern.md

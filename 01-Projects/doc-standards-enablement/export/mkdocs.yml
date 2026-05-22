@@ -1,0 +1,46 @@
+site_name: doc-standards Enablement Guide
+site_description: From Idea to Archive — the complete doc-standards lifecycle
+site_url: https://carlosfrias.github.io/doc-standards-enablement
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: amber
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+  - mermaid2:
+      arguments:
+        theme: default
+
+nav:
+  - Home: index.md
+  - Quick Start: quick-start.md
+  - Full Guide: full-guide.md
+  - Workbench Pattern: workbench-pattern.md
+  - API Hunt Pattern: api-hunt-pattern.md
+  - Export Guide: export-guide.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true

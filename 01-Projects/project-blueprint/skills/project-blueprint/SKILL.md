@@ -11,7 +11,7 @@ author: "Trading Laboratory"
 
 ## [S-TIGHT]
 
-Decomposed skill for project setup and domain management. Low-capacity models: read this manifest (~3KB), then load ONLY the sub-file matching your task. All sub-files live in this directory with relative paths.
+Tier-routed skill for project setup and domain management. Models <32K context: load the LINEAR script matching your task from `./linear/` — do NOT read this manifest further. Models ≥32K context: read this manifest, then load ONLY the sub-file matching your task.
 
 ---
 
@@ -30,7 +30,27 @@ Decomposed skill for project setup and domain management. Low-capacity models: r
 
 ---
 
-## [LOD: Low] Task Routing
+## [LOD: Low] Tier-Based Routing
+
+**Models with <32K context window MUST use linear scripts.** These are flat, self-contained files with no cross-references. Read the linear script that matches your task — it contains everything you need.
+
+| Task keywords | Linear script (<32K models) | Decomposed file (≥32K models) |
+|--------------|---------------------------|--------------------------|
+| setup, create, new project, initialize, scaffold | `./linear/task-create-project.md` | `./setup.md` |
+| add domain, new domain, create domain | `./linear/task-add-domain.md` | `./domain-management.md` § Add |
+| list domains, show domains | `./linear/task-list-domains.md` | `./domain-management.md` § List |
+| remove domain, delete domain | `./linear/task-remove-domain.md` | `./domain-management.md` § Remove |
+| refine AGENTS, post-completion, golden path | `./linear/task-refine-agents.md` | `./post-completion.md` |
+| rename domain, change domain name | *Not yet available as linear* | `./domain-management.md` § Rename |
+| consolidate wiki, migrate wiki | *Not yet available as linear* | `./wiki-integrate.md` |
+| extract domain, export domain | *Not yet available as linear* | `./domain-extract.md` |
+| verify, check, checklist | *Not yet available as linear* | `./checklists.md` |
+
+**Why two tracks?** Validation (Phase 6, doc-standards) proved that a 4B model with a linear script outperforms an 8B model with the decomposed approach. Cross-reference navigation overhead exhausts low-capacity context windows before task execution begins. See: `doc-standards/wiki/reference/linear-scripts/validation-results.md`
+
+---
+
+## [LOD: Low] Task Routing (Decomposed — ≥32K Models Only)
 
 When a task matches one of these operations, read ONLY the corresponding file. Do not load the full skill.
 
@@ -52,9 +72,14 @@ When a task matches one of these operations, read ONLY the corresponding file. D
 
 | File | Purpose | Sections |
 |------|---------|----------|
-| `setup.md` | Full project creation walkthrough | Phases 1-10, Critical Rules, Templates, References |
-| `domain-management.md` | Add, list, rename, remove domains | Sync Checklist, Add, List, Rename, Remove |
-| `post-completion.md` | Transform session artifacts into optimized AGENTS files | Phases 1-5, Quality Gates, Merge Protocol |
-| `wiki-integrate.md` | Consolidate scattered wiki content | When to Use, Interview, Steps, Output, Rules |
-| `domain-extract.md` | Extract domain as standalone package | When to Use, Interview, Steps, Output, Rules |
-| `checklists.md` | All verification checklists | Setup verify, Management verify, Critical Rules |
+| `setup.md` | Full project creation walkthrough (≥32K) | Phases 1-10, Critical Rules, Templates, References |
+| `domain-management.md` | Add, list, rename, remove domains (≥32K) | Sync Checklist, Add, List, Rename, Remove |
+| `post-completion.md` | Transform session artifacts into optimized AGENTS files (≥32K) | Phases 1-5, Quality Gates, Merge Protocol |
+| `wiki-integrate.md` | Consolidate scattered wiki content (≥32K) | When to Use, Interview, Steps, Output, Rules |
+| `domain-extract.md` | Extract domain as standalone package (≥32K) | When to Use, Interview, Steps, Output, Rules |
+| `checklists.md` | All verification checklists (≥32K) | Setup verify, Management verify, Critical Rules |
+| `linear/task-create-project.md` | Flat script: create project (<32K) | Context, Steps, Templates, Verification Gate |
+| `linear/task-add-domain.md` | Flat script: add domain (<32K) | Context, Steps, Templates, Verification Gate |
+| `linear/task-list-domains.md` | Flat script: list domains (<32K) | Context, Steps, Output, Verification Gate |
+| `linear/task-remove-domain.md` | Flat script: remove domain (<32K) | Context, Steps, Critical Rules, Verification Gate |
+| `linear/task-refine-agents.md` | Flat script: refine AGENTS (<32K) | Context, Steps, Critical Rules, Verification Gate |

@@ -1,0 +1,40 @@
+{
+  "name": "pi-cross-node-comms",
+  "total_size": "5.5KB",
+  "version": "2.0.0",
+  "lod_directive": "Low models load CORE only; Medium+ load CORE + PATTERNS + CONFIG",
+  "sections": [
+    {
+      "id": "CORE",
+      "file": "CORE.md",
+      "size": "~1.5KB",
+      "lod": "Low",
+      "purpose": "When to use, tool reference table, reply rules",
+      "load_when": "always"
+    },
+    {
+      "id": "PATTERNS",
+      "file": "PATTERNS.md",
+      "size": "~1.8KB",
+      "lod": "Medium",
+      "purpose": "Fire-and-forget, ask-and-wait, polling, cross-machine workflow diagram",
+      "load_when": "implementing cross-node calls or understanding message flow"
+    },
+    {
+      "id": "CONFIG",
+      "file": "CONFIG.md",
+      "size": "~0.7KB",
+      "lod": "Low",
+      "purpose": "AGENTS.md XML snippet for hub connection",
+      "load_when": "setting up a new agent or configuring hub connection"
+    }
+  ],
+  "task_to_sections": {
+    "quick_reference": ["CORE"],
+    "send_message": ["CORE", "PATTERNS"],
+    "wait_for_reply": ["CORE", "PATTERNS"],
+    "configure_agent": ["CORE", "CONFIG"],
+    "understand_workflow": ["PATTERNS"],
+    "full_implementation": ["CORE", "PATTERNS", "CONFIG"]
+  }
+}

@@ -1,80 +1,115 @@
 ---
-# Start pi + coms-net agents on all lab nodes
+# Start pi + coms-net agents on all lab nodes via systemd
 #
-# Each node starts a pi session with the coms-net extension,
-# registers with the hub, and stays online until killed.
+# Replaces the old nohup-based start-agents.yml with proper systemd units.
+# Each node gets a pi-cross-node-agent@<hostname>.service that survives
+# crashes and reboots.
 #
-# Prerequisites: deploy-fleet.yml must have been run first.
+# Prerequisites: deploy-fleet.yml or standup-fleet.yml Phases 1-4 must be complete.
 #
 # Usage:
 #   cd workspace/01-Projects/pi-cross-node-comms/ansible
 #   ansible-playbook -i inventory.yml start-agents.yml
 
-- name: Start coms-net Agents on Lab Nodes
+- name: Start coms-net Agents on Lab Nodes (systemd)
   hosts: lab_nodes
-  gather_facts: no
+  gather_facts: yes
   strategy: free
 
   vars:
     hub_url: "http://192.168.0.142:8080"
-    coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
     hub_project: "lab"
+    extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+    systemd_src: "{{ playbook_dir }}/systemd"
 
   tasks:
-    - name: Kill any existing agent on this node
+    # ── Stop legacy nohup agents (migration path) ──
+    - name: Kill any nohup-launched agent
       ansible.builtin.shell: |
         pkill -f "pi -e.*coms-net" 2>/dev/null || true
+        pkill -f "pi.*--name.*{{ inventory_hostname }}" 2>/dev/null || true
+        rm -f /tmp/pi-agent-{{ inventory_hostname }}.pid
         true
       changed_when: false
       failed_when: false
 
-    - name: Start pi agent with coms-net
-      ansible.builtin.shell: |
-        cd {{ ansible_env.HOME }}/pi-cross-node-comms
-        nohup pi -e src/index.ts \
-          --name {{ inventory_hostname }} \
-          --project {{ hub_project }} \
-          --server-url {{ hub_url }} \
-          --auth-token {{ coms_token }} \
-          --purpose "lab worker — {{ ollama_models | default('qwen3.5:4b') }}" \
-          --model ollama/qwen3.5:4b \
-          -p "You are {{ inventory_hostname }}, a lab worker node. Report your presence to the hub: your hostname, available CPU cores, RAM, disk, and ollama models. Then stay online and wait for tasks from the orchestrator." \
-          > /tmp/pi-agent-{{ inventory_hostname }}.log 2>&1 &
-        echo $! > /tmp/pi-agent-{{ inventory_hostname }}.pid
-        sleep 2
-        echo "Agent started on {{ inventory_hostname }} (PID $(cat /tmp/pi-agent-{{ inventory_hostname }}.pid))"
-      changed_when: true
-      register: agent_start
-      async: 30
-      poll: 0
+    # ── Stop existing systemd service (for clean restart) ──
+    - name: Stop existing systemd service
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        state: stopped
+      ignore_errors: yes
+      changed_when: false
 
-    - name: Report agent launch
+    # ── Install systemd unit from template ──
+    - name: Install systemd unit
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent@.service.template"
+        dest: "/etc/systemd/system/pi-cross-node-agent@{{ inventory_hostname }}.service"
+        mode: '0644'
+      become: yes
+
+    # ── Install per-node environment file (secure) ──
+    - name: Install per-node environment file
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent.conf"
+        dest: "/etc/pi-cross-node-agent@{{ inventory_hostname }}.conf"
+        mode: '0600'
+        owner: root
+        group: root
+      become: yes
+
+    # ── Reload and start ──
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Enable and start pi-cross-node-agent service
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        enabled: yes
+        state: started
+      become: yes
+
+    - name: Wait for service to be active
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+      register: svc_status
+      until: svc_status.status.ActiveState == 'active'
+      retries: 5
+      delay: 3
+
+    - name: Report agent status
       ansible.builtin.debug:
-        msg: "🚀 Agent launched on {{ inventory_hostname }} — name={{ inventory_hostname }}"
+        msg: "🚀 {{ inventory_hostname }} — pi-cross-node-agent@{{ inventory_hostname }} {{ svc_status.status.ActiveState }}"
 
-- name: Wait for all agents to register
+- name: Wait for all agents to register on hub
   hosts: localhost
   connection: local
   gather_facts: no
+
+  vars:
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_url: "http://192.168.0.142:8080"
+
   tasks:
     - name: Wait for agents to appear on hub
-      ansible.builtin.uri:
-        url: "http://192.168.0.142:8080/v1/agents"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ coms_token }}"
-      register: agent_list
-      retries: 15
-      delay: 3
-      until: "(agent_list.json.agents | default([]) | length) >= 7"
+      ansible.builtin.shell: |
+        for i in $(seq 1 30); do
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          if [ "$count" -ge 1 ]; then
+            echo "Agents registered: $count"
+            exit 0
+          fi
+          sleep 3
+        done
+        echo "No agents registered after 90 seconds"
+        exit 1
+      register: agent_wait
+      changed_when: false
 
     - name: Report fleet status
       ansible.builtin.debug:
-        msg:
-          - "═══════════════════════════════════════════════════"
-          - "  FLEET ONLINE — {{ agent_list.json.agents | length }} agents registered"
-          - ""
-          - "{% for agent in agent_list.json.agents %}"
-          - "  {{ agent.name }}: {{ agent.purpose }} ({{ agent.model }})"
-          - "{% endfor %}"
-          - "═══════════════════════════════════════════════════"
+        msg: "═══════════════════════════════════════════════════\n  FLEET ONLINE — {{ agent_wait.stdout }}\n  Hub: {{ hub_url }}\n═══════════════════════════════════════════════════"

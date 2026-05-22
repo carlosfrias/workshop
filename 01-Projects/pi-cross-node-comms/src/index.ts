@@ -28,6 +28,7 @@ import { Text } from "@mariozechner/pi-tui";
 import { truncateToWidth } from "@mariozechner/pi-tui";
 import { Type } from "@sinclair/typebox";
 import { applyExtensionDefaults } from "./themeMap.ts";
+import { performHeartbeatTick } from "./heartbeat-tick.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
@@ -674,24 +675,13 @@ export default function (pi: ExtensionAPI) {
 		currentInbound = inbound;
 
 		try {
-			pi.sendMessage(
-				{
-					customType: "coms-net-inbound",
-					content:
-						`[inbound coms-net message from ${senderName} @ ${senderCwd}]\n` +
-						`[reply by writing a normal assistant message — your turn output is auto-returned to ${senderName}. ` +
-						`DO NOT call coms_net_send/coms_net_await/coms_net_get to reply; that creates a ping-pong loop. ` +
-						`msg_id ${msg_id} belongs to ${senderName}'s outbound, not yours.]\n\n` +
-						`${promptText}`,
-					display: true,
-					details: {
-						msg_id,
-						sender_session: senderSession,
-						response_schema: responseSchema,
-						hops,
-					},
-				},
-				{ deliverAs: "followUp", triggerTurn: true },
+			pi.sendUserMessage(
+				`[from ${senderName} @ ${senderCwd}]\n` +
+				`[reply by writing a normal assistant message — your turn output is auto-returned to ${senderName}. ` +
+				`DO NOT call coms_net_send/coms_net_await/coms_net_get to reply; that creates a ping-pong loop. ` +
+				`msg_id ${msg_id} belongs to ${senderName}'s outbound, not yours.]\n\n` +
+				`${promptText}`,
+				{ deliverAs: "followUp" },
 			);
 			try {
 				pi.appendEntry("coms-net-log", {
@@ -984,13 +974,15 @@ export default function (pi: ExtensionAPI) {
 		// 9. Heartbeat loop.
 		heartbeatTimer = setInterval(() => {
 			if (!identity || shuttingDown) return;
-			const ctxNow = currentCtx;
-			const pct = Math.round(ctxNow?.getContextUsage()?.percent ?? 0);
+			const tick = performHeartbeatTick(currentCtx, identity, inboundQueue.size);
+			if (tick.ctxWasStale) {
+				currentCtx = null;
+			}
 			const hbReq: HeartbeatRequest = {
 				project: identity.project,
-				context_used_pct: pct,
-				queue_depth: inboundQueue.size,
-				model: ctxNow?.model?.id ?? identity.model,
+				context_used_pct: tick.pct,
+				queue_depth: tick.queue_depth,
+				model: currentCtx?.model?.id ?? identity.model,
 				status: "online",
 			};
 			httpFetch("POST", `/v1/agents/${encodeURIComponent(identity.session_id)}/heartbeat`, hbReq, { timeoutMs: 5_000 })

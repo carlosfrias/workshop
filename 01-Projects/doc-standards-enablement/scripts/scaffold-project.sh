@@ -9,8 +9,8 @@
 # Creates:
 #   personal-vault/01-Projects/{name}/
 #     README.md, AGENTS.md, FOCUS.md, WORKBENCH.md, Overview.md
-#     threads/{name}/0-THREAD.md, prompts/001-initial-setup.md
-#     journal/, status/ (empty dirs)
+#     threads/{name}/0-THREAD.md, threads/{name}/prompts/001-initial-setup.md
+#     journal/, refined-agents/, status/ (empty dirs)
 #
 #   workshop/01-Projects/{name}/
 #     AGENTS.md
@@ -210,6 +210,9 @@ write_file "$VAULT_PROJECT/FOCUS.md" "---
 name: $DISPLAY_NAME
 summary: Project scaffolded — define deliverables and priorities
 status: active
+phase: \"Phase 1: Setup\"
+progress: 20
+tracked: true
 ---
 
 # Current Focus
@@ -239,7 +242,21 @@ status: active
 3. Read this file for current state
 "
 
-# WORKBENCH.md (from template)
+# PLAN.md
+write_file "$VAULT_PROJECT/PLAN.md" "---
+name: $DISPLAY_NAME
+phase: \"Phase 1: Setup\"
+progress: 20
+tracked: true
+---
+
+# Plan — $DISPLAY_NAME
+
+## Phase 1: Setup
+- [x] 1.1 Project scaffolded with doc-standards structure
+- [ ] 1.2 Define deliverables and priorities
+- [ ] 1.3 First working session
+"
 write_file "$VAULT_PROJECT/WORKBENCH.md" "---
 workbench: true
 updated: $NOW
@@ -365,6 +382,7 @@ Create the $DISPLAY_NAME project with full doc-standards structure (v2.3.0). Doc
 
 # Empty dirs
 write_empty_dir "$VAULT_PROJECT/journal"
+write_empty_dir "$VAULT_PROJECT/refined-agents"
 write_empty_dir "$VAULT_PROJECT/status"
 
 # ═══════════════════════════════════════════════════════════════════════

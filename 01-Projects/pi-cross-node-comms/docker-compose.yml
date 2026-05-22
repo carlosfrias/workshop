@@ -1,0 +1,39 @@
+# coms-net Hub Server — Docker Compose
+#
+# Start:    PI_COMS_NET_AUTH_TOKEN=<token> docker compose up -d
+# Stop:     docker compose down
+# Logs:     docker compose logs -f
+# Rebuild:  docker compose build --no-cache && docker compose up -d --force-recreate
+#
+# The hub requires PI_COMS_NET_AUTH_TOKEN for non-loopback binds.
+# For loopback-only (dev), omit the token var.
+
+services:
+  hub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: coms-net-hub:latest
+    container_name: coms-net-hub
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PI_COMS_NET_HOST: "${PI_COMS_NET_HOST:-0.0.0.0}"
+      PI_COMS_NET_PORT: "${PI_COMS_NET_PORT:-8080}"
+      PI_COMS_NET_PROJECT: "${PI_COMS_NET_PROJECT:-lab}"
+      PI_COMS_NET_AUTH_TOKEN: "${PI_COMS_NET_AUTH_TOKEN:-}"
+      PI_COMS_NET_LOG_HEARTBEAT: "${PI_COMS_NET_LOG_HEARTBEAT:-0}"
+      PI_COMS_NET_LOG_QUIET: "${PI_COMS_NET_LOG_QUIET:-0}"
+    volumes:
+      - hub-state:/home/comsnet/.pi/coms-net
+    # Health check is built into the Dockerfile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  hub-state:
+    name: coms-net-hub-state

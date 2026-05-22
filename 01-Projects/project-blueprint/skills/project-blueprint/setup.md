@@ -47,7 +47,7 @@ Before creating anything, ask the user these questions. Use their answers to cus
 
 ### Phase 2: Create Directory Structure
 
-Create the following structure, substituting the user's domain names:
+Create the following structure, substituting the user's domain names. This covers the **workshop side** (code, agents, domains, wiki). The **vault side** (WORKBENCH.md, AGENTS.md, FOCUS.md, threads) is created in Phase 3.
 
 ```
 <project-root>/
@@ -76,7 +76,34 @@ Create the following structure, substituting the user's domain names:
             └── ...
 ```
 
-### Phase 3: Create the Root AGENTS.md
+### Phase 3: Create Vault-Side Documentation
+
+Create the human-facing documentation in the vault (`personal-vault/01-Projects/{project-name}/`). This side contains the Workbench, AI handoff, and prompt threads.
+
+**1. WORKBENCH.md** — Use the template at `./templates/WORKBENCH.md`.
+
+This is the **human's workspace** (Workbench Pattern). Deliberately exempt from [S-TIGHT], LOD markers, and AI formatting rules. Customize:
+- Project name in title and frontmatter
+- Current date
+- One checkbox: "Project scaffolded" as first completed item
+
+**Rules:**
+- Put here: current thinking, half-formed ideas, brain dumps, working checklists, questions, sketches
+- Don't put here: finished decisions (→ decision-log), concrete tasks (→ FOCUS.md), prompt captures (→ thread)
+- When content matures, migrate to the appropriate structural file
+- Strike through completed items with `~~done~~`
+
+**2. Vault AGENTS.md** — Contains documentation-domain routing, conventions, discovery order (WORKBENCH → AGENTS → FOCUS → README → thread), and workshop cross-reference.
+
+**3. FOCUS.md** — Frontmatter (`name`, `summary`, `status`, `phase`, `progress`), current focus, active work, session handoff, blocked/needs-decision, next-agent discovery path.
+
+**4. README.md** — Project overview, description, deliverables, quick links.
+
+**5. Overview.md** — Progress dashboard with phase status table and session history.
+
+**6. Thread** — `threads/{project-name}/0-THREAD.md` + first prompt.
+
+### Phase 4: Create the Root AGENTS.md (Workshop)
 
 Use the template at `./templates/AGENTS-root.md`.
 
@@ -102,7 +129,7 @@ That file contains all context, conventions, rules, and quality checks for the d
 After reading the domain file, follow its instructions for the task.
 ```
 
-### Phase 4: Create the Identity File
+### Phase 5: Create the Identity File
 
 Use the template at `./templates/APPEND_SYSTEM.md`.
 
@@ -111,7 +138,7 @@ This goes in `.pi/APPEND_SYSTEM.md` and should contain ONLY:
 - Their role/context
 - Any universal rules (NO domain-specific content — that goes in domain `AGENTS.md` files)
 
-### Phase 5: Create Domain AGENTS.md Files
+### Phase 6: Create Domain AGENTS.md Files
 
 For each domain, use the template at `./templates/AGENTS-domain.md`.
 
@@ -126,7 +153,7 @@ Each domain `AGENTS.md` must be **self-contained** — it should contain:
 
 **Do NOT create supplementary files** (no `CONTEXT.md`, `REFERENCES.md`, `QualityControl.md`). Everything goes in `AGENTS.md`.
 
-### Phase 6: Create Agent Definitions
+### Phase 7: Create Agent Definitions
 
 For each domain, create an agent definition in `.pi/agents/<domain>.md`.
 
@@ -151,8 +178,6 @@ Key frontmatter settings:
 6. **Default wiki directory name is `wiki`**, not `research`. Allow user override.
 7. **Include sample prompts in the wiki** — non-technical users need copy-paste examples.
 8. **Report token budget** before and after setup so the user understands the efficiency gains.
-
-Each chain step uses `{task}` and `{previous}` variables.
 
 ### Phase 8: Create the Wiki
 
@@ -243,7 +268,8 @@ Report the totals to the user.
 ### Phase 10: Final Verification
 
 1. Verify the routing table in root `AGENTS.md` covers all domains
-2. Verify each domain `AGENTS.md` is self-contained (no references to supplementary files)
+2. Verify the vault AGENTS.md discovery order starts with WORKBENCH.md
+3. Verify each domain `AGENTS.md` is self-contained (no references to supplementary files)
 3. Verify all agent definitions have `inheritProjectContext: false` and correct `cwd`
 4. Verify the wiki navigation links all pages
 5. Run `ls -la` on the project structure to confirm file layout
@@ -264,7 +290,8 @@ Report the totals to the user.
 
 All templates are in `./templates/`. Read each template file and customize it for the user's project. Never copy a template verbatim — always adapt it to the specific domain and project.
 
-- `AGENTS-root.md` — Root AGENTS.md with routing table
+- `WORKBENCH.md` — Human workspace, exempt from AI formatting (Workbench Pattern)
+- `AGENTS-root.md` — Workshop root AGENTS.md with routing table
 - `AGENTS-domain.md` — Domain AGENTS.md structure (includes Documentation Protocol)
 - `APPEND_SYSTEM.md` — Identity file for .pi/
 - `agent-domain.md` — Agent definition with frontmatter (includes Documentation Protocol)

@@ -30,6 +30,10 @@ All three end up reading the same skill. They're just different ways to trigger 
 
 ## What's Included
 
+### Standard Prompts (≥32K context models)
+
+These prompts instruct the agent to read the skill manifest and follow cross-references. Suitable for models that can navigate 3-4 hops.
+
 | Command | File | What It Does |
 |---------|------|-------------|
 | `/new-project` | `new-project.md` | Scaffold a brand new project from scratch |
@@ -39,6 +43,17 @@ All three end up reading the same skill. They're just different ways to trigger 
 | `/list-domain` | `list-domain.md` | List all configured domains with keywords and metadata |
 | `/integrate-wiki` | `integrate-wiki.md` | Consolidate scattered/legacy wiki content into domain-centric layout |
 | `/extract-domain` | `extract-domain.md` | Extract a domain as a self-contained package for a new workspace |
+
+### Linear Prompts (<32K context models)
+
+These prompts inline the linear script directly — no cross-references, no navigation. Validated on gemma4:e4b (4B) and qwen3:8b (8B). A 4B model with a linear script outperforms an 8B model with the decomposed approach.
+
+| Command | File | What It Does |
+|---------|------|-------------|
+| `/new-project-linear` | `new-project-linear.md` | Scaffold a new project (flat instructions, no navigation) |
+| `/add-domain-linear` | `add-domain-linear.md` | Add a domain (flat instructions) |
+| `/remove-domain-linear` | `remove-domain-linear.md` | Remove a domain (flat instructions) |
+| `/list-domain-linear` | `list-domain-linear.md` | List domains (flat instructions) |
 
 ## Usage
 

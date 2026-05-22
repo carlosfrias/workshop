@@ -1,0 +1,133 @@
+{
+  "_comment": "Model router for 31Gi RAM nodes (fnet3, fnet4, fnet5, fnet6). Comfortable RAM \u2014 gemma4:e4b as flagship for high-tier tasks.",
+  "_tier": "31Gi",
+  "_models": {
+    "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision+thinking",
+    "qwen3:8b": "5.2GB disk, 8.2B params, 40960 ctx, tools+thinking",
+    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking"
+  },
+  "defaultProfile": "local",
+  "debug": false,
+  "phaseBias": 0.5,
+  "largeContextThreshold": 60000,
+  "rules": [
+    {
+      "matches": [
+        "deploy",
+        "production",
+        "release",
+        "security"
+      ],
+      "tier": "high",
+      "profile": "local",
+      "reason": "Safety-critical tasks need the flagship model"
+    },
+    {
+      "matches": [
+        "refactor",
+        "architect",
+        "design",
+        "plan"
+      ],
+      "tier": "high",
+      "profile": "local",
+      "reason": "Complex planning needs the best model"
+    },
+    {
+      "matches": [
+        "changelog",
+        "comment",
+        "format",
+        "lint",
+        "typos",
+        "list",
+        "count"
+      ],
+      "tier": "low",
+      "reason": "Lightweight tasks use the fast model"
+    }
+  ],
+  "profiles": {
+    "local": {
+      "high": {
+        "model": "ollama/gemma4:e4b",
+        "thinking": "low"
+      },
+      "medium": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    },
+    "fast": {
+      "high": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      },
+      "medium": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    },
+    "reasoning": {
+      "high": {
+        "model": "ollama/gemma4:e4b",
+        "thinking": "high"
+      },
+      "medium": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "medium"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "low"
+      }
+    },
+    "coding": {
+      "high": {
+        "model": "ollama/gemma4:e4b",
+        "thinking": "medium"
+      },
+      "medium": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      },
+      "low": {
+        "model": "ollama/qwen3.5:4b",
+        "thinking": "off"
+      }
+    }
+  },
+  "skills": {
+    "project-blueprint": {
+      "_comment": "Route low-capacity models to linear scripts (no cross-ref navigation)",
+      "_validated": "2026-05-21 Phase 6 \u2014 gemma4:e4b + linear outperforms qwen3:8b + decomposed",
+      "linearThreshold": 32000,
+      "linearSuffix": "-linear",
+      "tiers": {
+        "low": {
+          "model": "ollama/qwen3.5:4b",
+          "promptVariant": "-linear",
+          "reason": "<8K context cannot navigate cross-refs"
+        },
+        "medium": {
+          "model": "ollama/qwen3:8b",
+          "promptVariant": "-linear",
+          "reason": "<32K context: linear scripts validated as safer"
+        },
+        "high": {
+          "model": "ollama/gemma4:e4b",
+          "promptVariant": "",
+          "reason": ">=32K context can handle decomposed skill"
+        }
+      }
+    }
+  }
+}

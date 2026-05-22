@@ -2,7 +2,7 @@
 # Standup Fleet — Full coms-net Hub + Lab Readiness Playbook
 #
 # Single-playbook orchestrator that:
-#   Phase 1: Deploys and starts the coms-net hub server on fnet2
+#   Phase 1: Docker-deploys and starts the coms-net hub server on fnet2
 #   Phase 2: Ensures pi is installed and current on every lab node
 #   Phase 3: Ensures Ollama is installed, running, and target models are pulled
 #   Phase 4: Deploys the coms-net extension to every lab node
@@ -32,7 +32,7 @@
         msg:
           - "═══════════════════════════════════════════════════"
           - "  coms-net FLEET STANDUP"
-          - "  Phase 1: Hub Server (fnet2)"
+          - "  Phase 1: Hub Server (fnet2) [Docker]"
           - "  Phase 2: pi Agent (all nodes)"
           - "  Phase 3: Ollama + Models (all nodes)"
           - "  Phase 4: Extension Deploy (all nodes)"
@@ -44,7 +44,7 @@
 # PHASE 1: Hub Server — fnet2 only
 # ══════════════════════════════════════════════════════════════════════════════
 
-- name: PHASE 1 - Hub Server on fnet2
+- name: PHASE 1 - Hub Server on fnet2 (Docker)
   hosts: fnet2
   gather_facts: yes
 
@@ -54,59 +54,78 @@
     hub_project: "lab"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
     extension_src: "{{ playbook_dir }}/../"
+    deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
 
   tasks:
-    - name: Install Bun on fnet2
+    - name: Ensure Docker is installed
       ansible.builtin.shell: |
-        curl -fsSL https://bun.sh/install | bash
-      args:
-        creates: "{{ ansible_env.HOME }}/.bun/bin/bun"
+        if ! command -v docker >/dev/null 2>&1; then
+          curl -fsSL https://get.docker.com | sh
+          sudo usermod -aG docker $USER
+        fi
       changed_when: true
 
-    - name: Create server directory
+    - name: Ensure Docker daemon is running
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Create deployment directory
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.pi/coms-net/server"
+        path: "{{ deploy_dir }}"
         state: directory
         mode: '0755'
 
-    - name: Copy hub server code
-      ansible.builtin.copy:
-        src: "{{ extension_src }}/server/coms-net-server.ts"
-        dest: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
+    - name: Create server subdirectory
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}/server"
+        state: directory
         mode: '0755'
 
-    - name: Stop existing hub
+    - name: Copy Docker assets
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/{{ item }}"
+        dest: "{{ deploy_dir }}/{{ item }}"
+        mode: '0644'
+      loop:
+        - Dockerfile
+        - docker-compose.yml
+        - .dockerignore
+
+    - name: Copy hub server source
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/server/coms-net-server.ts"
+        dest: "{{ deploy_dir }}/server/coms-net-server.ts"
+        mode: '0644'
+
+    - name: Kill any process using hub port (legacy Bun cleanup)
       ansible.builtin.shell: |
-        [ -f /tmp/coms-net-hub.pid ] && kill $(cat /tmp/coms-net-hub.pid) 2>/dev/null || true
-        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | sed -n 's/.*pid=\([0-9]*\).*/\1/p' || true)
-        [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
-        rm -f /tmp/coms-net-hub.pid
+        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | grep -oP 'pid=\K[0-9]+' || true)
+        [ -n "$pid" ] && sudo kill "$pid" 2>/dev/null || true
         true
       changed_when: false
       failed_when: false
 
-    - name: Wait for port to release
-      ansible.builtin.wait_for:
-        port: "{{ hub_port }}"
-        state: stopped
-        timeout: 10
-      ignore_errors: yes
+    - name: Stop existing container
+      ansible.builtin.shell: |
+        cd {{ deploy_dir }}
+        docker compose down --remove-orphans 2>/dev/null || true
+      changed_when: false
+      failed_when: false
 
-    - name: Start coms-net hub
+    - name: Build and start hub via Docker Compose
       block:
-        - name: Launch hub server
+        - name: Docker compose up
           ansible.builtin.shell: |
-            export BUN_INSTALL="{{ ansible_env.HOME }}/.bun"
-            export PATH="$BUN_INSTALL/bin:$PATH"
-            export PI_COMS_NET_AUTH_TOKEN="{{ coms_token }}"
-            export PI_COMS_NET_HOST="{{ hub_host }}"
-            export PI_COMS_NET_PORT="{{ hub_port }}"
-            export PI_COMS_NET_PROJECT="{{ hub_project }}"
-            nohup bun run "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts" > /tmp/coms-net-hub.log 2>&1 &
-            echo $! > /tmp/coms-net-hub.pid
-            sleep 3
-            curl -sf http://localhost:{{ hub_port }}/health
-          register: hub_launch
+            cd {{ deploy_dir }}
+            PI_COMS_NET_AUTH_TOKEN="{{ coms_token }}" \
+            PI_COMS_NET_HOST="{{ hub_host }}" \
+            PI_COMS_NET_PORT="{{ hub_port }}" \
+            PI_COMS_NET_PROJECT="{{ hub_project }}" \
+            docker compose up -d --build --force-recreate
+          register: compose_up
           changed_when: true
 
         - name: Verify hub health
@@ -121,37 +140,43 @@
         - name: Report hub ready
           ansible.builtin.debug:
             msg:
-              - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }})"
+              - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }}) [Docker]"
+              - "   Container: coms-net-hub"
               - "   Server ID: {{ hub_health.json.server_id }}"
+              - "   Image: coms-net-hub:latest"
       rescue:
-        - name: Dump hub log for diagnostics
-          ansible.builtin.command: cat /tmp/coms-net-hub.log
+        - name: Dump Docker logs for diagnostics
+          ansible.builtin.shell: |
+            cd {{ deploy_dir }}
+            docker compose logs --tail=50 2>&1 || true
           changed_when: false
           failed_when: false
 
-        - name: Check if bun binary exists
-          ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.bun/bin/bun"
-          register: bun_binary
+        - name: Check Docker is running
+          ansible.builtin.command: docker info
+          register: docker_info
+          changed_when: false
           failed_when: false
 
-        - name: Check if server code exists
-          ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.pi/coms-net/server/coms-net-server.ts"
-          register: server_code
+        - name: Check container exists
+          ansible.builtin.shell: |
+            docker ps -a --filter name=coms-net-hub --format '{{ '{{' }}.Status{{ '}}' }}' 2>/dev/null || echo 'missing'
+          register: container_status
+          changed_when: false
           failed_when: false
 
         - name: Diagnostic report
           ansible.builtin.fail:
             msg:
-              - "❌ Hub failed to start on fnet2"
-              - "   Bun binary: {{ 'FOUND' if bun_binary.stat.exists else 'MISSING — install Bun manually' }}"
-              - "   Server code: {{ 'FOUND' if server_code.stat.exists else 'MISSING — check extension_src path' }}"
-              - "   Auth token: {{ 'SET (' + coms_token[:8] + '...) if coms_token else 'EMPTY — set PI_COMS_NET_AUTH_TOKEN or use -e flag' }}"
-              - "   Hub log above this message. Common fixes:"
+              - "❌ Hub failed to start on fnet2 (Docker)"
+              - "   Docker: {{ 'RUNNING' if docker_info.rc == 0 else 'NOT RUNNING' }}"
+              - "   Container: {{ container_status.stdout }}"
+              - "   Auth token: {{ 'SET' if coms_token else 'EMPTY' }}"
+              - "   Docker logs above this message. Common fixes:"
               - "     1. Token empty → pass -e 'coms_token=<token>'"
-              - "     2. Bun missing → run: curl -fsSL https://bun.sh/install | bash"
-              - "     3. Port in use → kill process on port {{ hub_port }} or wait for release"
+              - "     2. Docker not installed → run: curl -fsSL https://get.docker.com | sh"
+              - "     3. Port in use → check: docker ps / sudo ss -tlnp | grep {{ hub_port }}"
+              - "     4. Manual rebuild: cd {{ deploy_dir }} && docker compose build --no-clean && docker compose up -d"
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PHASE 2: pi Agent — all lab nodes (idempotent install/upgrade)
@@ -315,10 +340,18 @@
         msg: "✅ {{ inventory_hostname }} — extension installed"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PHASE 5: Start Agents — all lab nodes
+# PHASE 5: Start Agents — systemd service (replaces nohup)
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Installs a systemd service template (pi-cross-node-agent@.service) that
+# replaces the old nohup-based agent launch. Agents now survive crashes,
+# hub restarts (SSE reconnect), and host reboots.
+#
+# The unit file is templated from ansible/systemd/pi-cross-node-agent@.service.template
+# with values from ansible/systemd/pi-cross-node-agent.conf.
 # ══════════════════════════════════════════════════════════════════════════════
 
-- name: PHASE 5 - Launch Agents on Lab Nodes
+- name: PHASE 5 - Install and Start Agent Services (systemd)
   hosts: lab_nodes
   gather_facts: yes
   strategy: free
@@ -327,39 +360,108 @@
     hub_url: "http://192.168.0.142:8080"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
     hub_project: "lab"
+    extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+    systemd_src: "{{ playbook_dir }}/systemd"
 
   tasks:
-    - name: Kill any existing agent on this node
+    # ── Discover pi executable path ──
+    - name: Find pi executable path
+      ansible.builtin.shell: which pi
+      register: pi_which
+      changed_when: false
+
+    - name: Set pi_executable fact
+      ansible.builtin.set_fact:
+        pi_executable: "{{ pi_which.stdout | default('/usr/local/bin/pi') }}"
+
+    # ── Stop any nohup-launched agent (migration path) ──
+    - name: Kill any existing nohup agent on this node
       ansible.builtin.shell: |
         pkill -f "pi -e.*coms-net" 2>/dev/null || true
         pkill -f "pi.*--name.*{{ inventory_hostname }}" 2>/dev/null || true
+        rm -f /tmp/pi-agent-{{ inventory_hostname }}.pid
         true
       changed_when: false
       failed_when: false
 
-    - name: Start pi agent with coms-net
-      ansible.builtin.shell: |
-        cd {{ ansible_env.HOME }}/pi-cross-node-comms
-        nohup pi -e src/index.ts \
-          --name {{ inventory_hostname }} \
-          --project {{ hub_project }} \
-          --server-url {{ hub_url }} \
-          --auth-token {{ coms_token }} \
-          --purpose "lab worker — {{ inventory_hostname }}" \
-          --model ollama/qwen3.5:4b \
-          -p "You are {{ inventory_hostname }}, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a D-E-V Workflow Task envelope, execute the sub-task precisely and return ONLY the output in the specified format. When you receive other prompts, report your hostname, CPU cores, RAM, disk, and ollama models, then stay online and wait for tasks. If you cannot complete a task, respond with: FAIL: [reason]\n\nD-E-V Envelope Format — when you see this, follow it exactly:\n## D-E-V Workflow Task\n**Plan ID:** [plan reference]\n**Sub-Task #:** [number]\n**Task:** [your instruction]\n**Expected Output Format:** [required format]\n**Verification Criteria:** [what will be checked]\n**Your Role:** Execute the sub-task precisely. Return ONLY the output in the expected format. No extra commentary." \
-          > /tmp/pi-agent-{{ inventory_hostname }}.log 2>&1 &
-        echo $! > /tmp/pi-agent-{{ inventory_hostname }}.pid
-        sleep 2
-        echo "Agent started on {{ inventory_hostname }} (PID $(cat /tmp/pi-agent-{{ inventory_hostname }}.pid))"
-      changed_when: true
-      register: agent_start
-      async: 30
-      poll: 0
+    # ── Stop any existing systemd service (for clean restart) ──
+    - name: Stop existing systemd service if running
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        state: stopped
+      ignore_errors: yes
+      changed_when: false
 
-    - name: Report agent launch
+    # ── Create systemd directory ──
+    - name: Ensure systemd directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/system
+        state: directory
+        mode: '0755'
+      become: yes
+
+    # ── Copy the FIFO wrapper script ──
+    - name: Copy pi-agent-standalone.sh wrapper
+      ansible.builtin.copy:
+        src: "{{ systemd_src }}/pi-agent-standalone.sh"
+        dest: "{{ extension_path }}/pi-agent-standalone.sh"
+        mode: '0755'
+      become: yes
+
+    # ── Template and install the systemd unit ──
+    - name: Install systemd unit from template
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent@.service.template"
+        dest: "/etc/systemd/system/pi-cross-node-agent@{{ inventory_hostname }}.service"
+        mode: '0644'
+      become: yes
+
+    # ── Install the environment file (secure permissions) ──
+    - name: Install per-node environment file
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent.conf"
+        dest: "/etc/pi-cross-node-agent@{{ inventory_hostname }}.conf"
+        mode: '0600'
+        owner: root
+        group: root
+      become: yes
+
+    # ── Reload systemd and enable/start the service ──
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Enable and start pi-cross-node-agent service
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        enabled: yes
+        state: started
+      become: yes
+      register: service_start
+
+    # ── Wait for service to be running ──
+    - name: Wait for agent service to be active
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+      register: service_status
+      until: service_status.status.ActiveState == 'active'
+      retries: 5
+      delay: 3
+
+    - name: Verify pi process is running
+      ansible.builtin.shell: |
+        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }} && echo "running" || echo "not running"
+      register: pi_running
+      changed_when: false
+
+    - name: Report agent service status
       ansible.builtin.debug:
-        msg: "🚀 Agent launched on {{ inventory_hostname }}"
+        msg: >-
+          {{ '🚀' if pi_running.stdout == 'running' else '❌' }}
+          {{ inventory_hostname }} —
+          pi-cross-node-agent@{{ inventory_hostname }}
+          {{ service_status.status.ActiveState }}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PHASE 6: Fleet Validation + Prune Down Nodes

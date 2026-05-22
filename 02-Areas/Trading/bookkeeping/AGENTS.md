@@ -1,52 +1,74 @@
-# Bookkeeping Agent Protocol
-# Framework: Beancount (Plain Text Accounting)
+# AGENTS.md — Bookkeeping
+
+**Documentation home:** `../../personal-vault/02-Areas/Trading/bookkeeping/` or `../../personal-vault/01-Projects/Carlos-Trading-Desk/`
+**Code workspace:** `./` (this directory)
+
+## [S-TIGHT]
+
+Bookkeeping system using Beancount plain-text accounting. Three sub-domains: financial ledger (Schwab brokerage), import pipeline (PDF/XLSX/CSV → Beancount), and AI cost model (cloud/local inference spend tracking). Fava UI managed via playbook-executor.
 
 ## Domain Routing
-When any of the following keywords appear in a prompt, load the specialized initialization prompt from `./Prompts/bookkeeping-agent-prompt.md`:
-- a list of keywords: `bookkeeping, ledger, beancount, reconciliation, p&l, realization, cost-basis, financial-records`
 
-## Workflow
-1. **Event Trigger**: The `trade-to-log.chain` or `position-management` agent signals a trade execution.
+| Keywords | Read this file |
+|----------|---------------|
+| bookkeeping, ledger, beancount, reconciliation, p&l, realization, cost-basis, trade log, journal entry, financial records, double-entry, main.beancount, balance, trial balance, income statement, balance sheet | `./ledger/AGENTS.md` |
+| import, pipeline, staging, ingest, pdfplumber, schwab, brokerage statement, pdf import, csv import, xlsx import, approved, rejected, patch file, rollback, bean-check | `./import/AGENTS.md` |
+| ai cost, model cost, inference cost, token cost, cloud spend, local model cost, cost tracking, compute cost, routing efficiency, ai-cost-model, ai budget | `./cost-model/AGENTS.md` |
+| fava, fava server, start fava, stop fava, restart fava, ledger viewer, bean counter | Use playbook-executor: `start-fava` playbook |
 
-2. **Entry Generation**: The `bookkeeping` agent creates a Beancount transaction in `./bookkeeping/ledger/main.beancount`.
-3. **Reconciliation**: Periodically, the agent reads brokerage CSVs and compares them against the ledger.
-4. **Import Pipeline**: Staged, auditable import of CSV/XLSX/ODS financial records via `./scripts/import_pipeline.py`. See `./Prompts/bookkeeping-agent-prompt.md` for operational details.
-5. **P&L Calculation**: Use Beancount/Fava to generate realized and unrealized P&L reports.
+## Tech Stack
 
-## Financial Records Import Pipeline
+| Component | Technology | Managed By |
+|-----------|-----------|-------------|
+| Ledger | Beancount (plain-text) | This project |
+| Web UI | Fava | playbook-executor (`start-fava.yml`) |
+| PDF import | pdfplumber | `./scripts/import_pipeline.py` |
+| Excel import | openpyxl | `./scripts/import_pipeline.py` |
+| Python venv | Python 3.14 at `./.venv` | playbook-executor manages installs |
 
-Supported formats: CSV, Microsoft Excel (XLSX), LibreOffice Calc (ODS).
+## Conventions
 
-**Stages:** Inbox → Validate → Pending → Review → Import → Archive
+- All timestamps in US Eastern (America/New_York)
+- All date formats: YYYY-MM-DD
+- All monetary values in USD unless specified
+- Trade IDs: `#SCHWAB-YYYYMMDD-NNN`
+- Beancount format: `YYYY-MM-DD * "Description" Account:Name Amount Commodity`
+- Double-entry: every transaction must balance to zero
 
-**Rollback:** Every import creates a timestamped backup in `./ledger/.backups/`. Rollback restores the pre-import ledger state.
+## Key Files
 
-## Fava Visualization
-
-[Fava](https://beancount.github.io/fava/) is the web-based UI layered on top of Beancount. It runs from the Python virtual environment at `.venv` in the project root.
-
-**To launch Fava:**
-```bash
-source .venv/bin/activate
-fava bookkeeping/ledger/main.beancount
-```
-
-This starts a local web server at `http://127.0.0.1:5000` with interactive views for trial balance, income statement, balance sheet, and commodity price charts.
-
-## Beancount Conventions
-- **Format**: `YYYY-MM-DD * "Description" Account:Name Amount Commodity`
-- **Positions**: Tracked in `Assets:Brokerage:Positions`.
-- **Fees**: Always logged to `Expenses:Trading:Commissions`.
+| File | Purpose |
+|------|---------|
+| `ledger/main.beancount` | Primary Schwab brokerage ledger (706 lines) |
+| `ledger/ai-cost-model.beancount` | AI inference cost tracking ledger (72 lines) |
+| `ledger/combined.beancount` | Combined view merging all sub-ledgers |
+| `scripts/import_pipeline.py` | Main import pipeline (811 lines) |
+| `scripts/run_import.sh` | Bash wrapper for pipeline |
+| `staging/inbox/` | Raw PDF/XLSX/CSV statements awaiting processing |
+| `staging/approved/` | Approved processed statements |
+| `staging/patches/` | JSON patch files for record corrections |
+| `logs/pipeline.log` | Pipeline execution log |
+| `logs/import_jobs.jsonl` | Import job audit trail |
+| `Prompts/bookkeeping-agent-prompt.md` | Operational prompt for bookkeeping agent |
 
 ## Quality Checks
-- [ ] All transactions must balance to zero.
-- [ ] Every trade must reference a Trade ID in the description.
-- [ ] Timestamps must match US Eastern time.
 
----
+- [ ] All transactions balance to zero
+- [ ] Every trade references a Trade ID in description
+- [ ] Timestamps match US Eastern time
+- [ ] `bean-check` passes on all ledgers
+- [ ] Import pipeline creates backup before any ledger modification
 
-## Backlog Management
+## Documentation Protocol
 
-**Documentation home:** `../personal-vault/` — backlog and session tracking follow vault-native conventions.
+- Session notes: `../../personal-vault/02-Areas/Trading/bookkeeping/journal/` or Carlos-Trading-Desk journal
+- AI cost log: `../../personal-vault/02-Areas/Trading/bookkeeping/costs/AI-MODEL-COSTS.md`
+- Prompt threads: Carlos-Trading-Desk thread system
 
-**Active Backlog:** Tracked in `../personal-vault/01-Projects/Carlos-Trading-Desk/Overview.md`
+## Cross-Reference
+
+| Need | Go Here |
+|------|---------|
+| Project overview, sessions | `../../personal-vault/01-Projects/Carlos-Trading-Desk/` |
+| Start/stop Fava UI | `playbook-executor` → `start-fava` playbook |
+| Trading desk root router | `../../AGENTS.md` |

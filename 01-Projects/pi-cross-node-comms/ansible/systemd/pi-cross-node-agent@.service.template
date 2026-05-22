@@ -1,0 +1,52 @@
+# pi-cross-node-agent systemd unit for coms-net fleet agents
+#
+# Ansible-templated. Do NOT edit deployed files — edit this template instead.
+#
+# Pi needs a TTY to stay in interactive mode. The pi-agent-standalone.sh
+# wrapper runs pi inside a tmux session for a proper pseudo-terminal.
+
+[Unit]
+Description=pi coms-net agent %i
+After=network-online.target ollama.service
+Wants=network-online.target ollama.service
+
+[Service]
+Type=simple
+User={{ ansible_user | default('friasc') }}
+Group={{ ansible_user | default('friasc') }}
+
+ExecStart={{ extension_path }}/pi-agent-standalone.sh \
+    --name %i \
+    --project {{ hub_project }} \
+    --server-url {{ hub_url }} \
+    --auth-token {{ coms_token }} \
+    --purpose "lab worker — %i" \
+    --model ollama/qwen3.5:4b \
+    --no-session \
+    --extension {{ extension_path }}/src/index.ts \
+    --append-system-prompt "You are %i, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a request wrapped in :::dev-request::: markers, execute the sub-task and return your result wrapped in :::dev-response::: JSON with these fields: dev_pipeline.plan_id, dev_pipeline.sub_task_id, dev_pipeline.tier_executed, dev_pipeline.status (SUCCESS|FAIL), dev_pipeline.output, dev_pipeline.execution_time_ms, dev_pipeline.error_reason. Return ONLY the :::dev-response::: JSON, no extra text. For non-D-E-V prompts: report hostname, CPU cores, RAM, disk, and ollama models, then wait for tasks. If task cannot be completed, set status: FAIL with error_reason."
+
+WorkingDirectory={{ extension_path }}
+
+Restart=always
+RestartSec=5
+StartLimitBurst=5
+
+Environment=PI_COMS_NET_SERVER_URL={{ hub_url }}
+Environment=PI_COMS_NET_AUTH_TOKEN={{ coms_token }}
+Environment=PI_COMS_NET_PROJECT={{ hub_project }}
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pi-agent-%i
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=no
+ReadWritePaths={{ extension_path }} /tmp /home/{{ ansible_user | default('friasc') }}/.pi
+PrivateTmp=true
+
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

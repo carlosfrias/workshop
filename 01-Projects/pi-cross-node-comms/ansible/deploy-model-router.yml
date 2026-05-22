@@ -1,0 +1,90 @@
+---
+# Deploy tiered model-router.json configs to worker nodes
+#
+# 15Gi tier (fnet1, fnet7): Conservative — qwen3:8b as high to avoid OOM
+# 31Gi tier (fnet3-6): Full — gemma4:e4b as flagship high tier
+#
+# Run:
+#   ansible-playbook -i inventory.yml deploy-model-router.yml
+#
+# Dry run:
+#   ansible-playbook -i inventory.yml deploy-model-router.yml --check
+#
+# Verify a single node:
+#   ssh friasc@fnet3 "cat ~/.pi/agent/model-router.json | python3 -m json.tool"
+
+- name: Deploy model-router configs (15Gi tier)
+  hosts: ram_15gi
+  gather_facts: no
+  vars:
+    config_src: "configs/model-router-15gi.json"
+
+  tasks:
+    - name: Ensure ~/.pi/agent directory exists
+      ansible.builtin.file:
+        path: "$HOME/.pi/agent"
+        state: directory
+        mode: '0755'
+
+    - name: Copy 15Gi tier model-router.json
+      ansible.builtin.copy:
+        src: "{{ config_src }}"
+        dest: "$HOME/.pi/agent/model-router.json"
+        mode: '0644'
+        backup: yes
+
+    - name: Validate JSON on 15Gi nodes
+      ansible.builtin.shell: python3 -c "import json; json.load(open('$HOME/.pi/agent/model-router.json'))"
+      changed_when: false
+
+    - name: Show deployed profile (15Gi)
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} — tier: 15Gi, profile: local (high=qwen3:8b, medium=qwen3.5:4b, low=qwen3.5:4b)"
+
+- name: Deploy model-router configs (31Gi tier)
+  hosts: ram_31gi
+  gather_facts: no
+  vars:
+    config_src: "configs/model-router-31gi.json"
+
+  tasks:
+    - name: Ensure ~/.pi/agent directory exists
+      ansible.builtin.file:
+        path: "$HOME/.pi/agent"
+        state: directory
+        mode: '0755'
+
+    - name: Copy 31Gi tier model-router.json
+      ansible.builtin.copy:
+        src: "{{ config_src }}"
+        dest: "$HOME/.pi/agent/model-router.json"
+        mode: '0644'
+        backup: yes
+
+    - name: Validate JSON on 31Gi nodes
+      ansible.builtin.shell: python3 -c "import json; json.load(open('$HOME/.pi/agent/model-router.json'))"
+      changed_when: false
+
+    - name: Show deployed profile (31Gi)
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} — tier: 31Gi, profile: local (high=gemma4:e4b, medium=qwen3:8b, low=qwen3.5:4b)"
+
+- name: Verify deployments
+  hosts: ram_15gi,ram_31gi
+  gather_facts: no
+  tasks:
+    - name: Verify model-router.json is valid JSON
+      ansible.builtin.shell: |
+        python3 -c "
+        import json
+        d = json.load(open('$HOME/.pi/agent/model-router.json'))
+        print('tier:', d.get('_tier','?'))
+        print('defaultProfile:', d['defaultProfile'])
+        print('profiles:', list(d['profiles'].keys()))
+        "
+      changed_when: false
+      register: verify
+
+    - name: Show verification result
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} — {{ verify.stdout | replace('\n', ', ') }}"

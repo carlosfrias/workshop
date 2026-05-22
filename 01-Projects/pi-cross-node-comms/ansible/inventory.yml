@@ -13,6 +13,20 @@ fnet7 ansible_host=192.168.0.147 ansible_user=friasc
 [hub_host]
 fnet2
 
+[ram_15gi]
+fnet1
+fnet7
+
+[ram_31gi]
+fnet3
+fnet4
+fnet5
+fnet6
+
+[workers:children]
+ram_15gi
+ram_31gi
+
 [orchestrator]
 localhost ansible_connection=local
 

@@ -1,0 +1,57 @@
+{
+  "name": "lab-fleet-deployment",
+  "version": "1.0.0",
+  "total_size": "~8.5KB",
+  "lod_directive": "Load only sections relevant to the task. Never load all sections on low-capacity models.",
+  "sections": [
+    {
+      "id": "inventory",
+      "file": "INVENTORY.md",
+      "size": "~1.5KB",
+      "lod": "Low",
+      "purpose": "Node inventory, IPs, roles, and models for the 7-node fnet lab fleet",
+      "load_always": true
+    },
+    {
+      "id": "connection",
+      "file": "CONNECTION.md",
+      "size": "~1.1KB",
+      "lod": "Low",
+      "purpose": "Hub URL, auth token sources, project name, and connection commands",
+      "load_always": false
+    },
+    {
+      "id": "monitoring",
+      "file": "MONITORING.md",
+      "size": "~2.3KB",
+      "lod": "Medium",
+      "purpose": "Fleet status checks, SSH per-node checks, and key file locations",
+      "load_always": false
+    },
+    {
+      "id": "playbooks",
+      "file": "PLAYBOOKS.md",
+      "size": "~1.4KB",
+      "lod": "Low",
+      "purpose": "Ansible playbook triggers and commands for fleet standup and agent relaunch",
+      "load_always": false
+    },
+    {
+      "id": "troubleshooting",
+      "file": "TROUBLESHOOTING.md",
+      "size": "~1.3KB",
+      "lod": "Medium",
+      "purpose": "Symptom-based diagnostics for fleet health issues",
+      "load_always": false
+    }
+  ],
+  "task_to_sections": {
+    "check_fleet_health": ["inventory", "monitoring"],
+    "connect_to_fleet": ["inventory", "connection"],
+    "standup_or_relaunch": ["inventory", "playbooks"],
+    "diagnose_problem": ["troubleshooting", "monitoring"],
+    "configure_new_agent": ["inventory", "connection"],
+    "full_deployment": ["inventory", "connection", "playbooks"],
+    "quick_node_lookup": ["inventory"]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "project-blueprint",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Scaffold new projects with sub-agent orchestration, structural routing, domain directories, agent definitions, chain files, and a self-documenting wiki. v1.3 adds post-completion AGENTS architecture — golden path extraction and executable library.",
   "keywords": ["pi-package"],
   "pi": {
