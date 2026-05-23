@@ -39,3 +39,6 @@ data/courses/
 
 # Pi sessions (machine-generated)
 .pi/sessions/
+
+# Media files — too large for git
+*.mp4
