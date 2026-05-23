@@ -48,6 +48,8 @@ Tier-routed skill for project setup and domain management. Models <32K context: 
 
 **Why two tracks?** Validation (Phase 6, doc-standards) proved that a 4B model with a linear script outperforms an 8B model with the decomposed approach. Cross-reference navigation overhead exhausts low-capacity context windows before task execution begins. See: `doc-standards/wiki/reference/linear-scripts/validation-results.md`
 
+**Tier detection:** Run `check-model-tier.sh` from `local-model-pilot` to determine whether to use linear or decomposed scripts.
+
 ---
 
 ## [LOD: Low] Task Routing (Decomposed — ≥32K Models Only)

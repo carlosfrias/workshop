@@ -66,7 +66,7 @@ The agent definition's frontmatter controls its behavior:
 
 | Setting | Value | Why |
 |---------|-------|-----|
-| `model` | `anthropic/claude-sonnet-4-6` | Capable model for the interview and scaffolding |
+| `model` | `ollama/deepseek-v4-pro:cloud` | Capable model for the interview and scaffolding |
 | `thinking` | `high` | Thoughtful analysis of domain structure and routing |
 | `systemPromptMode` | `replace` | Clean system prompt focused on project setup |
 | `inheritProjectContext` | `true` | Sees the current project context for awareness |

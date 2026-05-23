@@ -423,8 +423,8 @@ Before creating anything, ask the user these questions. Use their answers to cus
 5. **HTML wiki** — Should the wiki also build a browser-friendly HTML version with sidebar, search, and modern navigation? Default: yes. Uses VitePress — reads the same markdown files, no duplication.
 6. **Models** — What models for orchestrator and sub-agents? If unsure, use defaults:
    - Orchestrator: current default model
-   - Reasoning-heavy sub-agents: `anthropic/claude-sonnet-4-6`
-   - Fast sub-agents: `anthropic/claude-haiku-4-5`
+   - Reasoning-heavy sub-agents: `ollama/deepseek-v4-pro:cloud`
+   - Fast sub-agents: `ollama/qwen3.5:4b`
 7. **Check-back behavior** — Should sub-agents check back with the orchestrator via intercom? Default: yes, using the `delegate` pattern (check back on decisions and blockers)
 8. **Any existing context** — Are there existing `AGENTS.md` files, conventions, or documentation to incorporate?
 
@@ -1694,7 +1694,7 @@ The agent definition's frontmatter controls its behavior:
 
 | Setting | Value | Why |
 |---------|-------|-----|
-| `model` | `anthropic/claude-sonnet-4-6` | Capable model for the interview and scaffolding |
+| `model` | `ollama/deepseek-v4-pro:cloud` | Capable model for the interview and scaffolding |
 | `thinking` | `high` | Thoughtful analysis of domain structure and routing |
 | `systemPromptMode` | `replace` | Clean system prompt focused on project setup |
 | `inheritProjectContext` | `true` | Sees the current project context for awareness |
@@ -1728,7 +1728,7 @@ Save it as `~/.pi/agent/agents/my-agent.md` (user-level) or `.pi/agents/my-agent
 name: project-builder
 description: Interactive project scaffolding that interviews the user and creates a full orchestrated project structure
 tools: read, write, edit, bash, intercom
-model: anthropic/claude-sonnet-4-6
+model: ollama/deepseek-v4-pro:cloud
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
@@ -1749,7 +1749,7 @@ You are a project scaffolding specialist. Your job is to help users set up a new
 
 - Wiki directory: `wiki/` (user can override)
 - Orchestrator model: current default
-- Sub-agent model: `anthropic/claude-sonnet-4-6` for reasoning, `anthropic/claude-haiku-4-5` for fast tasks
+- Sub-agent model: `ollama/deepseek-v4-pro:cloud` for reasoning, `ollama/qwen3.5:4b` for fast tasks
 - Check-back: delegate pattern (check back on decisions and blockers)
 
 ## Interview Questions

@@ -40,8 +40,8 @@ Before creating anything, ask the user these questions. Use their answers to cus
 5. **HTML wiki** — Should the wiki also build a browser-friendly HTML version with sidebar, search, and modern navigation? Default: yes. Uses VitePress — reads the same markdown files, no duplication.
 6. **Models** — What models for orchestrator and sub-agents? If unsure, use defaults:
    - Orchestrator: current default model
-   - Reasoning-heavy sub-agents: `anthropic/claude-sonnet-4-6`
-   - Fast sub-agents: `anthropic/claude-haiku-4-5`
+   - Reasoning-heavy sub-agents: `ollama/deepseek-v4-pro:cloud`
+   - Fast sub-agents: `ollama/qwen3.5:4b`
 7. **Check-back behavior** — Should sub-agents check back with the orchestrator via intercom? Default: yes, using the `delegate` pattern (check back on decisions and blockers)
 8. **Any existing context** — Are there existing `AGENTS.md` files, conventions, or documentation to incorporate?
 

@@ -4,12 +4,13 @@
   "_models": {
     "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision+thinking",
     "qwen3:8b": "5.2GB disk, 8.2B params, 40960 ctx, tools+thinking",
-    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking \u2014 TIGHT on 15Gi"
+    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking \u2014 TIGHT on 15Gi",
+    "qwen3.5:9b": "6.6GB disk, 9.65B params, 262144 ctx, tools+vision+thinking \u2014 NOT viable on 15Gi (needs 31Gi+)"
   },
   "defaultProfile": "local",
   "debug": false,
   "phaseBias": 0.5,
-  "largeContextThreshold": 30000,
+  "largeContextThreshold": 999999,
   "rules": [
     {
       "matches": [
@@ -108,26 +109,27 @@
   "skills": {
     "project-blueprint": {
       "_comment": "Route low-capacity models to linear scripts (no cross-ref navigation)",
-      "_validated": "2026-05-21 Phase 6",
-      "linearThreshold": 32000,
+      "_validated": "2026-05-22: ALL local models fail decomposed. Linear forced for all tiers.",
+      "linearThreshold": 999999,
       "linearSuffix": "-linear",
       "tiers": {
         "low": {
           "model": "ollama/qwen3.5:4b",
           "promptVariant": "-linear",
-          "reason": "<8K context cannot navigate cross-refs"
+          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
         },
         "medium": {
           "model": "ollama/qwen3:8b",
           "promptVariant": "-linear",
-          "reason": "<32K context: linear scripts validated as safer"
+          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
         },
         "high": {
           "model": "ollama/gemma4:e4b",
           "promptVariant": "-linear",
-          "reason": "TIGHT on 15Gi; linear reduces context pressure"
+          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
         }
       }
     }
-  }
+  },
+  "_forceLinearReason": "Validation testing proved ALL local models (qwen3.5:4b, qwen3:8b, gemma4:e4b) fail decomposed approach. Linear scripts validated as safer across all tiers. Threshold set above maximum local model context window to force linear for all local models."
 }

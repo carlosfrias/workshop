@@ -31,6 +31,17 @@ Unified routing hub. Detects domain from prompt keywords, routes to section file
 | High local (~32K) | 32K | Identity & Phases + up to 4 sections. |
 | Cloud (>32K) | 32K+ | Load all sections if needed. Prefer targeted sections. |
 
+## Tier Detection
+
+Skills using tier-based routing (doc-standards, project-blueprint, decompose-execute-verify) require knowing whether to use linear scripts (<32K context) or decomposed sections (≥32K). Before loading any such skill:
+
+```bash
+bash ~/.pi/agent/skills/local-model-pilot/scripts/check-model-tier.sh
+```
+
+- Output `linear` → load `linear/` scripts from skill
+- Output `decomposed` → load decomposed sections from skill manifest
+
 ---
 
 ## Quick Task Routing

@@ -2,7 +2,7 @@
 name: project-blueprint.project-builder
 description: Interactive project scaffolding that interviews the user and creates a full orchestrated project structure
 tools: read, write, edit, bash, intercom
-model: anthropic/claude-sonnet-4-6
+model: ollama/deepseek-v4-pro:cloud
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
@@ -25,7 +25,7 @@ structural routing, and a self-documenting wiki.
 
 - Wiki directory: `wiki/` (user can override)
 - Orchestrator model: current default
-- Sub-agent model: `anthropic/claude-sonnet-4-6` for reasoning, `anthropic/claude-haiku-4-5` for fast tasks
+- Sub-agent model: `ollama/deepseek-v4-pro:cloud` for reasoning, `ollama/qwen3.5:4b` for fast tasks
 - Check-back: delegate pattern (check back on decisions and blockers)
 
 ## Interview Questions

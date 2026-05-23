@@ -4,12 +4,13 @@
   "_models": {
     "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision+thinking",
     "qwen3:8b": "5.2GB disk, 8.2B params, 40960 ctx, tools+thinking",
-    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking"
+    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking",
+    "qwen3.5:9b": "6.6GB disk, 9.65B params, 262144 ctx, tools+vision+thinking \u2014 validated on 31Gi fleet nodes 2026-05-22"
   },
   "defaultProfile": "local",
   "debug": false,
   "phaseBias": 0.5,
-  "largeContextThreshold": 60000,
+  "largeContextThreshold": 999999,
   "rules": [
     {
       "matches": [
@@ -103,13 +104,27 @@
         "model": "ollama/qwen3.5:4b",
         "thinking": "off"
       }
+    },
+    "heavy": {
+      "high": {
+        "model": "ollama/qwen3.5:9b",
+        "thinking": "medium"
+      },
+      "medium": {
+        "model": "ollama/qwen3.5:9b",
+        "thinking": "low"
+      },
+      "low": {
+        "model": "ollama/qwen3:8b",
+        "thinking": "low"
+      }
     }
   },
   "skills": {
     "project-blueprint": {
       "_comment": "Route low-capacity models to linear scripts (no cross-ref navigation)",
-      "_validated": "2026-05-21 Phase 6 \u2014 gemma4:e4b + linear outperforms qwen3:8b + decomposed",
-      "linearThreshold": 32000,
+      "_validated": "2026-05-22: ALL local models fail decomposed even on 31Gi nodes. Linear forced for all tiers. gemma4:e4b decomposed test: IMPROVISED (no templates followed). qwen3.5:4b decomposed test: PARTIAL (D-E-V envelope only).",
+      "linearThreshold": 999999,
       "linearSuffix": "-linear",
       "tiers": {
         "low": {
@@ -124,10 +139,16 @@
         },
         "high": {
           "model": "ollama/gemma4:e4b",
-          "promptVariant": "",
-          "reason": ">=32K context can handle decomposed skill"
+          "promptVariant": "-linear",
+          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
+        },
+        "heavy": {
+          "model": "ollama/qwen3.5:9b",
+          "promptVariant": "-linear",
+          "reason": "9.65B model, linear scripts forced. Validated on 31Gi fleet nodes."
         }
       }
     }
-  }
+  },
+  "_forceLinearReason": "Validation testing proved ALL local models (qwen3.5:4b, qwen3:8b, gemma4:e4b) fail decomposed approach, even on 31Gi nodes. Linear scripts validated as safer across all tiers. Threshold set above maximum local model context window to force linear for all local models."
 }
