@@ -73,14 +73,19 @@ Project Blueprint sets up a complete AI-orchestrated project structure with:
 
 ## Quick Start
 
+> 📖 **Prefer a standalone guide?** See [QUICKSTART.md](QUICKSTART.md) for a focused 5-minute walkthrough.
+
 ### Install
 
 ```bash
-# From local path
-pi install ./project-blueprint
+# From GitHub (recommended)
+pi install git:git@github.com:carlosfrias/project-blueprint.git
 
-# From GitHub
-pi install github:carlosfrias/project-blueprint
+# From GitHub (HTTPS)
+pi install git:https://github.com/carlosfrias/project-blueprint.git
+
+# From local path (development only)
+pi install ./project-blueprint
 ```
 
 ### Create a New Project
