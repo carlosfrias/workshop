@@ -74,6 +74,7 @@ After extracting a domain:
 6. **Default wiki directory name is `wiki`**, not `research`. Allow user override.
 7. **Include sample prompts in the wiki** — non-technical users need copy-paste examples.
 8. **Report token budget** before and after setup.
+9. **Never leave local paths or symlinks as the permanent state.** Workshop paths and extension symlinks are scaffolding only. Every pi package must be git-distributed (`git:` in settings.json). See Distribution Gate.
 
 ### Add Domain — Critical Rules
 - New domain's `AGENTS.md` must be fully self-contained.
@@ -101,3 +102,17 @@ After extracting a domain:
 - Extracted domain must be self-contained — no references back to source.
 - All internal references must be localized to work within extraction.
 - Multi-domain chains require attention — mark other-domain steps as stubs.
+
+---
+
+## Distribution Gate (After Every Session)
+
+> **Anti-pattern:** Workshop paths and symlinks that persist across sessions. These bypass git distribution and create fragile, unreproducible installations.
+
+Before closing a session:
+- [ ] All workshop changes committed and pushed to the git remote
+- [ ] `pi update --extensions` run to reconcile git clones
+- [ ] `settings.json` contains zero local paths (`../../Cloud/...`) for this project
+- [ ] No stale symlinks in `~/.pi/agent/extensions/` (only npm/git-managed dirs)
+- [ ] All 10 pi packages are git-sourced — verify with: `grep -c '"git:' ~/.pi/agent/settings.json`
+- [ ] `~/.pi/agent/git/github.com/carlosfrias/` clones match remote HEADs

@@ -5,6 +5,7 @@ license: MIT
 compatibility: pi-coding-agent with pi-subagents, pi-intercom, pi-keyword-router, find-skill, librarian, and decompose-execute-verify packages
 version: "0.1.0"
 author: "Trading Laboratory"
+distribution_gate: "Every pi package must complete commit→push→pi update. Workshop paths and symlinks are scaffolding only. See checklists.md § Distribution Gate."
 ---
 
 # Orchestrated Project — Skill Manifest

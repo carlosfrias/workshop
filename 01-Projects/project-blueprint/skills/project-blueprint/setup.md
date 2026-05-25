@@ -275,6 +275,43 @@ Report the totals to the user.
 5. Run `ls -la` on the project structure to confirm file layout
 6. Report the final structure and token budget to the user
 
+### Phase 11: Distribution Deployment
+
+> **Rule:** Workshop paths and symlinks are scaffolding only. If the project is not a clean git distribution installable via `pi install`, it is a failure.
+
+After verification passes, deploy the project as a clean pi package:
+
+1. **Create GitHub repo** — Use `gh repo create carlosfrias/{project-name} --private`
+2. **Initialize git and push** — The project root must contain `package.json` with `"pi"` key:
+   ```bash
+   cd {project-root}
+   git init
+   git add -A
+   git commit -m "Initial distribution: {project-name}"
+   git remote add origin git@github.com:carlosfrias/{project-name}.git
+   git push -u origin main
+   ```
+3. **Add to pi settings** — Replace any local path with the git entry:
+   ```bash
+   # In ~/.pi/agent/settings.json, add:
+   "git:git@github.com:carlosfrias/{project-name}.git"
+   ```
+4. **Run pi update** — Clones and installs the package:
+   ```bash
+   pi update --extensions
+   ```
+5. **Verify distribution** — Confirm no local paths remain for this package in settings.json and no stale symlinks in `~/.pi/agent/extensions/`
+
+### Development Cycle (After Distribution)
+
+Once distributed, the development cycle is:
+
+```
+workshop/ edit → git commit → git push → pi update --extensions
+```
+
+**Never leave a session with uncommitted workshop changes.** Workshop edits that aren't committed and pushed are invisible to pi — the git clone at `~/.pi/agent/git/...` is what pi loads.
+
 ## Critical Rules
 
 1. **Never put domain-specific content in root `AGENTS.md`.** Root is for identity + routing only.
@@ -285,6 +322,7 @@ Report the totals to the user.
 6. **Default wiki directory name is `wiki`**, not `research`. Allow user override.
 7. **Include sample prompts in the wiki** — non-technical users need copy-paste examples.
 8. **Report token budget** before and after setup so the user understands the efficiency gains.
+9. **Never leave local paths or symlinks as the permanent state.** Workshop paths (`../../Cloud/...`) and extension symlinks are scaffolding only. Every pi package must complete the commit→push→`pi update` cycle. If the project isn't installed via `git:` in settings.json, it's broken. See Phase 11: Distribution Deployment.
 
 ## Templates
 
