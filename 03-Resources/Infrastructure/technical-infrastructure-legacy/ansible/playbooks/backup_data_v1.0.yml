@@ -3,7 +3,7 @@
   hosts: localhost
   vars:
     trigger_keyword: "backup_data"
-    backup_source: "/Users/friasc/Dropbox/ai-trading-workspace"
+    backup_source: "/Users/friasc/Cloud/ai-trading-workspace"
     backup_dest: "/Volumes/Backup/ai-trading-workspace"
     health_check: true
   

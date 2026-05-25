@@ -9,8 +9,8 @@
 //   `import.meta.main` is true. `bun -e "import('...')"` must NOT start the server.
 // - Token policy:
 //     * PI_COMS_NET_AUTH_TOKEN set -> use it; do NOT write server.secret.json.
-//     * Loopback bind w/o env token -> generate random, write server.secret.json (0600).
-//     * Non-loopback bind w/o env token -> fail startup (exit 1).
+//     * Loopback or all-interfaces bind (0.0.0.0/::) w/o env token -> auto-generate random, write server.secret.json (0600).
+//     * Other non-loopback bind w/o env token -> fail startup (exit 1).
 // - Never log the auth token. Print only the *path* to server.secret.json.
 // - crypto.timingSafeEqual is length-guarded.
 // - Atomic writes via .tmp + renameSync.
@@ -28,7 +28,7 @@ import * as os from "node:os";
 // Env-var reads (module scope; all tunables here)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const HOST = process.env.PI_COMS_NET_HOST ?? "127.0.0.1";
+const HOST = process.env.PI_COMS_NET_HOST ?? "0.0.0.0";
 const PORT = Number(process.env.PI_COMS_NET_PORT ?? 0);
 const PUBLIC_URL = process.env.PI_COMS_NET_PUBLIC_URL;
 const PROJECT = process.env.PI_COMS_NET_PROJECT ?? "default";
@@ -145,6 +145,7 @@ export type AgentCard = {
 	provider?: string;
 	color: string;
 	cwd: string;
+	node: string;
 	project: string;
 	explicit: boolean;
 	started_at: string;
@@ -185,6 +186,7 @@ export type RegisterRequest = {
 	provider?: string;
 	color: string;
 	cwd: string;
+	node: string;
 	explicit: boolean;
 };
 
@@ -292,6 +294,24 @@ export function nowIso(): string {
 
 export function isLoopback(host: string): boolean {
 	return host === "127.0.0.1" || host === "::1" || host === "localhost";
+}
+
+/** Auto-generate token when binding all-interfaces or loopback (private LAN is safe). */
+export function isSafeToAutoToken(host: string): boolean {
+	return host === "0.0.0.0" || host === "::" || isLoopback(host);
+}
+
+/** Best-guess LAN IP for public_url when binding 0.0.0.0. */
+function detectLanIP(): string | null {
+	const nets = os.networkInterfaces();
+	for (const name of Object.keys(nets)) {
+		for (const net of nets[name] ?? []) {
+			if (net.family === "IPv4" && !net.internal) {
+				return net.address;
+			}
+		}
+	}
+	return null;
 }
 
 export function tokensEqual(a: string, b: string): boolean {
@@ -1441,7 +1461,7 @@ function stopLoops(): void {
 export function main(): void {
 	// Token policy.
 	if (!TOKEN) {
-		if (!isLoopback(HOST)) {
+		if (!isSafeToAutoToken(HOST)) {
 			console.error(
 				`coms-net: refusing to bind ${HOST} without an explicit PI_COMS_NET_AUTH_TOKEN.`,
 			);
@@ -1467,7 +1487,8 @@ export function main(): void {
 	const claimedPort: number = Number(server.port);
 	const localHost = HOST === "0.0.0.0" || HOST === "::" ? "127.0.0.1" : HOST;
 	const localUrl = `http://${localHost}:${claimedPort}`;
-	const publicUrl = PUBLIC_URL ?? localUrl;
+	const lanIP = (HOST === "0.0.0.0" || HOST === "::") ? detectLanIP() : null;
+	const publicUrl = PUBLIC_URL ?? (lanIP ? `http://${lanIP}:${claimedPort}` : localUrl);
 
 	// Write server.json (NEVER include the token).
 	const serverJsonPath = path.join(dir, "server.json");

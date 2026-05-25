@@ -431,7 +431,7 @@ Savings: $1.25 - $0.14 = $1.11 (89% savings)
 │                    Orchestrator Session                      │
 │              (mac-orchestrator: macOS)                       │
 │                                                              │
-│  Workspace: /Users/friasc/Dropbox/workshop       │
+│  Workspace: /Users/friasc/Cloud/workshop       │
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │              intercom-coord-workflows                  │ │

@@ -281,7 +281,7 @@
 #!/bin/bash
 # Run all pre-flight tests locally
 
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/scripts
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/scripts
 
 echo "=== Test 1.1: Normal prompt ==="
 python3 handle_413.py --preflight --prompt "Hello world" --model qwen3:8b --json
@@ -340,7 +340,7 @@ ssh $NODE "cat /srv/tasks/completed/test-413.json | python3 -m json.tool"
 #!/bin/bash
 # Full pipeline test with 413 recovery
 
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 
 # Create trigger
 cat > .pi/decompose-triggers/pending/test-e2e-413.json <<'EOF'

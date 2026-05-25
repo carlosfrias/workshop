@@ -19,7 +19,7 @@ PLAN = [
 ]
 
 # --- Configuration ---
-LOG_FILE = Path("/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-simulation.jsonl")
+LOG_FILE = Path("/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-simulation.jsonl")
 
 TIERS = {
     "local_low":    {"model": "qwen3.5:4b",      "capacity": ["LOW"],         "latency_ms": 2000},

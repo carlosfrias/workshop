@@ -133,7 +133,7 @@ cat > "${LOCAL_BIN}/gist-orchestrator" << 'PYEOF'
 #!/usr/bin/env python3
 # Wrapper: passes through environment and changes to repo root
 import os, sys, subprocess
-repo = os.path.expanduser("~/Dropbox/workshop")
+repo = os.path.expanduser("~/Cloud/workshop")
 script = os.path.join(repo, "technical-infrastructure", "scripts", "gist-orchestrator.py")
 if not os.path.exists(script):
     print("✗ gist-orchestrator.py not found at", script)

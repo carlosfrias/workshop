@@ -5,7 +5,7 @@ import ast
 import re
 
 # Read file
-with open("/Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "r") as f:
+with open("/Users/friasc/Cloud/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "r") as f:
     content = f.read()
 
 print("=" * 70)

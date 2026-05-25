@@ -37,10 +37,10 @@ Integrate the specified core behaviors (Intercom, SSHFS, Doc-Standards) into the
 
 ## References
 1. `~/.pi/agent/git/github.com/carlosfrias/decompose-execute-verify/skills/decompose-execute-verify/SKILL.md`
-2. `/Users/friasc/Dropbox/workshop/technical-infrastructure/packages/sshfs-accessible/skills/sshfs-accessible/SKILL.md`
+2. `/Users/friasc/Cloud/workshop/technical-infrastructure/packages/sshfs-accessible/skills/sshfs-accessible/SKILL.md`
 3. `/usr/local/lib/node_modules/pi-intercom/skills/pi-intercom/SKILL.md`
 4. `/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md`
-5. `/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/templates/master-assembly-guide.md`
+5. `/Users/friasc/Cloud/workshop/technical-infrastructure/wiki/templates/master-assembly-guide.md`
 
 ---
 

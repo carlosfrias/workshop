@@ -16,7 +16,7 @@ PLAN = [
     {"id": 3, "action": "Generate markdown report with recommendations", "node": "local_model", "complexity": "MEDIUM"}
 ]
 
-LOG_FILE = Path("/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-health-simulation.jsonl")
+LOG_FILE = Path("/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-health-simulation.jsonl")
 
 # Node health states (simulated)
 # True = node is healthy and accepts tasks

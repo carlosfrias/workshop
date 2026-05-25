@@ -97,7 +97,7 @@ test_orchestration_harness.py
 ### 1. Safe Dry-Run (No Network)
 
 ```bash
-cd ~/Dropbox/workshop
+cd ~/Cloud/workshop
 python3 technical-infrastructure/scripts/test_orchestration_harness.py --all
 ```
 

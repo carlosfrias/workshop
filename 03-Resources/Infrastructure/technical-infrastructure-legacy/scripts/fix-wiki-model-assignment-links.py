@@ -4,7 +4,7 @@ Step 003: Fix model-assignment-strategy.html Links
 Fixes broken decompose-execute-verify-pattern link.
 """
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 FILE_PATH = f"{WORKSPACE}/wiki/model-assignment-strategy.md"
 LOG_PREFIX = "Step 003"
 

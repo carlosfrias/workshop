@@ -1,0 +1,132 @@
+---
+- name: Migrate Node.js from NodeSource to nvm
+  hosts: "{{ target_hosts | default('fnet2,fnet5,fnet6') }}"
+  become: true
+  gather_facts: true
+  vars:
+    nvm_version: "0.40.3"
+    node_version: "24.15.0"
+    nvm_install_dir: "/home/friasc/.nvm"
+    
+  tasks:
+    - name: Check current Node.js installation
+      shell: |
+        echo "BEFORE: node version: $(node --version 2>&1 || echo 'not found')"
+        echo "BEFORE: npm version: $(npm --version 2>&1 || echo 'not found')"
+        echo "BEFORE: node path: $(which node 2>&1 || echo 'not found')"
+      register: before_state
+      changed_when: false
+      
+    - name: Display before state
+      debug:
+        msg: "{{ before_state.stdout_lines }}"
+        
+    - name: Install nvm
+      shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
+      args:
+        creates: "{{ nvm_install_dir }}"
+      tags: [nvm]
+      
+    - name: Source nvm and install Node.js
+      shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install {{ node_version }}
+        nvm use {{ node_version }}
+        nvm alias default {{ node_version }}
+      args:
+        executable: /bin/bash
+      tags: [node]
+      
+    - name: Verify Node.js installation via nvm
+      shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        echo "AFTER: node version: $(node --version)"
+        echo "AFTER: npm version: $(npm --version)"
+        echo "AFTER: node path: $(which node)"
+      register: after_state
+      args:
+        executable: /bin/bash
+      changed_when: false
+      
+    - name: Display after state
+      debug:
+        msg: "{{ after_state.stdout_lines }}"
+        
+    - name: Remove NodeSource repository and packages
+      block:
+        - name: Remove NodeSource package
+          apt:
+            name:
+              - nodejs
+              - npm
+            state: absent
+            purge: true
+          when: ansible_os_family == "Debian"
+          
+        - name: Remove NodeSource list
+          file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /etc/apt/sources.list.d/nodesource.list
+            - /etc/apt/keyrings/nodesource.gpg
+          ignore_errors: true
+          
+        - name: Update apt cache
+          apt:
+            update_cache: yes
+            cache_valid_time: 3600
+          when: ansible_os_family == "Debian"
+      tags: [cleanup]
+      rescue:
+        - name: NodeSource cleanup failed (non-critical)
+          debug:
+            msg: "NodeSource cleanup failed or not applicable - nvm is now the primary Node.js source"
+            
+    - name: Clean .bashrc of NodeSource references
+      lineinfile:
+        path: /home/friasc/.bashrc
+        state: absent
+        regexp: '.*nodesource.*'
+      tags: [cleanup]
+      
+    - name: Add nvm sourcing to .bashrc
+      blockinfile:
+        path: /home/friasc/.bashrc
+        block: |
+          # nvm (Node Version Manager)
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+        create: yes
+        state: present
+      tags: [config]
+      
+    - name: Final verification
+      shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        echo "FINAL: node version: $(node --version)"
+        echo "FINAL: npm version: $(npm --version)"
+        echo "FINAL: nvm version: $(nvm --version)"
+        echo "FINAL: node path: $(which node)"
+      register: final_state
+      args:
+        executable: /bin/bash
+      changed_when: false
+      
+    - name: Display final state
+      debug:
+        msg: "{{ final_state.stdout_lines }}"
+        
+    - name: Summary
+      debug:
+        msg: |
+          ✅ Migration complete on {{ inventory_hostname }}
+          - nvm v{{ nvm_version }} installed
+          - Node.js v{{ node_version }} installed via nvm
+          - NodeSource packages removed (if applicable)
+          - .bashrc updated with nvm sourcing

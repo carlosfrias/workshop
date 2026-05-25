@@ -4,7 +4,7 @@ Step 002: Fix index.html / README.html Broken Links
 Fixes broken paths in wiki/README.md root files.
 """
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 FILE_PATH = f"{WORKSPACE}/wiki/README.md"
 LOG_PREFIX = "Step 002"
 

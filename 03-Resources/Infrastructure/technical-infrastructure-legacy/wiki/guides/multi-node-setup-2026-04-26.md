@@ -97,7 +97,7 @@ The cluster is managed via Ansible to ensure consistency and reproducibility acr
 To run the full optimization and LLM setup pipeline:
 
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/ansible
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/ansible
 ansible-playbook -i inventory.yml playbooks/setup-ollama.yml
 ansible-playbook -i inventory.yml playbooks/optimize-lab.yml
 ```

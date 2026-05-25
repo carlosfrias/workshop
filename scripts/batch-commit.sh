@@ -9,7 +9,7 @@ if [ "$1" == "--dry-run" ]; then
     echo "=== DRY RUN MODE ==="
 fi
 
-WORKSHOP_ROOT="/Users/friasc/Dropbox/carlos-desktop/workshop"
+WORKSHOP_ROOT="/Users/friasc/Cloud/carlos-desktop/workshop"
 cd "$WORKSHOP_ROOT" || exit 1
 
 # Color output

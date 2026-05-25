@@ -88,7 +88,7 @@ network-troubleshooting-bundle.tar.gz
 **Alternative:** Copy bundle from orchestrator via USB drive:
 ```bash
 # On orchestrator (Mac):
-tar -czvf /tmp/nt-bundle.tar.gz -C ~/Dropbox/workshop/technical-infrastructure/archive/deployment-examples/network-troubleshooting .
+tar -czvf /tmp/nt-bundle.tar.gz -C ~/Cloud/workshop/technical-infrastructure/archive/deployment-examples/network-troubleshooting .
 
 # Copy to USB drive, then to target node
 ```

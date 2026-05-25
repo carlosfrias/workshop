@@ -5,7 +5,7 @@
 
 set -e
 
-WORKSPACE="/Users/friasc/Dropbox/workshop"
+WORKSPACE="/Users/friasc/Cloud/workshop"
 LOG_DIR="$WORKSPACE/logs/wiki-links"
 SCRIPTS_DIR="$WORKSPACE/technical-infrastructure/scripts"
 

@@ -16,18 +16,18 @@ Playbook-executor ALREADY has `deploy-pi.yml` which does everything needed:
 
 ### Step 1: Verify playbook-executor is available
 ```bash
-ls -la /Users/friasc/Dropbox/workshop/technical-infrastructure/packages/playbook-executor/scripts/run-playbook.sh
+ls -la /Users/friasc/Cloud/workshop/technical-infrastructure/packages/playbook-executor/scripts/run-playbook.sh
 ```
 
 ### Step 2: Run deploy-pi playbook via playbook-executor
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/packages/playbook-executor
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/packages/playbook-executor
 ./scripts/run-playbook.sh deploy_pi
 ```
 
 **OR** if keyword trigger doesn't work, run directly:
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/ansible
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/ansible
 ansible-playbook -i inventory.ini playbooks/deploy-pi.yml
 ```
 

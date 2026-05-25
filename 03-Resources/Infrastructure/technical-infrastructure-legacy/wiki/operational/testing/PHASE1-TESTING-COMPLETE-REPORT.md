@@ -69,7 +69,7 @@ All tests can be verified with these commands:
 
 ### Scripts
 ```bash
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 
 # Health check
 python3 technical-infrastructure/scripts/orchestrator_health.py --json

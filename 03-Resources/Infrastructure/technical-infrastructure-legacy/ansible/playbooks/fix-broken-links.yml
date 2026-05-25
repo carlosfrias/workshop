@@ -13,7 +13,7 @@
   connection: local
   gather_facts: false
   vars:
-    workspace: "/Users/friasc/Dropbox/ai-trading-workspace"
+    workspace: "/Users/friasc/Cloud/ai-trading-workspace"
     scripts_dir: "{{ workspace }}/technical-infrastructure/scripts"
     log_dir: "{{ workspace }}/logs/wiki-links"
     fix_steps:

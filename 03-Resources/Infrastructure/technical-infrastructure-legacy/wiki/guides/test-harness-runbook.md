@@ -11,7 +11,7 @@
 ## Quick Start
 
 ```bash
-cd ~/Dropbox/workshop
+cd ~/Cloud/workshop
 
 # Run everything in safe dry-run mode (~10 seconds)
 python3 technical-infrastructure/scripts/test_orchestration_harness.py --all
@@ -123,7 +123,7 @@ When `--report` is used, the harness writes a markdown file with:
 ### `ModuleNotFoundError: No module named 'ti011_node_registry'`
 The harness sets `sys.path` to include the scripts directory. If running from outside the repo, use the full path or symlink. Working example:
 ```bash
-cd ~/Dropbox/workshop
+cd ~/Cloud/workshop
 python3 technical-infrastructure/scripts/test_orchestration_harness.py --all
 ```
 

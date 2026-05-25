@@ -67,6 +67,7 @@ interface AgentCard {
 	provider?: string;
 	color: string;
 	cwd: string;
+	node: string;
 	project: string;
 	explicit: boolean;
 	started_at: string;
@@ -84,6 +85,7 @@ interface RegisterRequest {
 	provider?: string;
 	color: string;
 	cwd: string;
+	node: string;
 	explicit: boolean;
 }
 
@@ -414,6 +416,7 @@ export default function (pi: ExtensionAPI) {
 		project: string;
 		explicit: boolean;
 		cwd: string;
+		node: string;
 		model: string;
 		started_at: string;
 	} | null = null;
@@ -826,6 +829,7 @@ export default function (pi: ExtensionAPI) {
 			model: ctx?.model?.id ?? identity.model,
 			color: identity.color,
 			cwd: identity.cwd,
+			node: identity.node,
 			explicit: identity.explicit,
 		};
 		const resp = await httpFetch("POST", "/v1/agents/register", req) as RegisterResponse;
@@ -880,6 +884,7 @@ export default function (pi: ExtensionAPI) {
 		if (flags.color && isValidHex(flags.color)) color = flags.color;
 
 		const cwd = ctx.cwd || process.cwd();
+		const node = os.hostname();
 		const model = ctx.model?.id ?? "unknown";
 		const started_at = nowIso();
 
@@ -891,6 +896,7 @@ export default function (pi: ExtensionAPI) {
 			project,
 			explicit,
 			cwd,
+			node,
 			model,
 			started_at,
 		};
@@ -962,7 +968,7 @@ export default function (pi: ExtensionAPI) {
 		// 7. Install widget + status. Success is the default — only failures notify
 		// (status line + widget already convey the connected state).
 		try {
-			ctx.ui.setStatus("coms-net", `📡 ${identity.name}@${identity.project}`);
+			ctx.ui.setStatus("coms-net", `📡 ${identity.name}@${identity.project} (${identity.node})`);
 			installPoolWidget(ctx);
 		} catch {
 			// hasUI may be false in some contexts.
@@ -998,6 +1004,7 @@ export default function (pi: ExtensionAPI) {
 	function renderPool(width: number, theme: Theme): string[] {
 		interface Row {
 			name: string;
+			node: string;
 			model: string;
 			color: string;
 			purpose: string;
@@ -1012,6 +1019,7 @@ export default function (pi: ExtensionAPI) {
 			if (!includeExplicit && card.explicit) continue;
 			rows.push({
 				name: card.name,
+				node: card.node,
 				model: card.model,
 				color: card.color,
 				purpose: card.purpose,
@@ -1076,6 +1084,7 @@ export default function (pi: ExtensionAPI) {
 			}
 
 			const swatch = r.pending ? theme.fg("dim", "●") : hexFg(r.color, "●");
+			const nodePart = theme.fg("dim", `[${r.node}] `.padStart(12));
 			const namePart = theme.fg("accent", r.name.padEnd(12));
 			const modelPart = theme.fg("dim", abbreviateModel(r.model).padEnd(14));
 			const barFill = r.pending
@@ -1086,7 +1095,7 @@ export default function (pi: ExtensionAPI) {
 			const sep = theme.fg("dim", "  —  ");
 			const purposePart = theme.fg("muted", r.purpose || "");
 
-			const line = " " + swatch + " " + namePart + " " + modelPart + " " + bar + pctPart + sep + purposePart;
+			const line = " " + swatch + " " + nodePart + namePart + " " + modelPart + " " + bar + pctPart + sep + purposePart;
 			out.push(truncateToWidth(line, width));
 		}
 

@@ -84,7 +84,7 @@ When acting as the orchestrator or verifier in this loop, always refer to the **
 
 ## Related Files
 
-- `/Users/friasc/Dropbox/workshop/.pi/agents/verifier.md` — Updated with 2x decomposition protocol
-- `/Users/friasc/Dropbox/workshop/.pi/agents/decomposer.md` — Updated with complexity flagging and re-decomposition handling
-- `/Users/friasc/Dropbox/workshop/.pi/agents/decomposed-trade-to-log.chain.md` — Chain that uses decomposer → executor → verifier pattern
-- `/Users/friasc/Dropbox/workshop/.pi/agents/decomposed-monitor-to-log.chain.md` — Chain that uses decomposer → executor → verifier pattern
+- `/Users/friasc/Cloud/workshop/.pi/agents/verifier.md` — Updated with 2x decomposition protocol
+- `/Users/friasc/Cloud/workshop/.pi/agents/decomposer.md` — Updated with complexity flagging and re-decomposition handling
+- `/Users/friasc/Cloud/workshop/.pi/agents/decomposed-trade-to-log.chain.md` — Chain that uses decomposer → executor → verifier pattern
+- `/Users/friasc/Cloud/workshop/.pi/agents/decomposed-monitor-to-log.chain.md` — Chain that uses decomposer → executor → verifier pattern

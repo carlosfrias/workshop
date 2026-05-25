@@ -376,11 +376,11 @@ Version: 1.2.0
 
 ## References
 
-- **Main Skill**: `/Users/friasc/Dropbox/agent-workspace/local-model-pilot/skills/local-model-pilot/SKILL.md`
-- **Ubuntu Wiki**: `/Users/friasc/Dropbox/agent-workspace/local-model-pilot/wiki/UBUNTU-SUPPORT.md`
-- **Detection Script**: `/Users/friasc/Dropbox/agent-workspace/local-model-pilot/scripts/detect-hardware.sh`
-- **Implementation Prompt**: `/Users/friasc/Dropbox/agent-workspace/local-model-pilot/prompts/ubuntu-support-implementation.md`
-- **Trading-Lab Architecture**: `/Users/friasc/Dropbox/agent-workspace/trading-lab-architecture/DESIGN.md`
+- **Main Skill**: `/Users/friasc/Cloud/agent-workspace/local-model-pilot/skills/local-model-pilot/SKILL.md`
+- **Ubuntu Wiki**: `/Users/friasc/Cloud/agent-workspace/local-model-pilot/wiki/UBUNTU-SUPPORT.md`
+- **Detection Script**: `/Users/friasc/Cloud/agent-workspace/local-model-pilot/scripts/detect-hardware.sh`
+- **Implementation Prompt**: `/Users/friasc/Cloud/agent-workspace/local-model-pilot/prompts/ubuntu-support-implementation.md`
+- **Trading-Lab Architecture**: `/Users/friasc/Cloud/agent-workspace/trading-lab-architecture/DESIGN.md`
 - **GitHub Repo**: https://github.com/carlosfrias/local-model-pilot
 
 ---

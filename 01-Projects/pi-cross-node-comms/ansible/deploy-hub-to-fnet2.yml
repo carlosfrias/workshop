@@ -18,7 +18,7 @@
   vars:
     hub_host: "0.0.0.0"
     hub_port: "8080"
-    hub_project: "lab"
+    hub_project: "default"
     coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
     # Source paths — on the macOS orchestrator (deploy from here)
     server_src: "{{ playbook_dir }}/../server/coms-net-server.ts"

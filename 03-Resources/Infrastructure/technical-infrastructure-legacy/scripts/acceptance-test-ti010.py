@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # Configuration
-WORKSPACE = Path("/Users/friasc/Dropbox/ai-trading-workspace")
+WORKSPACE = Path("/Users/friasc/Cloud/ai-trading-workspace")
 SCRIPTS_DIR = WORKSPACE / "technical-infrastructure" / "scripts"
 GIST_ID = os.getenv("GIST_ID", "0c517214489cb78c0484ca661f3d8463")
 

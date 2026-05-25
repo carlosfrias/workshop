@@ -10,7 +10,7 @@ import unittest
 import subprocess
 import sys
 
-BASE_DIR = "/Users/friasc/Dropbox/ai-trading-workspace"
+BASE_DIR = "/Users/friasc/Cloud/ai-trading-workspace"
 SCRIPTS_DIR = f"{BASE_DIR}/technical-infrastructure/scripts"
 PLAYBOOKS_DIR = f"{BASE_DIR}/technical-infrastructure/playbooks"
 PROMPTS_DIR = f"{BASE_DIR}/technical-infrastructure/prompts"

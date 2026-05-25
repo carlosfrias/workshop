@@ -12,8 +12,8 @@ You are implementing a distributed multi-agent architecture for a 7-node trading
 ## Context
 
 Read these documents first:
-1. `/Users/friasc/Dropbox/agent-workspace/trading-lab-architecture/DESIGN.md` — Full architecture design
-2. `/Users/friasc/Dropbox/agent-workspace/trading-lab-architecture/README.md` — Quick start guide
+1. `/Users/friasc/Cloud/agent-workspace/trading-lab-architecture/DESIGN.md` — Full architecture design
+2. `/Users/friasc/Cloud/agent-workspace/trading-lab-architecture/README.md` — Quick start guide
 
 ## Current State
 

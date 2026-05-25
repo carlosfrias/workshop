@@ -2,7 +2,7 @@
 
 **Purpose:** Runtime (node × model) availability + performance map for TI-011 meta-orchestration.
 
-**Location:** `/Users/friasc/Dropbox/workshop/lab-specs/`
+**Location:** `/Users/friasc/Cloud/workshop/lab-specs/`
 
 ---
 
@@ -239,7 +239,7 @@ lab-specs/
 Use the benchmark suite to auto-detect hardware and generate configs:
 
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure
+cd /Users/friasc/Cloud/workshop/technical-infrastructure
 
 # Detect hardware on all nodes
 python3 scripts/remote-detect.sh --all-nodes
@@ -265,7 +265,7 @@ This will:
 Verify configs are valid:
 
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure
+cd /Users/friasc/Cloud/workshop/technical-infrastructure
 
 # Dump all node configs
 python3 scripts/ti011_node_registry.py --dump
@@ -284,7 +284,7 @@ print(reg.best_model_for(complexity='medium', vision=False))
 Expected output:
 ```
 Node Registry: 7 nodes loaded
-Config dir: /Users/friasc/Dropbox/workshop/lab-specs/node-configs
+Config dir: /Users/friasc/Cloud/workshop/lab-specs/node-configs
 
 === Per-Node Compute Cost ===
   fnet1: $0.0370/hour (RAM: ?GB)

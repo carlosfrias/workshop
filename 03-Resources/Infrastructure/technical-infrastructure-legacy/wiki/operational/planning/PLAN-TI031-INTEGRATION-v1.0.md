@@ -131,7 +131,7 @@ def check_orchestrator_health():
         ['python3', 'technical-infrastructure/scripts/orchestrator_health.py', '--json'],
         capture_output=True,
         text=True,
-        cwd='/Users/friasc/Dropbox/workshop'
+        cwd='/Users/friasc/Cloud/workshop'
     )
     
     if result.returncode != 0:
@@ -235,7 +235,7 @@ def log_health_decision(health, playbook_name, routing=None):
         'decomposition_required': routing.get('decomposition_required', False)
     }
     
-    log_file = Path('/Users/friasc/Dropbox/workshop/wiki/operational/sessions/health-decisions.jsonl')
+    log_file = Path('/Users/friasc/Cloud/workshop/wiki/operational/sessions/health-decisions.jsonl')
     log_file.parent.mkdir(parents=True, exist_ok=True)
     
     with open(log_file, 'a') as f:

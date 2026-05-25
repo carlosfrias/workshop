@@ -11,7 +11,18 @@
 
 set -euo pipefail
 
+# ── Load nvm so systemd uses the managed Node.js version ──
+# Save positional params before sourcing nvm (nvm processes $@)
+_saved_args=("$@")
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+set -- "${_saved_args[@]}"
+unset _saved_args
+
 SESSION_NAME="pi-agent"
+TMUX_TMPDIR="$HOME/.tmux"
+mkdir -p "$TMUX_TMPDIR"
+export TMUX_TMPDIR
 INITIAL_PROMPT="You are a coms-net fleet agent. Your extension is already loaded. Report your hostname, then wait for tasks via the coms-net tools."
 
 # Kill any existing tmux session with this name

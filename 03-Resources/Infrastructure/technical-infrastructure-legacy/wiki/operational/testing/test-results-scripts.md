@@ -2,7 +2,7 @@
 
 **Test Date:** 2026-05-05  
 **Test Environment:** Darwin (macOS)  
-**Working Directory:** /Users/friasc/Dropbox/workshop
+**Working Directory:** /Users/friasc/Cloud/workshop
 
 ---
 
@@ -63,7 +63,7 @@ python3 technical-infrastructure/scripts/health_aware_executor.py --test
 **Error Message:**
 ```
 Traceback (most recent call last):
-  File "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/health_aware_executor.py", line 41, in <module>
+  File "/Users/friasc/Cloud/workshop/technical-infrastructure/scripts/health_aware_executor.py", line 41, in <module>
     if len(sys.argv) > 1 and sys.argv[1] == '--test':
            ^^^
 NameError: name 'sys' is not defined. Did you forget to import 'sys'?

@@ -5,7 +5,7 @@
 # Usage: ./remote-detect.sh [OPTIONS] [node_list]
 # Options:
 #   --output-dir DIR    Write hardware JSON to DIR (default: auto-detect)
-#   --lmp-dir DIR       Path to local-model-pilot scripts (default: ~/Dropbox/agent-workspace/local-model-pilot)
+#   --lmp-dir DIR       Path to local-model-pilot scripts (default: ~/Cloud/agent-workspace/local-model-pilot)
 # Arguments:
 #   node_list           comma-separated (default: fnet1,fnet2,fnet3,fnet4,fnet5,fnet6,fnet7)
 #

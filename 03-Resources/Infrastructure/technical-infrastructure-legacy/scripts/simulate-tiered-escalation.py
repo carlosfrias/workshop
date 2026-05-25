@@ -13,9 +13,9 @@ from datetime import datetime
 from pathlib import Path
 
 # --- Configuration ---
-LOG_FILE = Path("/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-simulation.jsonl")
-DECOMPOSER_AGENT = "/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/packages/decompose-execute-verify/agents/decomposer.md"
-VERIFIER_AGENT = "/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/packages/decompose-execute-verify/agents/verifier.md"
+LOG_FILE = Path("/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/escalation-simulation.jsonl")
+DECOMPOSER_AGENT = "/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/packages/decompose-execute-verify/agents/decomposer.md"
+VERIFIER_AGENT = "/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/packages/decompose-execute-verify/agents/verifier.md"
 
 # Model Tiers (from keyword-router.json and user's policy)
 TIERS = {

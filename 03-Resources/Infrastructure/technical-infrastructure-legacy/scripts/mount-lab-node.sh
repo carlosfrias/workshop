@@ -10,7 +10,7 @@ set -euo pipefail
 
 LAB_HOST="${1:-fnet1}"
 MOUNT_POINT="/mnt/trading-desk"
-LOCAL_PATH="/Users/friasc/Dropbox/workshop"
+LOCAL_PATH="/Users/friasc/Cloud/workshop"
 ORCH_HOST="mac-orchestrator"
 
 echo "========================================"

@@ -1,0 +1,134 @@
+---
+# Shutdown Fleet — Gracefully stop all fleet components
+#
+# Run from the macOS orchestrator:
+#   cd workshop/01-Projects/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml shutdown-fleet.yml
+#
+# What this does:
+#   Phase 1: Stop agent services on all lab nodes (systemd)
+#   Phase 2: Stop hub server on fnet2 (Docker container)
+#   Phase 3: Verify fleet is offline
+
+- name: SHUTDOWN FLEET
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Display banner
+      ansible.builtin.debug:
+        msg:
+          - "═══════════════════════════════════════════════════"
+          - "  coms-net FLEET SHUTDOWN"
+          - "  Phase 1: Stop Agent Services (lab_nodes)"
+          - "  Phase 2: Stop Hub Server (fnet2)"
+          - "  Phase 3: Verify Fleet Offline"
+          - "═══════════════════════════════════════════════════"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 1: Stop agent services on all lab nodes
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 1 - Stop Agent Services on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: no
+  strategy: free
+
+  tasks:
+    - name: Stop systemd service
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+      become: yes
+      changed_when: false
+
+    - name: Kill any nohup-launched agent (legacy fallback)
+      ansible.builtin.shell: |
+        pkill -f "pi -e.*coms-net" 2>/dev/null || true
+        pkill -f "pi.*--name.*{{ inventory_hostname }}" 2>/dev/null || true
+        rm -f /tmp/pi-agent-{{ inventory_hostname }}.pid
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Kill any tmux pi-agent sessions
+      ansible.builtin.shell: |
+        tmux kill-session -t pi-agent 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Report node stopped
+      ansible.builtin.debug:
+        msg: "⏹️  {{ inventory_hostname }} — agent stopped"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 2: Stop hub server on fnet2
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 2 - Stop Hub Server on fnet2
+  hosts: fnet2
+  gather_facts: no
+
+  vars:
+    deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
+    hub_port: "8080"
+
+  tasks:
+    - name: Stop Docker container
+      ansible.builtin.shell: |
+        cd {{ deploy_dir }} 2>/dev/null && docker compose down --remove-orphans 2>/dev/null || true
+      changed_when: false
+      failed_when: false
+
+    - name: Kill any Bun-based hub process (legacy fallback)
+      ansible.builtin.shell: |
+        pkill -f "coms-net-server.ts" 2>/dev/null || true
+        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | grep -oP 'pid=\K[0-9]+' || true)
+        [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Clean server state files
+      ansible.builtin.shell: |
+        rm -f {{ ansible_env.HOME }}/.pi/coms-net/projects/default/server.json 2>/dev/null || true
+        rm -f {{ ansible_env.HOME }}/.pi/coms-net/projects/default/server.secret.json 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Report hub stopped
+      ansible.builtin.debug:
+        msg: "⏹️  fnet2 — hub server stopped"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: Verify fleet is offline
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 3 - Verify Fleet Offline
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_url: "http://192.168.0.142:8080"
+
+  tasks:
+    - name: Check if hub is still responding
+      ansible.builtin.shell: |
+        curl -sf -m 5 -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" 2>/dev/null && echo "STILL_UP" || echo "DOWN"
+      register: hub_check
+      changed_when: false
+      failed_when: false
+
+    - name: Display shutdown status
+      ansible.builtin.debug:
+        msg:
+          - "============================================================="
+          - "  FLEET SHUTDOWN COMPLETE"
+          - "  Hub:  {{ hub_url }} — {{ 'STILL UP (check manually)' if hub_check.stdout == 'STILL_UP' else 'OFFLINE' }}"
+          - "============================================================="

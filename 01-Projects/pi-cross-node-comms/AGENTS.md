@@ -7,6 +7,18 @@
 
 Cross-node pi communication package. Extracted `coms-net` extension and hub server from the pi-vs-cc mono-repo. Includes fleet-dispatcher cascade for bridge decompose-execute-verify to fleet nodes. Hub server is Dockerized (Bun-based container, docker compose managed).
 
+## Fleet Standup Rules
+
+1. **HUB FIRST, THEN PI** — Start the hub before launching any pi sessions. The extension reads `server.json` only at init time; no hot-reload.
+2. **Local dev:** Run `scripts/standup-hub.sh` → then start pi (extension auto-discovers `~/.pi/coms-net/projects/<project>/server.json`)
+3. **Production (lab):** Run Ansible `standup-fleet.yml` (6-phase: Docker hub → pi → Ollama → extension → systemd agents → validate)
+4. **If hub started after pi:** Must restart pi entirely. `/reload` does NOT re-read `server.json` (tested 2026-05-24).
+5. **Fixed port:** Local dev uses port 6420 to avoid ephemeral port confusion. Production uses port 8080 (Docker on fnet2)
+6. **Remote agents ALWAYS need `--server-url` and `--auth-token`** — they cannot read fnet2's `server.json`
+7. **Kill old hub before starting new** — `scripts/shutdown-hub.sh` or `pkill -f coms-net-server.ts`
+8. **Token strategy:** Loopback auto-generates + writes `server.secret.json` (0600). For LAN/Docker, set `PI_COMS_NET_AUTH_TOKEN` explicitly.
+9. **Shutdown fleet:** `scripts/shutdown-hub.sh` (local) or `ansible-playbook shutdown-fleet.yml` (production)
+
 ## Tech Stack
 
 | Component | Technology | Entry |
@@ -29,6 +41,7 @@ pi-cross-node-comms/
 ├── package.json
 ├── ansible/
 │   ├── standup-fleet.yml    # 6-phase unified playbook (hub+pi+ollama+ext+agents+prune)
+│   ├── shutdown-fleet.yml   # 3-phase shutdown (stop agents → stop hub → verify)
 │   ├── deploy-hub-to-fnet2.yml
 │   ├── deploy-fleet.yml
 │   ├── start-agents.yml
@@ -40,7 +53,9 @@ pi-cross-node-comms/
 │       └── pi-cross-node-comms/
 │           └── SKILL.md     # Agent usage patterns
 ├── scripts/
-│   └── setup-hub-on-fnet2.sh
+│   ├── standup-hub.sh       # Local dev: kill old → start hub → verify → print URL
+│   ├── shutdown-hub.sh      # Local dev: kill hub → clean state files
+│   └── setup-hub-on-fnet2.sh # Legacy: manual hub setup on fnet2 (Bun-based)
 └── server/
     └── coms-net-server.ts   # Bun HTTP/SSE hub server
 ```
@@ -59,11 +74,15 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 
 | Task | Command |
 |------|--------|
-| **Standup fleet (unified)** | `./scripts/run-playbook.sh "stand up the fleet"` or `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` (Phase 1 now deploys hub via Docker) |
+| **Standup fleet (production)** | `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` |
+| **Standup fleet (playbook-executor)** | `scripts/run-playbook.sh "stand up the fleet"` |
+| **Standup hub (local dev)** | `scripts/standup-hub.sh [--port PORT] [--project PROJECT]` |
+| **Shutdown fleet (production)** | `ansible-playbook -i ansible/inventory.yml ansible/shutdown-fleet.yml` |
+| **Shutdown fleet (playbook-executor)** | `scripts/run-playbook.sh "shutdown fleet"` |
+| **Shutdown hub (local dev)** | `scripts/shutdown-hub.sh [--project PROJECT]` |
 | **D-E-V cascade** | In pi session: decomposer → fleet-dispatcher → verifier → bookkeeping |
-| Start hub server | `docker compose up -d` (from this directory) or `PI_COMS_NET_AUTH_TOKEN=<token> docker compose up -d` |
 | Install extension | `pi install .` (from this directory) |
-| Launch agent with extension | `pi --server-url http://host:port --name agent-name --project lab` |
+| Launch agent with extension | `pi -e src/index.ts --server-url http://host:port --auth-token TOKEN --name agent-name --project lab` |
 
 ## Prompt
 

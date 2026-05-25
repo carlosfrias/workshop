@@ -15,7 +15,7 @@
   hosts: lab
   become: true
   vars_files:
-    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+    - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nextcloud_ip: 192.168.0.141
     nextcloud_domain: nextcloud.home
@@ -42,7 +42,7 @@
   hosts: nextcloud
   become: true
   vars_files:
-    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+    - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nextcloud_ip: 192.168.0.141
     nextcloud_domain: nextcloud.home

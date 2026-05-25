@@ -300,14 +300,23 @@ After verification passes, deploy the project as a clean pi package:
    ```bash
    pi update --extensions
    ```
-5. **Verify distribution** — Confirm no local paths remain for this package in settings.json and no stale symlinks in `~/.pi/agent/extensions/`
+5. **Deploy agent files** — If your package includes agents or chains, copy them as real files (not symlinks) to pi's agent directories:
+   ```bash
+   # Real files in ~/.pi/agent/agents/ — NOT symlinks to git clones
+   cp ~/.pi/agent/git/github.com/carlosfrias/{project-name}/agents/*.md ~/.pi/agent/agents/
+
+   # Real files in ~/.pi/agent/chains/ — NOT symlinks to git clones
+   cp ~/.pi/agent/git/github.com/carlosfrias/{project-name}/chains/*.chain.md ~/.pi/agent/chains/ 2>/dev/null || true
+   ```
+   > ⚠️ **Critical:** `pi update` only syncs the git clone. It does NOT sync agent/chain files to `~/.pi/agent/agents/` or `~/.pi/agent/chains/`. You must copy them manually after every update.
+6. **Verify distribution** — Confirm no local paths remain for this package in settings.json, no stale symlinks in `~/.pi/agent/extensions/`, and agent/chains are real files.
 
 ### Development Cycle (After Distribution)
 
 Once distributed, the development cycle is:
 
 ```
-workshop/ edit → git commit → git push → pi update --extensions
+workshop/ edit → git commit → git push → pi update --extensions → copy agents/chains → verify
 ```
 
 **Never leave a session with uncommitted workshop changes.** Workshop edits that aren't committed and pushed are invisible to pi — the git clone at `~/.pi/agent/git/...` is what pi loads.

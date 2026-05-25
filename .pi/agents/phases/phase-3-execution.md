@@ -36,7 +36,7 @@
 - Document every integration endpoint and authentication method.
 - **Publish with semantic versioning** (major.minor.patch) and test locally first.
 - **Follow the Quality Checklist** as the authoritative completion criteria.
-- **Load the `doc-standards` skill AND the vault-native taxonomy mapping** before creating, editing, or reviewing ANY `.md` file. (`/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md` + `/Users/friasc/Dropbox/carlos-desktop/personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md`) If the task involves documentation, the skill overrides general conventions.
+- **Load the `doc-standards` skill AND the vault-native taxonomy mapping** before creating, editing, or reviewing ANY `.md` file. (`/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md` + `/Users/friasc/Cloud/carlos-desktop/personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md`) If the task involves documentation, the skill overrides general conventions.
 
 ### Must Never
 - Store API keys or secrets in plain text.

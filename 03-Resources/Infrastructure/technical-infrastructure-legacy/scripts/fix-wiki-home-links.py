@@ -7,7 +7,7 @@ Updated for flat directory structure (post-merge).
 
 import os
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 FILE_PATH = f"{WORKSPACE}/wiki/index.md"
 LOG_PREFIX = "Step 001"
 

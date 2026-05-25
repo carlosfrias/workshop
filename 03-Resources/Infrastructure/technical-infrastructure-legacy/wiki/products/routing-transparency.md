@@ -37,7 +37,7 @@ The Routing Transparency extension provides complete visibility into how prompts
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ ~/Dropbox/workshop (main)                                           │
+│ ~/Cloud/workshop (main)                                           │
 │ ↑1.8M ↓33k R1.2s W0.8s $6.052  5.1%/262k  qwen3.5:4b • thinking off            │
 │ ROUTE: monitoring ← [status,check] | domain: position-monitor | TIME: 2.0s | EST│
 └─────────────────────────────────────────────────────────────────────────────────┘
@@ -238,7 +238,7 @@ pi install git:git@github.com:carlosfrias/pi-routing-transparency
 ### From Local Path (Development)
 
 ```bash
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 pi install ./technical-infrastructure/packages/routing-transparency
 ```
 

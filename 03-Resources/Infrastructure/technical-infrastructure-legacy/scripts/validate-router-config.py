@@ -24,7 +24,7 @@ import argparse
 from pathlib import Path
 
 HOME = Path.home()
-PROJECT_ROOT = Path("/Users/friasc/Dropbox/ai-trading-workspace")
+PROJECT_ROOT = Path("/Users/friasc/Cloud/ai-trading-workspace")
 
 CONFIG_PATHS = {
     "project": PROJECT_ROOT / ".pi" / "keyword-router.json",

@@ -223,7 +223,7 @@ Phase 6: Monitoring Dashboard    ⏳ Optional
 ## Contact & Communication
 
 **Primary Contact**: Carlos Frias  
-**Project Repository**: `/Users/friasc/Dropbox/agent-workspace/trading-lab-architecture`  
+**Project Repository**: `/Users/friasc/Cloud/agent-workspace/trading-lab-architecture`  
 **Documentation**: This directory
 
 **For Questions**:

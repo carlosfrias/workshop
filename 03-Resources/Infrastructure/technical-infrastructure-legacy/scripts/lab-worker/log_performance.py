@@ -14,7 +14,7 @@ if os.path.exists("/srv/lab-worker"):
     LOG_FILE = Path("/srv/lab-worker/performance-log.jsonl")
 else:
     # Orchestrator fallback
-    LOG_FILE = Path("/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/model-performance-log.jsonl")
+    LOG_FILE = Path("/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/model-performance-log.jsonl")
 
 def log_entry(node, model, task_id, latency_s, prompt_tokens, response_tokens, success=True):
     """Append a performance log entry."""

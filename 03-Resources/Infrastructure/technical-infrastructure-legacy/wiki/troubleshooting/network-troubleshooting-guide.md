@@ -439,6 +439,6 @@ ping -c 3 -W 2 -I enp7s0 192.168.0.1
 ---
 
 **Gist:** https://gist.github.com/carlosfrias/0c517214489cb78c0484ca661f3d8463  
-**Prompt:** `/Users/friasc/Dropbox/workshop/technical-infrastructure/prompts/network-troubleshooting.md`  
+**Prompt:** `/Users/friasc/Cloud/workshop/technical-infrastructure/prompts/network-troubleshooting.md`  
 **Version:** 1.0  
 **Last Updated:** 2026-04-26

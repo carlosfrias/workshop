@@ -12,9 +12,12 @@ set -euo pipefail
 
 REMOTE_HOST="friasc@192.168.0.146"
 REMOTE_BASE="/srv/archive/nextcloud"
-LOCAL_DATA="/srv/nextcloud/data"
+LOCAL_DATA="/srv/archive/nextcloud-data/config"
 LOCAL_DB="/srv/nextcloud/db"
 LOCAL_CONFIG="/srv/nextcloud/config"
+
+# Optional: full user data backup (uncomment if fnet6 has space)
+# LOCAL_USER_DATA="/srv/archive/nextcloud-data/data"
 LOG_FILE="/srv/nextcloud/backup.log"
 
 RSYNC_OPTS="-az --delete --compress-level=6 --human-readable --itemize-changes"
@@ -34,17 +37,17 @@ docker exec nextcloud-app php occ maintenance:mode --on 2>/dev/null || true
 START_TIME=$(date +%s)
 echo "$(date '+%Y-%m-%d %H:%M:%S') — Backup started" | tee -a "$LOG_FILE"
 
-# Rsync data directory (user files)
-echo ">>> Syncing data directory..."
-rsync $RSYNC_OPTS "$LOCAL_DATA/" "$REMOTE_HOST:$REMOTE_BASE/data/" 2>&1 | tee -a "$LOG_FILE"
+# Rsync NextCloud config (app config, not user data)
+echo ">>> Syncing config directory..."
+rsync $RSYNC_OPTS "$LOCAL_CONFIG/" "$REMOTE_HOST:$REMOTE_BASE/config/" 2>&1 | tee -a "$LOG_FILE"
 
 # Rsync database
 echo ">>> Syncing database directory..."
 rsync $RSYNC_OPTS "$LOCAL_DB/" "$REMOTE_HOST:$REMOTE_BASE/db/" 2>&1 | tee -a "$LOG_FILE"
 
-# Rsync config
-echo ">>> Syncing config directory..."
-rsync $RSYNC_OPTS "$LOCAL_CONFIG/" "$REMOTE_HOST:$REMOTE_BASE/config/" 2>&1 | tee -a "$LOG_FILE"
+# Rsync NextCloud config from data directory
+echo ">>> Syncing NC app data config..."
+rsync $RSYNC_OPTS "$LOCAL_DATA/" "$REMOTE_HOST:$REMOTE_BASE/app-config/" 2>&1 | tee -a "$LOG_FILE"
 
 # Disable maintenance mode
 docker exec nextcloud-app php occ maintenance:mode --off 2>/dev/null || true

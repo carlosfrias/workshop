@@ -592,7 +592,7 @@ Examples:
     report_date = time.strftime("%Y-%m-%d")
     report_path = args.report_path or f"benchmark-results-{report_date}.md"
     
-    report_dir = "/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/operational/status/"
+    report_dir = "/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/operational/status/"
     
     with open(f"{report_dir}{report_path}", "w") as f:
         f.write(markdown_report)

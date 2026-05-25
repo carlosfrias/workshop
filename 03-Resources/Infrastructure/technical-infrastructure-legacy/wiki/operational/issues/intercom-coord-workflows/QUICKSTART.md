@@ -14,7 +14,7 @@ last_updated: 2026-05-14
 ### Step 1: Install Package
 
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/packages/intercom-coord-workflows
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/packages/intercom-coord-workflows
 pi install .
 ```
 
@@ -29,25 +29,25 @@ Open **4 separate terminals**:
 
 ```bash
 # Terminal 1: Orchestrator (High Cloud)
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 pi
 /name orchestrator
 /model ollama/qwen3.5:397b
 
 # Terminal 2: Worker 1 (Medium Cloud)
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 pi
 /name worker-1
 /model ollama/qwen3.5:4b
 
 # Terminal 3: Worker 2 (Low Cloud)
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 pi
 /name worker-2
 /model ollama/qwen3:8b
 
 # Terminal 4: Lab Worker (Local)
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 pi
 /name lab-worker
 /model ollama/gemma4:e4b

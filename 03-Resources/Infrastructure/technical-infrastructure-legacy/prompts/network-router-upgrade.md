@@ -145,7 +145,7 @@ Upgrade the trading lab network infrastructure to support AI-friendly management
 
 ```bash
 # Activate trading workspace venv
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 source .venv/bin/activate
 
 # Install MCP server

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fix patch-file argument handling in import_pipeline.py"""
 
-with open("/Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "r") as f:
+with open("/Users/friasc/Cloud/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "r") as f:
     content = f.read()
 
 # Fix 1: Mark patch-file as required
@@ -15,7 +15,7 @@ new_patches = '    patches: Optional[dict] = None\n    if args.patch_file:\n    
 content = content.replace(old_patches, new_patches)
 
 # Write back
-with open("/Users/friasc/Dropbox/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "w") as f:
+with open("/Users/friasc/Cloud/ai-trading-workspace/bookkeeping/scripts/import_pipeline.py", "w") as f:
     f.write(content)
 
 print("Done fixing import_pipeline.py")

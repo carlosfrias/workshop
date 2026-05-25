@@ -35,7 +35,7 @@ ansible-playbook -i localhost, -c local playbooks/serve-wiki.yml -e "wiki_state=
 The wiki is served by VitePress from the **project root**, not a subdirectory:
 
 ```
-Project Root (/Users/friasc/Dropbox/workshop/)
+Project Root (/Users/friasc/Cloud/workshop/)
 ├── .vitepress/config.js          # VitePress configuration
 ├── wiki/                         # Content directory
 │   ├── index.md                  # Home page
@@ -157,7 +157,7 @@ cat /tmp/vitepress-wiki.log
 lsof -i :5173
 
 # Manual start for debugging
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 npx vitepress dev --port 5173
 ```
 

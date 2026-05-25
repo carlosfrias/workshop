@@ -75,6 +75,7 @@ After extracting a domain:
 7. **Include sample prompts in the wiki** — non-technical users need copy-paste examples.
 8. **Report token budget** before and after setup.
 9. **Never leave local paths or symlinks as the permanent state.** Workshop paths and extension symlinks are scaffolding only. Every pi package must be git-distributed (`git:` in settings.json). See Distribution Gate.
+10. **Never use `pi.agents` or `pi.chains` in package.json.** Pi's package manager processes only `extensions`, `skills`, `prompts`, `themes`. Agent and chain files must be deployed as real files to `~/.pi/agent/agents/` and `~/.pi/agent/chains/`. Symlinks to git clones break when paths change.
 
 ### Add Domain — Critical Rules
 - New domain's `AGENTS.md` must be fully self-contained.
@@ -109,10 +110,15 @@ After extracting a domain:
 
 > **Anti-pattern:** Workshop paths and symlinks that persist across sessions. These bypass git distribution and create fragile, unreproducible installations.
 
+> **Agent Deployment Rule:** `pi update` syncs the git clone but does NOT sync agent files to `~/.pi/agent/agents/` or chains to `~/.pi/agent/chains/`. You must copy them as real files after every update.
+
 Before closing a session:
 - [ ] All workshop changes committed and pushed to the git remote
 - [ ] `pi update --extensions` run to reconcile git clones
+- [ ] Agent files copied from git clone → `~/.pi/agent/agents/` (not symlinks — check with `ls -la`)
+- [ ] Chain files copied from git clone → `~/.pi/agent/chains/` (not symlinks — check with `ls -la`)
 - [ ] `settings.json` contains zero local paths (`../../Cloud/...`) for this project
 - [ ] No stale symlinks in `~/.pi/agent/extensions/` (only npm/git-managed dirs)
 - [ ] All 10 pi packages are git-sourced — verify with: `grep -c '"git:' ~/.pi/agent/settings.json`
 - [ ] `~/.pi/agent/git/github.com/carlosfrias/` clones match remote HEADs
+- [ ] No `pi.agents` or `pi.chains` in package.json (vestigial fields, silently ignored by pi)

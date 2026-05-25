@@ -1431,7 +1431,7 @@
   },
   {
     "timestamp": "2026-05-11T10:03:26.228527",
-    "prompt": "The `routing-bill ... --format...` should include csv or quicken. 1. This appears in the document you created on line 44 of /Users/friasc/Dropbox/workshop/technical-infrastructure/extensio",
+    "prompt": "The `routing-bill ... --format...` should include csv or quicken. 1. This appears in the document you created on line 44 of /Users/friasc/Cloud/workshop/technical-infrastructure/extensio",
     "complexity": "TRIVIAL",
     "model": "ollama/qwen3.5:4b",
     "latency_ms": 8,
@@ -1811,7 +1811,7 @@
   },
   {
     "timestamp": "2026-05-12T08:32:44.277821",
-    "prompt": "Are you able to update my obsidian (~/Dropbox/obsidian-vaults/)  with this plan?",
+    "prompt": "Are you able to update my obsidian (~/Cloud/obsidian-vaults/)  with this plan?",
     "complexity": "TRIVIAL",
     "model": "ollama/qwen3.5:4b",
     "latency_ms": 6,

@@ -1,135 +1,120 @@
 {
-  "_comment": "Model router for 15Gi RAM nodes (fnet1, fnet7). Tight RAM \u2014 avoids gemma4:e4b as default high-tier to prevent OOM. Use 'flagship' profile to force gemma4 when explicitly needed.",
+  "_comment": "Model router for 15Gi RAM nodes (fnet1, fnet7). Updated 2026-05-24 with multimodal profiles.",
   "_tier": "15Gi",
   "_models": {
-    "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision+thinking",
-    "qwen3:8b": "5.2GB disk, 8.2B params, 40960 ctx, tools+thinking",
-    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking \u2014 TIGHT on 15Gi",
-    "qwen3.5:9b": "6.6GB disk, 9.65B params, 262144 ctx, tools+vision+thinking \u2014 NOT viable on 15Gi (needs 31Gi+)"
+    "qwen3.5:4b": "3.4GB disk, 4.7B params, 262144 ctx, tools+vision (BROKEN)+thinking",
+    "openbmb/minicpm-o2.6:8b": "5.5GB disk, 8B params, 32768 ctx, tools+vision+thinking — 39 tok/s vision",
+    "gemma4:e4b": "9.6GB disk, 8.0B params, 131072 ctx, tools+vision+thinking — 33 tok/s vision, BEST quality"
   },
-  "defaultProfile": "local",
+  "_note": "qwen3:8b REMOVED (replaced by minicpm-o2.6:8b). qwen3.5:4b vision BROKEN (Ollama bug).",
+  "defaultProfile": "auto",
   "debug": false,
   "phaseBias": 0.5,
   "largeContextThreshold": 999999,
   "rules": [
     {
-      "matches": [
-        "deploy",
-        "production",
-        "release",
-        "security"
-      ],
+      "matches": ["deploy", "production", "release", "security"],
       "tier": "high",
-      "profile": "local",
-      "reason": "Safety-critical tasks need deeper reasoning"
+      "reason": "Safety check for production tasks"
     },
     {
-      "matches": [
-        "refactor",
-        "architect",
-        "design",
-        "plan"
-      ],
+      "matches": ["refactor", "architect", "design", "plan"],
       "tier": "high",
-      "profile": "local",
-      "reason": "Complex planning needs best available local model"
+      "reason": "Complex planning tasks need the best model"
     },
     {
-      "matches": [
-        "changelog",
-        "comment",
-        "format",
-        "lint",
-        "typos",
-        "list",
-        "count"
-      ],
+      "matches": ["changelog", "comment", "format", "lint", "typos"],
       "tier": "low",
-      "reason": "Lightweight tasks use the fast model"
+      "reason": "Lightweight tasks don't need heavy models"
+    },
+    {
+      "matches": ["transcribe", "audio", "podcast", "interview", "meeting notes", "voice memo"],
+      "tier": "medium",
+      "profile": "audio",
+      "reason": "Audio tasks use Whisper STT pipeline"
+    },
+    {
+      "matches": ["video", "movie", "clip", "youtube", "screen recording"],
+      "tier": "medium",
+      "profile": "video",
+      "reason": "Video tasks use frame extraction + vision pipeline"
+    },
+    {
+      "matches": ["image", "screenshot", "diagram", "chart", "photo", "visual"],
+      "tier": "medium",
+      "profile": "vision",
+      "reason": "Image tasks use vision-capable models"
     }
   ],
   "profiles": {
-    "local": {
-      "high": {
-        "model": "ollama/qwen3:8b",
-        "thinking": "low"
-      },
-      "medium": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "low"
-      },
-      "low": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "off"
-      }
-    },
-    "flagship": {
-      "high": {
-        "model": "ollama/gemma4:e4b",
-        "thinking": "low"
-      },
-      "medium": {
-        "model": "ollama/qwen3:8b",
-        "thinking": "low"
-      },
-      "low": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "off"
-      }
-    },
-    "fast": {
-      "high": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "low"
-      },
-      "medium": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "off"
-      },
-      "low": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "off"
-      }
+    "auto": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "medium"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "low", "_note": "Vision-capable"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only (vision BROKEN)"}
     },
     "reasoning": {
-      "high": {
-        "model": "ollama/qwen3:8b",
-        "thinking": "high"
-      },
-      "medium": {
-        "model": "ollama/qwen3:8b",
-        "thinking": "medium"
-      },
-      "low": {
-        "model": "ollama/qwen3.5:4b",
-        "thinking": "low"
-      }
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "Vision-capable"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "low", "_note": "Text-only (vision BROKEN)"}
+    },
+    "coding": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "Vision-capable — screenshots, diagrams"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "low", "_note": "Text-only (vision BROKEN)"}
+    },
+    "general": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "medium"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "low", "_note": "Vision-capable"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only (vision BROKEN)"}
+    },
+    "local": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "medium"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "low", "_note": "Vision-capable"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only (vision BROKEN)"}
+    },
+    "cloud": {
+      "high": {"model": "ollama/deepseek-v4-pro:cloud", "thinking": "high"},
+      "medium": {"model": "ollama/glm-5.1:cloud", "thinking": "medium"},
+      "low": {"model": "ollama/gemma4:31b-cloud", "thinking": "low"}
+    },
+    "fast": {
+      "high": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "low", "_note": "5.5GB, 39 tok/s, vision-capable"},
+      "medium": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only (vision BROKEN)"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only (vision BROKEN)"}
+    },
+    "vision": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "5.5GB, 39 tok/s vision"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "⚠️ Text-only — vision BROKEN"}
+    },
+    "multimodal": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high", "_note": "Best local vision + reasoning"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "Vision-capable (39 tok/s)"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only tier"}
+    },
+    "audio": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high", "_note": "Post-transcription analysis"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "Post-transcription Q&A"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text-only"}
+    },
+    "video": {
+      "high": {"model": "ollama/gemma4:e4b", "thinking": "high", "_note": "Frame analysis only"},
+      "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "thinking": "medium", "_note": "Frame-by-frame analysis"},
+      "low": {"model": "ollama/qwen3.5:4b", "thinking": "off", "_note": "Text metadata only"}
     }
   },
   "skills": {
     "project-blueprint": {
-      "_comment": "Route low-capacity models to linear scripts (no cross-ref navigation)",
+      "_comment": "Route all models to linear scripts (no cross-ref navigation)",
       "_validated": "2026-05-22: ALL local models fail decomposed. Linear forced for all tiers.",
       "linearThreshold": 999999,
       "linearSuffix": "-linear",
       "tiers": {
-        "low": {
-          "model": "ollama/qwen3.5:4b",
-          "promptVariant": "-linear",
-          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
-        },
-        "medium": {
-          "model": "ollama/qwen3:8b",
-          "promptVariant": "-linear",
-          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
-        },
-        "high": {
-          "model": "ollama/gemma4:e4b",
-          "promptVariant": "-linear",
-          "reason": "ALL models fail decomposed (validated 2026-05-22). Linear scripts forced."
-        }
+        "low": {"model": "ollama/qwen3.5:4b", "promptVariant": "-linear", "reason": "ALL models fail decomposed (validated 2026-05-22)"},
+        "medium": {"model": "ollama/openbmb/minicpm-o2.6:8b", "promptVariant": "-linear", "reason": "ALL models fail decomposed (validated 2026-05-22)"},
+        "high": {"model": "ollama/gemma4:e4b", "promptVariant": "-linear", "reason": "ALL models fail decomposed (validated 2026-05-22)"}
       }
     }
   },
-  "_forceLinearReason": "Validation testing proved ALL local models (qwen3.5:4b, qwen3:8b, gemma4:e4b) fail decomposed approach. Linear scripts validated as safer across all tiers. Threshold set above maximum local model context window to force linear for all local models."
+  "_forceLinearReason": "Validation testing proved ALL local models fail decomposed approach. Linear scripts validated as safer across all tiers."
 }

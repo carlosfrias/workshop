@@ -12,7 +12,7 @@
     {
       "name": "gist_event_bus.py exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/gist_event_bus.py",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/scripts/gist_event_bus.py",
       "timestamp": "2026-05-06T11:28:02.820665+00:00"
     },
     {
@@ -30,7 +30,7 @@
     {
       "name": "gist_lag_monitor.py exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/gist_lag_monitor.py",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/scripts/gist_lag_monitor.py",
       "timestamp": "2026-05-06T11:28:03.363234+00:00"
     },
     {
@@ -96,7 +96,7 @@
     {
       "name": "test_ti010.py exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/scripts/test_ti010.py",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/scripts/test_ti010.py",
       "timestamp": "2026-05-06T11:28:27.545349+00:00"
     },
     {
@@ -108,19 +108,19 @@
     {
       "name": "Architecture Plan exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/operational/planning/PLAN-TI010-EVENT-DRIVEN.md",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/wiki/operational/planning/PLAN-TI010-EVENT-DRIVEN.md",
       "timestamp": "2026-05-06T11:28:27.800096+00:00"
     },
     {
       "name": "Master Prompt exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/operational/planning/prompts/PROMPT-TI010-EVENT-DRIVEN.md",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/wiki/operational/planning/prompts/PROMPT-TI010-EVENT-DRIVEN.md",
       "timestamp": "2026-05-06T11:28:27.800124+00:00"
     },
     {
       "name": "Protocol Guide exists",
       "passed": true,
-      "detail": "/Users/friasc/Dropbox/workshop/technical-infrastructure/wiki/guides/gist-message-protocol.md",
+      "detail": "/Users/friasc/Cloud/workshop/technical-infrastructure/wiki/guides/gist-message-protocol.md",
       "timestamp": "2026-05-06T11:28:27.800155+00:00"
     },
     {

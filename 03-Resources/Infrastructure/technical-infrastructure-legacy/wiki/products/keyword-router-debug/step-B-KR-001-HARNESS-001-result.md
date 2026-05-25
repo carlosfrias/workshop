@@ -24,7 +24,7 @@
 > pi-keyword-router@1.0.0 test
 > vitest
 
- RUN  v3.2.4 /Users/friasc/Dropbox/workshop/technical-infrastructure/packages/pi-keyword-router
+ RUN  v3.2.4 /Users/friasc/Cloud/workshop/technical-infrastructure/packages/pi-keyword-router
 
  ✓ test/harness.test.ts (1 test) 3ms
 

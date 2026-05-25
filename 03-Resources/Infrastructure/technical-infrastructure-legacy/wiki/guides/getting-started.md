@@ -77,7 +77,7 @@ Project config: `.pi/keyword-router.json`
 ### 1. Develop Locally
 
 ```bash
-cd ~/Dropbox/workshop/technical-infrastructure
+cd ~/Cloud/workshop/technical-infrastructure
 
 # Make changes to packages/pi-keyword-router/
 
@@ -89,7 +89,7 @@ pi install ../technical-infrastructure/packages/pi-keyword-router
 ### 2. Publish to GitHub
 
 ```bash
-cd ~/Dropbox/workshop/technical-infrastructure/packages/pi-keyword-router
+cd ~/Cloud/workshop/technical-infrastructure/packages/pi-keyword-router
 
 # Update version in package.json
 # Commit changes
@@ -109,7 +109,7 @@ pi install github:carlosfrias/pi-keyword-router@v1.1.0
 ### 4. Publish to npm (When Mature)
 
 ```bash
-cd ~/Dropbox/workshop/technical-infrastructure/packages/pi-keyword-router
+cd ~/Cloud/workshop/technical-infrastructure/packages/pi-keyword-router
 npm version minor  # or patch, or major
 npm publish
 ```

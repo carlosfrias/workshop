@@ -15,7 +15,7 @@
   hosts: nextcloud
   become: true
   vars_files:
-    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+    - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nginx_ssl_dir: /etc/nginx/ssl
     nginx_conf_src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/nginx/nextcloud.home.conf"

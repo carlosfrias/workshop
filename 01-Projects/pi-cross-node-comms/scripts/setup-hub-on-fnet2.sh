@@ -17,7 +17,7 @@ set -euo pipefail
 # ─── Config ────────────────────────────────────────────────────────────────
 MACOS_IP="192.168.0.148"
 MACOS_USER="friasc"
-MACOS_SERVER_SRC="/Users/friasc/Dropbox/carlos-desktop/workshop/01-Projects/pi-cross-node-comms/server/coms-net-server.ts"
+MACOS_SERVER_SRC="/Users/friasc/Cloud/carlos-desktop/workshop/01-Projects/pi-cross-node-comms/server/coms-net-server.ts"
 LOCAL_SERVER_DIR="$HOME/.pi/coms-net/server"
 LOCAL_SERVER_FILE="$LOCAL_SERVER_DIR/coms-net-server.ts"
 HUB_HOST="0.0.0.0"

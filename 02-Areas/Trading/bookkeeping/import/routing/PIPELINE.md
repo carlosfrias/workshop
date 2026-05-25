@@ -8,7 +8,7 @@
 ## Standard Import
 
 ```bash
-cd /Users/friasc/Dropbox/carlos-desktop/workshop/02-Areas/Trading/bookkeeping
+cd /Users/friasc/Cloud/carlos-desktop/workshop/02-Areas/Trading/bookkeeping
 python3 scripts/import_pipeline.py ingest staging/inbox/statement.pdf
 ```
 

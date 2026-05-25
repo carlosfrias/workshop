@@ -22,7 +22,7 @@
   become: true
   vars_files:
     - ~/.ansible/secure/vault-nextcloud.yml
-    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+    - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nextcloud_base_dir: /srv/nextcloud
     nextcloud_data_dir: /srv/nextcloud/data

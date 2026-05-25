@@ -35,7 +35,7 @@
 - Added all 7 lab node public keys to orchestrator's `~/.ssh/authorized_keys`
 - Added `192.168.0.184 mac-orchestrator` to `/etc/hosts` on all 7 lab nodes
 - Fixed mount script: removed unsupported FUSE options (`defer_permissions`, `volname`)
-- All 7 nodes mount at `/mnt/trading-desk` → `/Users/friasc/Dropbox/workshop`
+- All 7 nodes mount at `/mnt/trading-desk` → `/Users/friasc/Cloud/workshop`
 
 **Blocker Status (2026-05-05):**
 ```

@@ -70,7 +70,7 @@ intercom({ action: "list" })
 3. **Restart session if needed:**
    ```bash
    # In new terminal
-   cd /Users/friasc/Dropbox/workshop
+   cd /Users/friasc/Cloud/workshop
    pi
    /name worker-1
    /model ollama/qwen3.5:4b

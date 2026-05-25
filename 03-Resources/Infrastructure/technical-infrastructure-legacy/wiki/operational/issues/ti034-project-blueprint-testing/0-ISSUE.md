@@ -12,7 +12,7 @@
 **Priority:** 🔴 **HIGH** — Causes incorrect model routing, wasted API cost, wrong model for task complexity
 **Rationale:** When consumers install project-blueprint via `pi install github:carlosfrias/project-blueprint`, the scaffolding wizard creates unexpected files in the workspace root (`technical-infrastructure/`, `templates/`, `Final Summary.md`, `model-routing-decisions.*`). These artifacts belong in the skill folder (`~/.pi/agent/skills/project-blueprint/`) or in `.pi/sessions/`, NOT in the consumer's workspace. This breaks the "clean root" contract and makes consumers lose trust in the tool.
 
-**Discovered in:** `~/Dropbox/carlos-desktop` workspace (his-desk domain setup)
+**Discovered in:** `~/Cloud/carlos-desktop` workspace (his-desk domain setup)
 
 **Critical Bugs to Fix:**
 - 🔴 **CRITICAL:** `technical-infrastructure/` created in workspace root (Trading Desk artifact leaked)

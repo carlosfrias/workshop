@@ -136,7 +136,7 @@ ansible-playbook -i their-inventory.ini deploy-gist-workers-only.yml \
 If you prefer a script over Ansible for the orchestrator side:
 
 ```bash
-cd ~/Dropbox/workshop
+cd ~/Cloud/workshop
 bash scripts/setup-gist-orchestrator.sh [--gist-id ID] [--token TOKEN]
 ```
 
@@ -165,7 +165,7 @@ export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxx"
 ### 2. Orchestrator Side (Mac)
 
 ```bash
-cd ~/Dropbox/workshop
+cd ~/Cloud/workshop
 
 # Submit a task to fnet3
 python3 technical-infrastructure/scripts/gist-orchestrator.py \

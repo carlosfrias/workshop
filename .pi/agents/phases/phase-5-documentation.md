@@ -12,7 +12,7 @@ All documentation must adhere to the universal standards defined in the `doc-sta
 
 **Required Action**: Before proceeding with any documentation task:
 1. Load the `doc-standards` skill: `/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md`
-2. Load the vault-native taxonomy mapping: `/Users/friasc/Dropbox/carlos-desktop/personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md`
+2. Load the vault-native taxonomy mapping: `/Users/friasc/Cloud/carlos-desktop/personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md`
 
 No documentation file may be created, edited, or reviewed until BOTH are loaded.
 

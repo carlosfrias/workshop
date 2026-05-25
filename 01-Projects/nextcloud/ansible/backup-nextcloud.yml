@@ -17,7 +17,7 @@
   hosts: nextcloud
   become: true
   vars_files:
-    - /Users/friasc/Dropbox/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
+    - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nextcloud_base_dir: /srv/nextcloud
     backup_script_src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/backup/backup-nextcloud.sh"

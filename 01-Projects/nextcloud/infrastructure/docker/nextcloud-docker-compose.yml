@@ -19,6 +19,7 @@ services:
     volumes:
       - nextcloud_data:/var/www/html
       - /srv/nextcloud/data:/srv/nextcloud/data
+      - /srv/archive/dropbox:/srv/archive/dropbox:shared
     environment:
       - NEXTCLOUD_URL=nextcloud.home
       - NEXTCLOUD_ADMIN_USER=admin
@@ -61,6 +62,27 @@ services:
     volumes:
       - nextcloud_data:/var/www/html
     entrypoint: /cron.sh
+    networks:
+      - nextcloud-net
+
+  collabora:
+    image: collabora/code:latest
+    container_name: collabora
+    hostname: collabora
+    restart: unless-stopped
+    depends_on:
+      - nextcloud-app
+    ports:
+      - "127.0.0.1:9980:9980"
+    environment:
+      - aliasgroup1=https://nextcloud\.home:443
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true
+      - dictionaries=en_US en_GB es
+      - username=${COLLABORA_ADMIN_USER:-admin}
+      - password=${COLLABORA_ADMIN_PASSWORD}
+      - server_name=collabora.home
+    cap_add:
+      - MKNOD
     networks:
       - nextcloud-net
 

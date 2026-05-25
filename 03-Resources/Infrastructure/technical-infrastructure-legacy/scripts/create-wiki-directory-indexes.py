@@ -6,7 +6,7 @@ Creates index.md files for directories that need them for VitePress navigation.
 
 import os
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 LOG_PREFIX = "Step 005"
 
 DIRECTORIES = [

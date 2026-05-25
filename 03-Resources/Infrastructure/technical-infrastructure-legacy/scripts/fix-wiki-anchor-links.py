@@ -6,7 +6,7 @@ Fixes broken anchor references across multiple files.
 
 import os
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 LOG_PREFIX = "Step 004"
 
 FILES_TO_FIX = [

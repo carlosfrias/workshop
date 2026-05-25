@@ -24,7 +24,7 @@
 Run the discovery script:
 
 ```bash
-cd /Users/friasc/Dropbox/workshop/technical-infrastructure/ansible
+cd /Users/friasc/Cloud/workshop/technical-infrastructure/ansible
 ./scripts/discover-mac-addresses.sh
 ```
 

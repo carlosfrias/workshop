@@ -13,7 +13,7 @@ LAB_NODES = [
     ("fnet7", "192.168.0.147"),
 ]
 
-LOCAL_LOG = Path("/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/model-performance-log.jsonl")
+LOCAL_LOG = Path("/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/wiki/operational/sessions/model-performance-log.jsonl")
 REMOTE_LOG = "/srv/lab-worker/performance-log.jsonl"
 
 def fetch_node_logs(node, ip):

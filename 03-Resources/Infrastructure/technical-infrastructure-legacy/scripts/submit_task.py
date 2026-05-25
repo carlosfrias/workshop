@@ -48,7 +48,7 @@ def submit_task(node, command, task_type="shell", task_dir="/srv/tasks/pending",
 
     # Handle orchestrator (local execution, no SSH)
     if node == "orchestrator":
-        orch_pending = os.path.expanduser("~/Dropbox/ai-trading-workspace/srv/tasks/pending")
+        orch_pending = os.path.expanduser("~/Cloud/ai-trading-workspace/srv/tasks/pending")
         os.makedirs(orch_pending, exist_ok=True)
         orch_path = os.path.join(orch_pending, f"{task_id}.json")
         with open(orch_path, 'w') as f:

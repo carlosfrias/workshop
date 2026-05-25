@@ -257,7 +257,7 @@ ollama list
 ```bash
 # Alternative: Copy from USB drive
 # On orchestrator (Mac):
-#   tar -czvf /tmp/nt-bundle.tar.gz -C ~/Dropbox/workshop/technical-infrastructure/deployment-bundles/network-troubleshooting .
+#   tar -czvf /tmp/nt-bundle.tar.gz -C ~/Cloud/workshop/technical-infrastructure/deployment-bundles/network-troubleshooting .
 # Copy to USB, then to node:
 #   tar -xzf /media/usb/nt-bundle.tar.gz -C ~
 ```

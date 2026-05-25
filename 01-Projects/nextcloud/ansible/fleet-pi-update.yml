@@ -1,0 +1,94 @@
+---
+- name: Fleet-wide pi update
+  hosts: lab
+  gather_facts: yes
+  strategy: free
+  serial: "{{ (groups['lab'] | length) }}"  # Run on all nodes in parallel
+  
+  vars:
+    nvm_dir: "/home/friasc/.nvm"
+    
+  tasks:
+    - name: Check if nvm is installed
+      stat:
+        path: "{{ nvm_dir }}/nvm.sh"
+      register: nvm_check
+      
+    - name: Check current pi version (with nvm initialization)
+      shell: |
+        # Mimic pi-agent-standalone.sh nvm initialization
+        _saved_args=($@)
+        export NVM_DIR="{{ nvm_dir }}"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        set -- "${_saved_args[@]}"
+        unset _saved_args
+        
+        pi --version 2>&1 || echo "pi not found"
+      args:
+        executable: /bin/bash
+      register: pi_before
+      changed_when: false
+      failed_when: false
+      when: nvm_check.stat.exists
+      
+    - name: Display before state
+      debug:
+        msg: "{{ inventory_hostname }}: pi {{ (pi_before.stdout | default('nvm not installed')) | regex_replace('^pi not found$', 'nvm not installed') | trim }}"
+      when: nvm_check.stat.exists
+      
+    - name: Display before state (no nvm)
+      debug:
+        msg: "{{ inventory_hostname }}: nvm not installed - skipping pi check"
+      when: not nvm_check.stat.exists
+        
+    - name: Run pi update (with nvm initialization)
+      shell: |
+        # Mimic pi-agent-standalone.sh nvm initialization
+        _saved_args=($@)
+        export NVM_DIR="{{ nvm_dir }}"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        set -- "${_saved_args[@]}"
+        unset _saved_args
+        
+        pi update 2>&1 || echo "pi update failed"
+      args:
+        executable: /bin/bash
+      register: pi_update
+      changed_when: "'Updated' in pi_update.stdout or 'updated' in pi_update.stdout"
+      failed_when: false
+      when: nvm_check.stat.exists
+      
+    - name: Verify pi version after update (with nvm initialization)
+      shell: |
+        # Mimic pi-agent-standalone.sh nvm initialization
+        _saved_args=($@)
+        export NVM_DIR="{{ nvm_dir }}"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        set -- "${_saved_args[@]}"
+        unset _saved_args
+        
+        pi --version 2>&1 || echo "pi not found"
+      args:
+        executable: /bin/bash
+      register: pi_after
+      changed_when: false
+      when: nvm_check.stat.exists
+      
+    - name: Display after state
+      debug:
+        msg: "{{ inventory_hostname }}: pi {{ (pi_after.stdout | default('nvm not installed')) | regex_replace('^pi not found$', 'nvm not installed') | trim }}"
+      when: nvm_check.stat.exists
+      
+    - name: Display after state (no nvm)
+      debug:
+        msg: "{{ inventory_hostname }}: nvm not installed - pi not available"
+      when: not nvm_check.stat.exists
+      
+    - name: Summary
+      debug:
+        msg: |
+          ✅ {{ inventory_hostname }}
+          Before: {{ (pi_before.stdout | default('n/a')) | trim }}
+          After:  {{ (pi_after.stdout | default('n/a')) | trim }}
+          Status: {{ 'Updated' if pi_before.stdout != pi_after.stdout and pi_before.stdout != 'pi not found' else 'Already current' }}
+      when: nvm_check.stat.exists

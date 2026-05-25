@@ -62,7 +62,7 @@ ollama pull qwen3.5:4b
 
 ```bash
 # Navigate to workspace
-cd /Users/friasc/Dropbox/workshop
+cd /Users/friasc/Cloud/workshop
 
 # Check prompt files exist
 ls -la technical-infrastructure/prompts/

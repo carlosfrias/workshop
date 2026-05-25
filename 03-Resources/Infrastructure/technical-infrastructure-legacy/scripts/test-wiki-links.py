@@ -7,7 +7,7 @@ Usage: python3 test-wiki-links.py [--fix]
 
 import os, re, sys, argparse
 
-WORKSPACE = "/Users/friasc/Dropbox/ai-trading-workspace"
+WORKSPACE = "/Users/friasc/Cloud/ai-trading-workspace"
 WIKI_ROOT = os.path.join(WORKSPACE, "wiki")
 BROKEN = []
 

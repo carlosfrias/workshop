@@ -13,7 +13,7 @@ import sys
 import argparse
 from pathlib import Path
 
-BASE = Path("/Users/friasc/Dropbox/ai-trading-workspace")
+BASE = Path("/Users/friasc/Cloud/ai-trading-workspace")
 
 # Files that should NOT exist in these locations (temp files to delete)
 SHOULD_NOT_EXIST = [

@@ -22,6 +22,26 @@ Tier-routed skill for project setup and domain management. Models <32K context: 
 2. **Self-contained domains** — Each domain folder has exactly one `AGENTS.md` containing all conventions, rules, quality checks, and instructions.
 3. **`inheritProjectContext: false`** — Sub-agents discover context independently via `cwd` walk.
 
+### Critical Architecture Rule: Agent vs Skill Deployment
+
+Pi processes **4 resource types** from packages: `extensions`, `skills`, `prompts`, `themes`.
+**Agents and chains are NOT processed.** They require manual deployment to the filesystem.
+
+| Resource | Discovery Path | Package.json Key | Managed by `pi update`? |
+|----------|---------------|-----------------|----------------------|
+| **Skill** | `pi.skills` in package.json → auto-discovered from git clone | `pi.skills` | ✅ Yes |
+| **Extension** | `pi.extensions` in package.json → auto-discovered | `pi.extensions` | ✅ Yes |
+| **Prompt** | `pi.prompts` in package.json → auto-discovered | `pi.prompts` | ✅ Yes |
+| **Theme** | `pi.themes` in package.json → auto-discovered | `pi.themes` | ✅ Yes |
+| **Agent** | `~/.pi/agent/agents/*.md` ONLY — real files, never symlinks | *Not supported* | ❌ No |
+| **Chain** | `~/.pi/agent/chains/*.md` ONLY — real files, never symlinks | *Not supported* | ❌ No |
+
+**Never use `pi.agents` or `pi.chains` in package.json.** These fields are vestigial and are silently ignored by pi. Including them creates false confidence.
+
+**Agent deployment rule:** After `pi update`, copy agent `.md` files from the git clone to `~/.pi/agent/agents/` as real files (not symlinks). Symlinks break when paths change.
+
+**Skill deployment rule:** Declare in `pi.skills` and pi discovers them automatically from the git clone.
+
 ### Token Budget Target
 
 | Role | Tokens | Content |

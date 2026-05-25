@@ -13,5 +13,5 @@
     - name: Fetch optimization report
       fetch:
         src: "/home/friasc/pi_node_report.json"
-        dest: "/Users/friasc/Dropbox/ai-trading-workspace/technical-infrastructure/ansible/reports/{{ inventory_hostname }}_report.json"
+        dest: "/Users/friasc/Cloud/ai-trading-workspace/technical-infrastructure/ansible/reports/{{ inventory_hostname }}_report.json"
         flat: yes
