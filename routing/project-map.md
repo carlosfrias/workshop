@@ -19,7 +19,7 @@ Match keywords from the prompt to the project AGENTS.md file. Each project has i
 |----------|----------|
 | kingdom, warfare, leadership, mike brewer, nancy, training, curriculum, flashcard, study aid, mkdocs, deliverance, demonology | `./01-Projects/kingdom-warfare-leadership/AGENTS.md` |
 | doc-standards, enablement, scaffold, project template, topology, documentation standard, prompt thread, workbench, focus | `./01-Projects/doc-standards-enablement/AGENTS.md` |
-| project-blueprint, blueprint, orchestration, domain routing, agent definition, structural routing, wiki, post-completion, golden path, learning loop, library | `./01-Projects/project-blueprint/AGENTS.md` |
+| project-blueprint, blueprint, orchestration, domain routing, agent definition, structural routing, wiki, post-completion, golden path, learning loop, library | `./02-Areas/project-blueprint/AGENTS.md` |
 | clief, core-agent-architecture, evaluation-metrics, workflow-design | `./01-Projects/clief/AGENTS.md` |
 | decompose, execute, verify, decomposition, cost-optimization, verification, fleet-dispatcher, cascade | `./01-Projects/decompose-execute-verify/AGENTS.md` or `.pi/agents/decomposer.md` or `.pi/agents/fleet-dispatcher.md` |
 | health, monitor, RAM, CPU, swap, system status, resource, saturation | `./01-Projects/health-monitor/AGENTS.md` |
