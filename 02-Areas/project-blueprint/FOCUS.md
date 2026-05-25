@@ -18,9 +18,9 @@ Post-completion architecture fully implemented across agents, skills, and templa
 ## Session handoff
 
 - Post-completion feature implemented: 2 agents, 1 skill, 1 template, thread structure extended
-- Vault project deployed at `personal-vault/01-Projects/project-blueprint/` with full doc-standards structure
+- Vault project deployed at `personal-vault/02-Areas/project-blueprint/` with full doc-standards structure
 - auto-documenter synced between project-blueprint and decompose-execute-verify packages (conflict resolved)
-- Workshop executor at `workshop/01-Projects/project-blueprint/` — pointer to code workspace
+- Workshop executor at `workshop/02-Areas/project-blueprint/` — pointer to code workspace
 
 ## Blocked / needs decision
 

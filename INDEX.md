@@ -8,14 +8,14 @@
 ## Quick Navigation
 
 ### 01-Projects (Active Development)
-- [`01-Projects/project-blueprint/`](01-Projects/project-blueprint/) - Project scaffolding with doc-standards
 - [`01-Projects/decompose-execute-verify/`](01-Projects/decompose-execute-verify/) - Cost-optimized execution pipeline
 - [`01-Projects/health-monitor/`](01-Projects/health-monitor/) - Orchestrator resource monitoring
 - [`01-Projects/local-model-pilot/`](01-Projects/local-model-pilot/) - Local LLM routing
 - [`01-Projects/node-router/`](01-Projects/node-router/) - Execution location scoring
 - [`01-Projects/sshfs-accessible/`](01-Projects/sshfs-accessible/) - Remote workspace mounts
 
-### 02-Areas/Trading (Ongoing Responsibilities)
+### 02-Areas (Ongoing Responsibilities)
+- [`02-Areas/project-blueprint/`](02-Areas/project-blueprint/) - Orchestration framework scaffolding, domain routing, agents
 - [`02-Areas/Trading/bookkeeping/`](02-Areas/Trading/bookkeeping/) - Trade logging, P&L, reconciliation
 - [`02-Areas/Trading/market-research/`](02-Areas/Trading/market-research/) - Analysis, signals, backtesting
 - [`02-Areas/Trading/position-management/`](02-Areas/Trading/position-management/) - Orders, risk, allocation

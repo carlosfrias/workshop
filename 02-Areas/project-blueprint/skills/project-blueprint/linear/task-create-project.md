@@ -9,7 +9,7 @@
 **Required Paths:**
 - Vault Root: `personal-vault/01-Projects/`
 - Workshop Root: `workshop/01-Projects/`
-- Skill Templates: `workshop/01-Projects/project-blueprint/templates/`
+- Skill Templates: `workshop/02-Areas/project-blueprint/templates/`
 
 **Core Rules:**
 - Use vault-native terms: `Plan` (not issue), `journal/` (not sessions/).

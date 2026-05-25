@@ -1,6 +1,6 @@
 # AGENTS.md — Project Blueprint (Workshop)
 
-**Documentation home:** `../../personal-vault/01-Projects/project-blueprint/`  
+**Documentation home:** `../../personal-vault/02-Areas/project-blueprint/`  
 **Code workspace:** `./`  
 **Workshop root:** `./` (this directory)
 
@@ -47,10 +47,10 @@ project-blueprint/
 
 | Need | Go Here |
 |------|---------|
-| Project overview, deliverables | `../../personal-vault/01-Projects/project-blueprint/README.md` |
-| Current state, priorities | `../../personal-vault/01-Projects/project-blueprint/FOCUS.md` |
-| Human workspace | `../../personal-vault/01-Projects/project-blueprint/WORKBENCH.md` |
-| Prompt history | `../../personal-vault/01-Projects/project-blueprint/threads/project-blueprint/0-THREAD.md` |
+| Project overview, deliverables | `../../personal-vault/02-Areas/project-blueprint/README.md` |
+| Current state, priorities | `../../personal-vault/02-Areas/project-blueprint/FOCUS.md` |
+| Human workspace | `../../personal-vault/02-Areas/project-blueprint/WORKBENCH.md` |
+| Prompt history | `../../personal-vault/02-Areas/project-blueprint/threads/project-blueprint/0-THREAD.md` |
 | Code implementation | `../../workshop/technical-infrastructure/packages/project-blueprint/` |
 
 ---

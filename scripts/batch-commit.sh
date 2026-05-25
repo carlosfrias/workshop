@@ -100,7 +100,7 @@ commit_repo "01-Projects/pi-cross-node-comms" \
 - Add bun.lock dependency lockfile
 - Update package.json, ansible configs, inventory"
 
-commit_repo "01-Projects/project-blueprint" \
+commit_repo "02-Areas/project-blueprint" \
     "feat: Add linear scripts and WORKBENCH template
 
 - Add skills/project-blueprint/linear/ (5 task scripts)
