@@ -1,3 +1,12 @@
+---
+name: Workflow Orchestration Research
+summary: Evaluate workflow orchestration options for single-user lab — Temporal, Cadence, pi orchestration, Taskwarrior
+status: active
+phase: "Phase 2: Evaluation"
+progress: 15
+tracked: true
+---
+
 # Workflow Orchestration Research — FOCUS
 
 **Status:** Active research

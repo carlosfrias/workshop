@@ -1,3 +1,9 @@
+---
+name: test-tier-qwen35
+phase: "Phase 1: Testing"
+progress: 50
+---
+
 # PLAN — test-tier-qwen35
 
 ## [S-TIGHT]

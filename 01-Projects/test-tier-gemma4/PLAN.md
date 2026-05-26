@@ -1,3 +1,9 @@
+---
+name: test-tier-gemma4
+phase: "Phase 1: Testing"
+progress: 50
+---
+
 # PLAN — test-tier-gemma4
 
 ## [S-TIGHT]

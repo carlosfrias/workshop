@@ -1,3 +1,12 @@
+---
+name: test-tier-gemma4
+summary: Threshold evidence research for gemma4:e4b as local high-tier model
+status: blocked
+phase: "Phase 1: Testing"
+progress: 0
+tracked: false
+---
+
 # Current Focus — test-tier-gemma4
 
 **Status:** blocked (machine health critical)

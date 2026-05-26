@@ -1,3 +1,12 @@
+---
+name: test-tier-qwen35
+summary: Validate qwen3.5:4b as low-tier model for decompose-execute-verify workloads
+status: complete
+phase: "Phase 1: Testing"
+progress: 100
+tracked: false
+---
+
 # Current Focus — test-tier-qwen35
 
 **Status:** complete

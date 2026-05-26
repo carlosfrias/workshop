@@ -1,3 +1,9 @@
+---
+name: NextCloud
+phase: "Phase 3: Verification"
+progress: 90
+---
+
 # NextCloud — Project Plan
 
 **Last Updated:** 2026-05-24 (nvm migration + fleet update complete)
@@ -10,6 +16,8 @@
 |---|------|----------|--------|-------|
 | 1 | Monitor NC sync completion on fnet1 | High | ⏳ In Progress | Ongoing monitoring of `/srv/archive/nextcloud-data/data/Carlos/` |
 | 2 | Monitor rclone backup cron (5x daily) | High | ⏳ In Progress | Ongoing verification of daily runs |
+| 3 | VFS carlos-desktop/ pin | High | ✅ Complete | Pinned 2026-05-26 via Locations → Nextcloud → Always keep downloaded |
+| 4 | VFS FinderSyncExt enablement | High | ✅ Complete | Found under File Providers (not Finder Extensions) on macOS Sequoia 15.6.1 |
 | 3 | Migrate fnet2, fnet5, fnet6: NodeSource → nvm | High | ✅ Complete | nvm v0.40.x + Node v24.15.0, NodeSource removed, .bashrc clean on all 3 |
 | 4 | Update `pi-agent-standalone.sh` & `standup-fleet.yml` | Medium | ✅ Complete | nvm sourcing already in both scripts; no changes needed |
 | 5 | Fleet-wide `pi update` | Low | ✅ Complete | All 3 nodes on pi v0.75.5 via nvm, ansible fleet-pi-update.yml verified |
@@ -43,3 +51,4 @@
 - All documentation lives in vault: `../../personal-vault/01-Projects/nextcloud/`
 - This project contains code and agent configs only
 - Target node: **fnet1** (`192.168.0.141`, 3TB primary depot)
+- VFS transition checklist: [vault/VFS-Transition-Checklist.md](../../personal-vault/01-Projects/nextcloud/VFS-Transition-Checklist.md)

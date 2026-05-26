@@ -1,3 +1,12 @@
+---
+name: NextCloud
+summary: VFS active, carlos-desktop pinned. Next: verify cloud icons, disk space, and on-demand file access.
+status: active
+phase: "Phase 3: Verification"
+progress: 90
+tracked: true
+---
+
 # NextCloud — Focus
 
 **Last Updated:** 2026-05-24

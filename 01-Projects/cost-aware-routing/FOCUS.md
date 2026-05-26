@@ -1,3 +1,12 @@
+---
+name: Cost-Aware Routing
+summary: Cost calculation and billing tier configuration for model routing decisions
+status: active
+phase: "Phase 2: Implementation"
+progress: 30
+tracked: true
+---
+
 # Current Focus — Cost-Aware Routing (Workshop)
 
 **Status:** active

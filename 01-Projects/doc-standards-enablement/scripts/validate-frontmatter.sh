@@ -58,7 +58,7 @@ TOTAL=0
 extract_frontmatter_field() {
   local file="$1" field="$2"
   # Extract value from YAML frontmatter (handles quoted and unquoted values)
-  sed -n "/^---$/,/^---$/p" "$file" | grep "^${field}:" | head -1 | sed "s/^${field}: *//" | sed 's/^"//;s/"$//' | sed "s/^'//;s/'$//"
+  sed -n "/^---$/,/^---$/p" "$file" | { grep "^${field}:" || true; } | head -1 | sed "s/^${field}: *//" | sed 's/^"//;s/"$//' | sed "s/^'//;s/'$//"
 }
 
 validate_focus() {

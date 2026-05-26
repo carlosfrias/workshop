@@ -1,8 +1,8 @@
 ---
-name: Clief Notes
-summary: Online classroom for AI use study, based on ICM methodology
-status: testing
-phase: "Model benchmark — 9b + MLX variants"
+name: test-tier-9b-mlx
+summary: Benchmark 9B + MLX variants for local model tier classification
+status: active
+phase: "Phase 1: Testing"
 progress: 0
 tracked: true
 ---
