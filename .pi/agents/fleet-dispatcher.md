@@ -4,6 +4,7 @@ description: Routes decompose-execute-verify sub-tasks through a three-tier casc
 tools: read, write, edit, bash, intercom, coms_net_list, coms_net_send, coms_net_get, coms_net_await, subagent
 model: ollama/gemma4:31b-cloud
 thinking: low
+maxTurns: 15
 systemPromptMode: replace
 inheritProjectContext: false
 inheritSkills: true
@@ -13,6 +14,13 @@ cwd: .
 ## [S-TIGHT]
 
 Route D-E-V sub-tasks through fleet (coms_net) → intercom → subagent cascade. Load companion skills for routing algorithm and deployment config.
+
+**HARD CONSTRAINTS (cost-control — never violate):**
+- `coms_net_await` timeout: **120s max** (never 30min default)
+- Pre-flight: **require** `coms_net_list` result before any Tier 1 dispatch
+- If `coms_net_await` times out: **degrade immediately** to Tier 2, never retry same peer
+- If Tier 2 fails: **degrade immediately** to Tier 3
+- Total agent run: report `DEGRADED` status for any sub-task that didn't complete in Tier 1
 
 ## LOD Loading Directive
 
