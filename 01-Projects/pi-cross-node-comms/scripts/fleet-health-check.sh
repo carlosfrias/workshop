@@ -24,16 +24,9 @@ HUB_HOST="${PI_COMS_NET_HUB_HOST:-192.168.0.142}"
 HUB_PORT="${PI_COMS_NET_HUB_PORT:-8080}"
 HUB_URL="http://${HUB_HOST}:${HUB_PORT}"
 
-# Lab nodes from Ansible inventory
-declare -A NODES=(
-    ["fnet1"]="192.168.0.141"
-    ["fnet2"]="192.168.0.142"  # Hub host
-    ["fnet3"]="192.168.0.143"
-    ["fnet4"]="192.168.0.144"
-    ["fnet5"]="192.168.0.145"
-    ["fnet6"]="192.168.0.146"
-    ["fnet7"]="192.168.0.147"
-)
+# Lab nodes from Ansible inventory (bash 3.2-compatible: indexed arrays, not associative)
+NODE_NAMES=("fnet1" "fnet2" "fnet3" "fnet4" "fnet5" "fnet6" "fnet7")
+NODE_IPS=("192.168.0.141" "192.168.0.142" "192.168.0.143" "192.168.0.144" "192.168.0.145" "192.168.0.146" "192.168.0.147")
 
 # Thresholds
 DISK_WARN=80
@@ -94,7 +87,7 @@ check_disk() {
     
     if [[ -z "$result" ]]; then
         echo "FAIL"
-        return 1
+        return 0
     fi
     
     local usage="${result%.*}"  # Remove decimal
@@ -105,12 +98,22 @@ check_disk() {
     else
         echo "OK:${usage}"
     fi
+    return 0
 }
 
 # Check LVM utilization
 check_lvm() {
     local node="$1"
     local host="$2"
+    
+    # Check if LVM exists on this node
+    local has_lvm
+    has_lvm=$(ssh_cmd "$node" "$host" "sudo vgs ubuntu-vg --noheadings -o vg_name 2>/dev/null | tr -d ' '")
+    
+    if [[ -z "$has_lvm" ]]; then
+        echo "N/A"
+        return 0
+    fi
     
     # Get LV size and VG size
     local lv_info
@@ -120,7 +123,7 @@ check_lvm() {
     
     if [[ -z "$lv_info" || -z "$vg_info" ]]; then
         echo "FAIL"
-        return 1
+        return 0
     fi
     
     # Calculate percentage
@@ -132,6 +135,7 @@ check_lvm() {
     else
         echo "OK:${percent}%"
     fi
+    return 0
 }
 
 # Check tmux socket persistence
@@ -139,13 +143,14 @@ check_tmux() {
     local node="$1"
     local host="$2"
     
+    # tmux socket is at $HOME/.tmux; ssh_cmd runs non-interactively
+    # so we must explicitly set TMUX_TMPDIR
     local socket_exists
-    socket_exists=$(ssh_cmd "$node" "$host" "test -d \$HOME/.tmux && echo 'ok' || echo 'missing'")
+    socket_exists=$(ssh_cmd "$node" "$host" "TMUX_TMPDIR=\$HOME/.tmux test -d \$TMUX_TMPDIR && echo 'ok' || echo 'missing'")
     
     if [[ "$socket_exists" == "ok" ]]; then
-        # Check if pi-agent session exists
         local session_exists
-        session_exists=$(ssh_cmd "$node" "$host" "tmux has-session -t pi-agent 2>/dev/null && echo 'ok' || echo 'missing'")
+        session_exists=$(ssh_cmd "$node" "$host" "TMUX_TMPDIR=\$HOME/.tmux tmux has-session -t pi-agent 2>/dev/null && echo 'ok' || echo 'missing'")
         
         if [[ "$session_exists" == "ok" ]]; then
             echo "OK"
@@ -239,20 +244,37 @@ echo "  Hub: ${HUB_URL}"
 echo "═══════════════════════════════════════════════════════════════════════════"
 echo ""
 
-# Build node list
+# Helper: get IP for a node name
+get_node_ip() {
+    local name="$1"
+    local i
+    for i in "${!NODE_NAMES[@]}"; do
+        if [[ "${NODE_NAMES[$i]}" == "$name" ]]; then
+            echo "${NODE_IPS[$i]}"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Build filtered node/ip arrays
+FILTERED_NAMES=()
+FILTERED_IPS=()
+
 if [[ -n "$NODE_FILTER" ]]; then
     IFS=',' read -ra SELECTED_NODES <<< "$NODE_FILTER"
-    declare -A FILTERED_NODES
     for node in "${SELECTED_NODES[@]}"; do
-        if [[ -v NODES[$node] ]]; then
-            FILTERED_NODES[$node]="${NODES[$node]}"
+        ip=$(get_node_ip "$node" 2>/dev/null) || true
+        if [[ -n "$ip" ]]; then
+            FILTERED_NAMES+=("$node")
+            FILTERED_IPS+=("$ip")
         else
             echo "⚠️  Unknown node: $node" >&2
         fi
     done
 else
-    declare -A FILTERED_NODES
-    FILTERED_NODES=("${NODES[@]}")
+    FILTERED_NAMES=("${NODE_NAMES[@]}")
+    FILTERED_IPS=("${NODE_IPS[@]}")
 fi
 
 # Summary counters
@@ -266,8 +288,9 @@ printf "%-8s %-6s %-8s %-10s %-15s %-12s %-12s %-20s\n" \
 printf "%-8s %-6s %-8s %-10s %-15s %-12s %-12s %-20s\n" \
     "----" "------" "----" "---" "----" "---" "------" "---"
 
-for node in "${!FILTERED_NODES[@]}"; do
-    host="${FILTERED_NODES[$node]}"
+for idx in "${!FILTERED_NAMES[@]}"; do
+    node="${FILTERED_NAMES[$idx]}"
+    host="${FILTERED_IPS[$idx]}"
     
     log "Checking $node ($host)..."
     
@@ -296,7 +319,9 @@ for node in "${!FILTERED_NODES[@]}"; do
     fi
     
     # Process LVM result
-    if [[ "$lvm_result" == "FAIL" ]]; then
+    if [[ "$lvm_result" == "N/A" ]]; then
+        :  # No LVM on this node — not a failure
+    elif [[ "$lvm_result" == "FAIL" ]]; then
         overall="FAIL"
         fix_suggestions+=("check-lvm")
     elif [[ "$lvm_result" == WARN:* ]]; then
@@ -338,7 +363,7 @@ for node in "${!FILTERED_NODES[@]}"; do
     fi
     
     # Build fix suggestion string
-    local fix_str="—"
+    fix_str="—"
     if [[ ${#fix_suggestions[@]} -gt 0 ]]; then
         fix_str="${fix_suggestions[0]}"
         if [[ ${#fix_suggestions[@]} -gt 1 ]]; then
@@ -347,7 +372,6 @@ for node in "${!FILTERED_NODES[@]}"; do
     fi
     
     # Print status line
-    local status_icon
     case "$overall" in
         PASS) status_icon="✅"; ((PASS++)) ;;
         WARN) status_icon="⚠️ "; ((WARN++)) ;;
@@ -355,10 +379,10 @@ for node in "${!FILTERED_NODES[@]}"; do
     esac
     
     # Extract values for display
-    local disk_display="${disk_result#*:}"
+    disk_display="${disk_result#*:}"
     [[ "$disk_result" == "FAIL" ]] && disk_display="FAIL"
     
-    local lvm_display="${lvm_result#*:}"
+    lvm_display="${lvm_result#*:}"
     [[ "$lvm_result" == "FAIL" ]] && lvm_display="FAIL"
     
     printf "%-8s %-6s %-8s %-10s %-15s %-12s %-12s %-20s\n" \

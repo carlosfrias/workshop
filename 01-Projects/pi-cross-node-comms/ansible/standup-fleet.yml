@@ -51,7 +51,7 @@
   vars:
     hub_host: "0.0.0.0"
     hub_port: "8080"
-    hub_project: "default"
+    hub_project: "lab"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
     extension_src: "{{ playbook_dir }}/../"
     deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
@@ -462,14 +462,19 @@
         mode: '0644'
       loop:
         - src/index.ts
+        - src/heartbeat-tick.ts
         - src/themeMap.ts
         - src/skills/pi-cross-node-comms/SKILL.md
         - package.json
 
     - name: Install extension via pi
-      ansible.builtin.command:
-        cmd: pi install .
-        chdir: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        cd {{ ansible_env.HOME }}/pi-cross-node-comms
+        pi install .
+      args:
+        executable: /bin/bash
       register: pi_install
       changed_when: "'Installed' in pi_install.stdout"
 
@@ -497,14 +502,19 @@
   vars:
     hub_url: "http://192.168.0.142:8080"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
-    hub_project: "default"
+    hub_project: "lab"
     extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
     systemd_src: "{{ playbook_dir }}/systemd"
 
   tasks:
     # ── Discover pi executable path ──
     - name: Find pi executable path
-      ansible.builtin.shell: which pi
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        which pi
+      args:
+        executable: /bin/bash
       register: pi_which
       changed_when: false
 
@@ -622,7 +632,7 @@
     - name: Wait for agents to register on hub
       ansible.builtin.shell: |
         for i in $(seq 1 30); do
-          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
           if [ "$count" -ge 1 ]; then
             echo "Agents registered: $count"
             exit 0
@@ -653,7 +663,7 @@
 
     - name: Prune down nodes from hub
       ansible.builtin.shell: |
-        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "
+        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "
           import json, sys
           agents = json.load(sys.stdin).get('agents', [])
           down = {{ down_node_names | to_json }}
@@ -661,13 +671,13 @@
               if a['name'] in down:
                   print(a['session_id'])
         " 2>/dev/null); do
-          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=default" 2>/dev/null || true
+          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=lab" 2>/dev/null || true
         done
       ignore_errors: yes
 
     - name: Get final agent list
       ansible.builtin.shell: |
-        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
+        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
       register: final_agents
       changed_when: false
 

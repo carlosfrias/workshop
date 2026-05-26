@@ -28,11 +28,21 @@ INITIAL_PROMPT="You are a coms-net fleet agent. Your extension is already loaded
 # Kill any existing tmux session with this name
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
 
+# Find absolute path to pi
+PI_BIN=$(which pi)
+if [ -z "$PI_BIN" ]; then
+    echo "Error: pi binary not found" >&2
+    exit 1
+fi
+
 # Create a new tmux session running pi with all arguments
 # -d = detached (no terminal attached)
-# The pi process inherits a proper PTY from tmux
+# The pi process inherits a proper PTY from tmux.
+# We pass PI_BIN directly (already resolved via NVM above) instead of
+# wrapping in bash -lc, because the login-shell environment under systemd
+# can differ from SSH and cause pi to fail to start.
 tmux new-session -d -s "$SESSION_NAME" -x 200 -y 50 \
-    pi "$@"
+    "$PI_BIN $*"
 
 # Wait for pi to initialize and be ready for input
 sleep 5
