@@ -1,8 +1,8 @@
 {
   "name": "pi-cross-node-comms",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
-  "description": "Cross-node pi communication \u2014 HTTP/SSE hub for multi-machine agent coordination",
+  "description": "Cross-node pi communication — HTTP/SSE hub for multi-machine agent coordination",
   "type": "module",
   "main": "src/index.ts",
   "keywords": [
