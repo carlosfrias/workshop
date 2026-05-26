@@ -13,6 +13,7 @@
 - Fleet coordination (orchestrator + lab workers)
 - Remote agent delegation
 - Cross-node health checks and status aggregation
+- **Auto-dispatch:** Say "use fleet" to trigger full D-E-V cascade (see `use-fleet` agent)
 
 **Not when:** Same-machine coordination — use pi-intercom instead.
 
