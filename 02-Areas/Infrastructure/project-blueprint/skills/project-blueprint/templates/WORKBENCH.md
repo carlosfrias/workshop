@@ -57,3 +57,7 @@ When an agent joins this project and reads the WORKBENCH:
 6. **Update this WORKBENCH** after processing — remove captured items from their original sections
 
 **Key rule:** Working notes (💭) require user confirmation before processing. Current work items (🔨) can be captured directly.
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [[01-Projects/{project_name}/wiki/{project_name}/reference/Checkbox-State-Legend|full legend]]

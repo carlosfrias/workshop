@@ -63,3 +63,7 @@ Project-level reference pages live in [_meta/](_meta/):
 ## For Non-Technical Users
 
 See [_meta/Sample Prompts](_meta/Sample Prompts.md) for copy-paste prompts you can use to interact with each domain. No command-line knowledge needed — just type the prompt naturally.
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [[01-Projects/{project_name}/wiki/{project_name}/reference/Checkbox-State-Legend|full legend]]
