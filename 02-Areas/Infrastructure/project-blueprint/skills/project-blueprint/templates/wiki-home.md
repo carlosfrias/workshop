@@ -66,4 +66,4 @@ See [_meta/Sample Prompts](_meta/Sample Prompts.md) for copy-paste prompts you c
 
 ---
 
-> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [[01-Projects/{project_name}/wiki/{project_name}/reference/Checkbox-State-Legend|full legend]]
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [[Checkbox State Legend|full legend]]
