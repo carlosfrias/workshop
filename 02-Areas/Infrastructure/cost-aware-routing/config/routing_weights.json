@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "description": "Configurable time-cost weighting for routing decisions",
+  
+  "weight_presets": {
+    "budget": {
+      "description": "Minimize monetary cost, accept time tax",
+      "monetary_weight": 0.60,
+      "time_weight": 0.15,
+      "fit_weight": 0.25,
+      "use_case": "Tight budget constraints, non-urgent work"
+    },
+    "balanced": {
+      "description": "Optimize total cost (money + time)",
+      "monetary_weight": 0.35,
+      "time_weight": 0.40,
+      "fit_weight": 0.25,
+      "use_case": "Default mode, general productivity"
+    },
+    "speed": {
+      "description": "Minimize wait time, pay cloud premium",
+      "monetary_weight": 0.10,
+      "time_weight": 0.65,
+      "fit_weight": 0.25,
+      "use_case": "Urgent deadlines, interactive sessions"
+    }
+  },
+  
+  "default_mode": "balanced",
+  
+  "time_cost_config": {
+    "default_hourly_rate": 100,
+    "rates_by_role": {
+      "developer": 100,
+      "analyst": 75,
+      "executive": 300,
+      "default": 100
+    },
+    "baseline_tps": 100,
+    "baseline_model": "kimi-k2.6:cloud"
+  },
+  
+  "routing_rules": {
+    "urgent_threshold_sec": 300,
+    "budget_threshold_usd": 1.0,
+    "max_time_tax_ratio": 5.0
+  }
+}

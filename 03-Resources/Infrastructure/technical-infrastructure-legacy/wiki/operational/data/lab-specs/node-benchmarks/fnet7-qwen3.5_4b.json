@@ -1,1 +1,0 @@
-{"node": "fnet7", "model": "qwen3.5:4b", "timestamp": "2026-05-04T03:47:14Z", "status": "success", "tokens_per_sec": 3.99, "total_time_s": 32.07, "tokens_generated": 128, "prompt_eval_count": 16}

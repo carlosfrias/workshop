@@ -8,7 +8,7 @@
 
 ## Summary
 
-The pi-multimodal-proxy is a Pi agent extension that enables vision capabilities for AI agents by intercepting image/video attachments, analyzing them with external multimodal models, and injecting structured descriptions into the conversation context.
+The pi-multimodal-proxy is a Pi agent extension that enables vision capabilities for AI agents by intercepting image/video attachments, analyzing them with local multimodal models via Ollama, and injecting structured descriptions into the conversation context.
 
 ---
 
@@ -18,7 +18,7 @@ The pi-multimodal-proxy is a Pi agent extension that enables vision capabilities
 
 The vision-proxy extension allows Pi agents to:
 1. **Intercept** image and video attachments from user prompts
-2. **Analyze** media files using external multimodal models (e.g., GPT-4V, Claude Vision)
+2. **Analyze** media files using local multimodal models via Ollama (e.g., MiniCPM-o 2.6)
 3. **Inject** structured analysis results into the conversation context
 4. **Preserve** privacy and consent through explicit user approval flows
 
@@ -34,7 +34,7 @@ User Prompt + Images/Videos
 │ 1. Detect media attachments     │
 │ 2. Check consent configuration  │
 │ 3. Build conversation context   │
-│ 4. Call external vision API     │
+│ 4. Call local Ollama vision model│
 │ 5. Parse analysis results       │
 │ 6. Inject structured description│
 └─────────────────────────────────┘
@@ -52,7 +52,7 @@ User Prompt + Images/Videos
 | `analyzeImages()` | Sends images to vision model, returns descriptions | vision-proxy.ts |
 | `analyzeVideo()` | Extracts frames, analyzes video content | vision-proxy.ts |
 | `buildConversationContext()` | Constructs conversation history for context-aware analysis | vision-proxy.ts |
-| `ensureConsent()` | Verifies user consent for external API calls | vision-proxy.ts |
+| `ensureConsent()` | Verifies user consent for model usage (local models — no data egress) | vision-proxy.ts |
 | `shouldStripImages()` | Determines if images should be removed from prompt | vision-proxy.ts |
 
 ### Configuration
@@ -60,8 +60,8 @@ User Prompt + Images/Videos
 ```typescript
 interface VisionProxyConfig {
   mode: "off" | "strip" | "fallback";
-  provider: string;           // e.g., "openai", "anthropic"
-  modelId: string;            // e.g., "gpt-4-vision-preview"
+  provider: string;           // e.g., "ollama"
+  modelId: string;            // e.g., "openbmb/minicpm-o2.6:8b"
   videoProvider: string;      // Separate provider for video
   videoModelId: string;       // Separate model for video
   includeContext: boolean;    // Include conversation history in analysis
@@ -274,6 +274,7 @@ Add to `tsconfig.json`:
    - Verify analysis proceeds automatically
    - Enable consent in config
    - Verify consent prompt appears
+   - Note: Local Ollama models stay on-machine — no data egress to third parties
 
 ### Automated Testing (Future)
 

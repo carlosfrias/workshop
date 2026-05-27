@@ -78,7 +78,7 @@
 
     - name: Copy Docker Compose file
       ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/docker/nextcloud-docker-compose.yml"
+        src: "{{ lookup('env', 'HOME') }}/Cloud/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/docker/nextcloud-docker-compose.yml"
         dest: "{{ nextcloud_base_dir }}/docker-compose.yml"
         owner: root
         group: root

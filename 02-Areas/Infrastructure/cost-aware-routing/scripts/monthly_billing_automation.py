@@ -1,0 +1,259 @@
+#!/usr/bin/env python3
+"""
+monthly_billing_automation.py — Automated monthly billing workflow.
+
+Runs on the 1st of each month to:
+1. Aggregate customer usage for prior month
+2. Generate invoices
+3. Run time-cost analysis
+4. Send notification summary
+
+Usage:
+    # Run manually
+    python3 monthly_billing_automation.py
+
+    # Run for specific month
+    python3 monthly_billing_automation.py --month 2026-05
+
+    # Dry run (no file writes)
+    python3 monthly_billing_automation.py --dry-run
+"""
+
+import argparse
+import json
+import subprocess
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Project paths
+SCRIPT_DIR = Path(__file__).parent.resolve()
+PROJECT_ROOT = SCRIPT_DIR.parent
+DATA_DIR = PROJECT_ROOT / "data"
+ANALYSIS_DIR = PROJECT_ROOT / "analysis"
+VAULT_ROOT = Path.home() / "Cloud" / "carlos-desktop" / "personal-vault"
+VAULT_INVOICES_DIR = VAULT_ROOT / "01-Projects" / "cost-aware-routing" / "invoices"
+
+
+def get_prior_month() -> str:
+    """Get prior month in YYYY-MM format."""
+    today = datetime.now()
+    first_of_this_month = today.replace(day=1)
+    first_of_prior_month = first_of_this_month - timedelta(days=1)
+    return first_of_prior_month.strftime("%Y-%m")
+
+
+def run_usage_tracker(month: str, dry_run: bool = False) -> dict:
+    """Run usage_tracker.py for the specified month."""
+    print(f"\n{'='*60}")
+    print(f"STEP 1: Aggregating customer usage for {month}")
+    print(f"{'='*60}\n")
+    
+    if dry_run:
+        print(f"[DRY RUN] Would run: usage_tracker.py --month {month}")
+        return {"customers": 0, "total_cost": 0}
+    
+    # Run usage tracker
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "usage_tracker.py"),
+        "--month", month,
+        "--summary"
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
+    
+    # Parse output for summary
+    lines = result.stdout.strip().split('\n')
+    customers = 0
+    total_cost = 0
+    
+    for line in lines:
+        if "customer(s)" in line:
+            try:
+                customers = int(line.split()[1])
+            except:
+                pass
+    
+    return {"customers": customers, "total_cost": total_cost}
+
+
+def run_invoice_generator(month: str, dry_run: bool = False) -> dict:
+    """Run invoice_generator.py for the specified month."""
+    print(f"\n{'='*60}")
+    print(f"STEP 2: Generating invoices for {month}")
+    print(f"{'='*60}\n")
+    
+    if dry_run:
+        print(f"[DRY RUN] Would run: invoice_generator.py --month {month}")
+        return {"invoices": 0}
+    
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "invoice_generator.py"),
+        "--month", month
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
+    
+    # Count invoices generated
+    invoices = result.stdout.count("Saved:")
+    
+    return {"invoices": invoices}
+
+
+def run_time_cost_analysis(hourly_rate: float = 100, dry_run: bool = False) -> dict:
+    """Run time_cost_analyzer.py to update findings."""
+    print(f"\n{'='*60}")
+    print(f"STEP 3: Running time-cost analysis")
+    print(f"{'='*60}\n")
+    
+    if dry_run:
+        print(f"[DRY RUN] Would run: time_cost_analyzer.py --report --hourly-rate {hourly_rate}")
+        return {}
+    
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "time_cost_analyzer.py"),
+        "--report",
+        "--hourly-rate", str(hourly_rate)
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
+    
+    return {}
+
+
+def run_time_tax_report(hourly_rate: float = 100, dry_run: bool = False) -> dict:
+    """Run time_tax_report.py for monthly summary."""
+    print(f"\n{'='*60}")
+    print(f"STEP 4: Generating time tax report")
+    print(f"{'='*60}\n")
+    
+    if dry_run:
+        print(f"[DRY RUN] Would run: time_tax_report.py --hourly-rate {hourly_rate}")
+        return {}
+    
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "time_tax_report.py"),
+        "--hourly-rate", str(hourly_rate)
+    ]
+    
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
+    
+    return {}
+
+
+def generate_summary_email(usage: dict, invoices: dict, month: str) -> str:
+    """Generate summary email body."""
+    subject = f"Billing Complete: {month} - {invoices['invoices']} invoices generated"
+    
+    body = f"""
+Billing automation completed for {month}.
+
+SUMMARY
+=======
+Customers processed: {usage.get('customers', 'N/A')}
+Invoices generated: {invoices.get('invoices', 'N/A')}
+Invoice location: personal-vault/01-Projects/cost-aware-routing/invoices/{month}/
+
+NEXT STEPS
+==========
+1. Review invoices in Finder: invoices/{month}/
+2. Send invoices to customers
+3. Process payments
+4. Update accounts receivable
+
+AUTOMATION LOG
+==============
+Full output above.
+
+---
+Generated by monthly_billing_automation.py
+"""
+    
+    return subject, body
+
+
+def send_notification(subject: str, body: str, dry_run: bool = False):
+    """Send notification (email, intercom, or log)."""
+    print(f"\n{'='*60}")
+    print(f"STEP 5: Sending notification")
+    print(f"{'='*60}\n")
+    
+    if dry_run:
+        print(f"[DRY RUN] Would send notification:")
+        print(f"Subject: {subject}")
+        print(f"Body: {body[:500]}...")
+        return
+    
+    # For now, just log to file
+    # In production, this would send email/Slack/intercom message
+    log_file = PROJECT_ROOT / "billing-automation-log.md"
+    
+    timestamp = datetime.now().isoformat()
+    log_entry = f"\n## {timestamp}\n\n{subject}\n\n{body}\n\n---\n"
+    
+    with open(log_file, 'a') as f:
+        f.write(log_entry)
+    
+    print(f"✓ Notification logged to: {log_file}")
+    print(f"\nSubject: {subject}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Automated monthly billing workflow")
+    parser.add_argument("--month", type=str, default=None,
+                        help="Month to process (YYYY-MM, default: prior month)")
+    parser.add_argument("--hourly-rate", type=float, default=100,
+                        help="Hourly rate for time-cost analysis (default: 100)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Show what would be done without executing")
+    args = parser.parse_args()
+    
+    # Determine month
+    month = args.month or get_prior_month()
+    
+    print(f"\n{'='*60}")
+    print(f"MONTHLY BILLING AUTOMATION")
+    print(f"Processing: {month}")
+    print(f"Hourly rate: ${args.hourly_rate}/hr")
+    print(f"Dry run: {args.dry_run}")
+    print(f"{'='*60}")
+    
+    # Step 1: Aggregate usage
+    usage = run_usage_tracker(month, args.dry_run)
+    
+    # Step 2: Generate invoices
+    invoices = run_invoice_generator(month, args.dry_run)
+    
+    # Step 3: Time-cost analysis
+    run_time_cost_analysis(args.hourly_rate, args.dry_run)
+    
+    # Step 4: Time tax report
+    run_time_tax_report(args.hourly_rate, args.dry_run)
+    
+    # Step 5: Send notification
+    subject, body = generate_summary_email(usage, invoices, month)
+    send_notification(subject, body, args.dry_run)
+    
+    print(f"\n{'='*60}")
+    print(f"AUTOMATION COMPLETE")
+    print(f"{'='*60}\n")
+    
+    if not args.dry_run:
+        print(f"✓ Invoices: {VAULT_INVOICES_DIR}/{month}/")
+        print(f"✓ Usage data: {DATA_DIR}/customer-usage-{month}.jsonl")
+        print(f"✓ Analysis: {ANALYSIS_DIR}/time-cost-decision-framework.md")
+        print(f"✓ Log: {PROJECT_ROOT}/billing-automation-log.md")
+
+
+if __name__ == "__main__":
+    main()

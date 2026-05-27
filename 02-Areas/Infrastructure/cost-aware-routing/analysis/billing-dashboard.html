@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost-Aware Routing — Billing Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .metric-sub {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .table-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            background: var(--bg);
+            font-weight: 600;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--bg);
+        }
+        
+        tr:hover {
+            background: var(--bg);
+        }
+        
+        .generated {
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Billing Dashboard</h1>
+            <div class="subtitle">Cost-Aware Routing Project</div>
+        </header>
+        
+        <!-- Summary Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">$1,605.81</div>
+                <div class="metric-sub">All customers</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Customers</div>
+                <div class="metric-value">45</div>
+                <div class="metric-sub">Active accounts</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Tasks</div>
+                <div class="metric-value">5,992</div>
+                <div class="metric-sub">Requests processed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Tokens</div>
+                <div class="metric-value">488.14M</div>
+                <div class="metric-sub">Input + output</div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">Daily Cost Trend</div>
+                <canvas id="dailyChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Model Usage Distribution</div>
+                <canvas id="modelChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Top Customers Table -->
+        <div class="table-card">
+            <h2 class="chart-title">Top 10 Customers by Cost</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Tasks</th>
+                        <th>Tokens</th>
+                        <th>Total Cost</th>
+                        <th>Last Activity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>019e4ae8-fdb</code></td>
+                        <td>584</td>
+                        <td>61.39M</td>
+                        <td>$246.85</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4512-a85</code></td>
+                        <td>469</td>
+                        <td>58.52M</td>
+                        <td>$244.48</td>
+                        <td>2026-05-20</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4209-4c3</code></td>
+                        <td>474</td>
+                        <td>48.85M</td>
+                        <td>$196.31</td>
+                        <td>2026-05-20</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4525-40b</code></td>
+                        <td>349</td>
+                        <td>32.52M</td>
+                        <td>$164.21</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4bdb-02e</code></td>
+                        <td>298</td>
+                        <td>30.97M</td>
+                        <td>$123.12</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4a63-d39</code></td>
+                        <td>186</td>
+                        <td>18.77M</td>
+                        <td>$75.63</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4076-f4c8-7fa7-9</code></td>
+                        <td>128</td>
+                        <td>17.56M</td>
+                        <td>$70.71</td>
+                        <td>2026-05-19</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4846-5f8</code></td>
+                        <td>166</td>
+                        <td>14.11M</td>
+                        <td>$68.80</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e50fe-d89</code></td>
+                        <td>546</td>
+                        <td>43.10M</td>
+                        <td>$60.71</td>
+                        <td>2026-05-22</td>
+                    </tr>
+                    <tr>
+                        <td><code>019e4a79-4a7</code></td>
+                        <td>177</td>
+                        <td>14.40M</td>
+                        <td>$58.15</td>
+                        <td>2026-05-21</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="generated">
+            Generated: 2026-05-26 11:39:19
+        </div>
+    </div>
+    
+    <script>
+        // Daily Cost Chart
+        const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: ["2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-23", "2026-05-26"],
+                datasets: [{
+                    label: 'Daily Cost (USD)',
+                    data: [147.30146399999995, 556.0750159999998, 733.3433659400001, 87.02335293999992, 72.64845276000001, 16.455948945],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Model Usage Chart
+        const modelCtx = document.getElementById('modelChart').getContext('2d');
+        new Chart(modelCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ["glm-5.1:cloud", "unknown", "gemma4:31b-cloud", "gemma4:e4b", "deepseek-v4-pro:cloud", "qwen3.5:397b-cloud", "qwen3:8b", "kimi-k2.6:cloud", "qwen3.5:4b"],
+                datasets: [{
+                    data: [4291, 39, 166, 86, 1248, 111, 18, 5, 28],
+                    backgroundColor: [
+                        '#2563eb',
+                        '#3b82f6',
+                        '#60a5fa',
+                        '#93c5fd',
+                        '#dbeafe',
+                        '#1e40af',
+                        '#1e3a8a',
+                        '#172554',
+                        '#64748b',
+                        '#94a3b8'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

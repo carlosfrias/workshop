@@ -18,7 +18,7 @@
     - /Users/friasc/Cloud/carlos-desktop/workshop/03-Resources/Infrastructure/technical-infrastructure-legacy/ansible/group_vars/lab_nodes/vault.yml
   vars:
     nginx_ssl_dir: /etc/nginx/ssl
-    nginx_conf_src: "{{ lookup('env', 'HOME') }}/Dropbox/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/nginx/nextcloud.home.conf"
+    nginx_conf_src: "{{ lookup('env', 'HOME') }}/Cloud/carlos-desktop/workshop/01-Projects/nextcloud/infrastructure/nginx/nextcloud.home.conf"
     nextcloud_domain: nextcloud.home
     nextcloud_internal_port: 8081
     ssl_org: HomeLab

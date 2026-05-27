@@ -1,6 +1,0 @@
----
-- name: Restart wg-quick-client
-  ansible.builtin.systemd:
-    name: "wg-quick@{{ wg_interface }}"
-    state: restarted
-  listen: Restart wg-quick-client
