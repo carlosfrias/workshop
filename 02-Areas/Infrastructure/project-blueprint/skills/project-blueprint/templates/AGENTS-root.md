@@ -16,9 +16,9 @@ That file contains all context, conventions, rules, and quality checks for the d
 
 | Keywords | Read this file |
 |----------|---------------|
-| {domain1_keywords} | `./{domain1}/AGENTS.md` |
-| {domain2_keywords} | `./{domain2}/AGENTS.md` |
-| wiki, documentation, research, analysis | `./wiki/AGENTS.md` |
+| {domain1_keywords} | [{domain1}](./{domain1}/AGENTS.md) |
+| {domain2_keywords} | [{domain2}](./{domain2}/AGENTS.md) |
+| wiki, documentation, research, analysis | [Wiki](./wiki/AGENTS.md) |
 
 After reading the domain file, follow its instructions for the task.
 

@@ -75,4 +75,4 @@ Use a consistent format for wiki entries:
 
 ## Cross-Domain References
 
-For tasks that span domains, consult the routing table in `./AGENTS.md` (project root).
+For tasks that span domains, consult the [routing table](./AGENTS.md) (project root).

@@ -1,7 +1,7 @@
 # {domain_name} — Refined (Post-Completion)
 
 > **Generated:** YYYY-MM-DD from session {session_id}
-> **Version:** v{N} — [[refined-agents/AGENTS-REFINED-v{N}|versioned record]] | [[refined-agents/AGENTS-REFINED|latest]]
+> **Version:** v{N} — [versioned record](./refined-agents/AGENTS-REFINED-v{N}.md) | [latest](./refined-agents/AGENTS-REFINED.md)
 > **Original AGENTS.md:** {path_to_original}
 > **Efficiency gain:** {estimated % reduction in tokens/steps for repeat execution}
 > **Status:** AWAITING REVIEW — sits alongside {original_agents_path}, not yet merged
