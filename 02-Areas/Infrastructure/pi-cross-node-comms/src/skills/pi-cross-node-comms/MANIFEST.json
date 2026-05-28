@@ -1,7 +1,7 @@
 {
   "name": "pi-cross-node-comms",
-  "total_size": "5.5KB",
-  "version": "2.0.0",
+  "total_size": "6.5KB",
+  "version": "2.1.0",
   "lod_directive": "Low models load CORE only; Medium+ load CORE + PATTERNS + CONFIG",
   "sections": [
     {
@@ -27,6 +27,14 @@
       "lod": "Low",
       "purpose": "AGENTS.md XML snippet for hub connection",
       "load_when": "setting up a new agent or configuring hub connection"
+    },
+    {
+      "id": "FLEET-OPS",
+      "file": "FLEET-OPS.md",
+      "size": "~1KB",
+      "lod": "Low",
+      "purpose": "Fleet deployment dispatch table — which script, which host, which order",
+      "load_when": "standing up or shutting down the fleet, hub deployment"
     }
   ],
   "task_to_sections": {
@@ -35,6 +43,7 @@
     "wait_for_reply": ["CORE", "PATTERNS"],
     "configure_agent": ["CORE", "CONFIG"],
     "understand_workflow": ["PATTERNS"],
+    "fleet_ops": ["FLEET-OPS"],
     "full_implementation": ["CORE", "PATTERNS", "CONFIG"]
   }
 }

@@ -13,6 +13,11 @@ Sections are defined in [MANIFEST.json](MANIFEST.json) — load on demand per th
 
 Cross-node pi communication via coms-net hub. 4 tools: list, send, get, await. Never use coms_net_send to reply to inbound messages — reply normally. Same-machine? Use pi-intercom instead.
 
+**Fleet deployment:** The coms-net hub runs on **fnet2** (192.168.0.142), NOT on the local Mac.
+- "Stand up the fleet" → `ssh fnet2` then run `setup-hub-on-fnet2.sh start`
+- `standup-hub.sh` is for **local dev only** — do NOT use it for fleet standup
+- `shutdown-hub.sh` is also local — for fleet shutdown, SSH to fnet2 first
+
 ---
 
 ## LOD Loading Directive
@@ -32,6 +37,7 @@ Cross-node pi communication via coms-net hub. 4 tools: list, send, get, await. N
 | CORE | [CORE.md](CORE.md) | ~1.5KB | Low | When to use, tool reference, reply rules | Always |
 | PATTERNS | [PATTERNS.md](PATTERNS.md) | ~1.8KB | Medium | Fire-and-forget, ask-and-wait, polling, workflow diagram | Implementing cross-node calls |
 | CONFIG | [CONFIG.md](CONFIG.md) | ~0.7KB | Low | AGENTS.md XML snippet for hub connection | Setting up a new agent |
+| FLEET-OPS | [FLEET-OPS.md](FLEET-OPS.md) | ~1KB | Low | Fleet deployment dispatch table (fnet2) | Standing up or shutting down fleet |
 
 ---
 
@@ -44,6 +50,7 @@ Cross-node pi communication via coms-net hub. 4 tools: list, send, get, await. N
 | "Wait for a reply from remote node" | CORE.md → PATTERNS.md |
 | "Configure agent for cross-node hub" | CORE.md → CONFIG.md |
 | "Understand message flow" | PATTERNS.md (workflow diagram) |
+| "Stand up / shut down fleet" | FLEET-OPS.md |
 
 ---
 
