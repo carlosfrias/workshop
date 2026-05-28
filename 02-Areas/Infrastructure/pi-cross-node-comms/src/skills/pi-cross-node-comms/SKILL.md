@@ -3,9 +3,11 @@ name: pi-cross-node-comms
 description: Cross-node coordination patterns for pi agents connected via a coms-net HTTP/SSE hub. Covers discovery, delegation, reply handling, and multi-machine workflows.
 ---
 
-# pi-cross-node-comms — Skill Manifest
+# pi-cross-node-comms — SKILL.md
 
 **Size:** ~5.5KB total (decomposed). **Low-capacity models:** Load only the sections listed for your task below.
+
+Sections are defined in [MANIFEST.json](MANIFEST.json) — load on demand per the LOD table below.
 
 ## [S-TIGHT]
 
