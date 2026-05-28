@@ -37,7 +37,7 @@ VOLUME ["/home/comsnet/.pi/coms-net"]
 # Environment variables (overridable at runtime)
 ENV PI_COMS_NET_HOST="0.0.0.0"
 ENV PI_COMS_NET_PORT="8080"
-ENV PI_COMS_NET_PROJECT="lab"
+ENV PI_COMS_NET_PROJECT="default"
 
 EXPOSE 8080
 

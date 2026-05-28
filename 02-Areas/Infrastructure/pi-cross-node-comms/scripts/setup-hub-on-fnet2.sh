@@ -23,7 +23,7 @@ LOCAL_SERVER_FILE="$LOCAL_SERVER_DIR/coms-net-server.ts"
 DOCKER_COMPOSE_DIR="$HOME/coms-net-hub"
 HUB_HOST="0.0.0.0"
 HUB_PORT="8080"
-HUB_PROJECT="${PI_COMS_NET_PROJECT:-lab}"
+HUB_PROJECT="${PI_COMS_NET_PROJECT:-default}"
 PID_FILE="/tmp/coms-net-hub.pid"
 LOG_FILE="/tmp/coms-net-hub.log"
 # Auth token — same as macOS hub
