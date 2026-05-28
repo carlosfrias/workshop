@@ -165,6 +165,34 @@ else
 fi
 
 echo ""
+echo "--- Stale config detection ---"
+
+# 8. No unexpected project config directories (prevents stale hubs)
+TOTAL=$((TOTAL + 1))
+EXPECTED_PROJECTS=("lab" "default")
+UNEXPECTED_DIRS=""
+for DIR in "$COMS_NET_DIR/projects"/*/; do
+  DIR_NAME=$(basename "$DIR")
+  FOUND=false
+  for EXPECTED in "${EXPECTED_PROJECTS[@]}"; do
+    if [[ "$DIR_NAME" == "$EXPECTED" ]]; then
+      FOUND=true
+      break
+    fi
+  done
+  if [[ "$FOUND" == "false" ]]; then
+    UNEXPECTED_DIRS="$UNEXPECTED_DIRS $DIR_NAME"
+  fi
+done
+if [[ -z "$UNEXPECTED_DIRS" ]]; then
+  PASS=$((PASS + 1))
+  echo "  ✅ No unexpected project config directories"
+else
+  FAIL=$((FAIL + 1))
+  echo "  ❌ Unexpected project config dirs: $UNEXPECTED_DIRS (stale hub configs)"
+fi
+
+echo ""
 echo "=========================================="
 echo "pi-cross-node-comms hub-connection: $PASS passed, $FAIL failed, $TOTAL total"
 echo "=========================================="

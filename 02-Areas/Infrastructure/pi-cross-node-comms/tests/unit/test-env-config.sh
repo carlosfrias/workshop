@@ -86,26 +86,42 @@ else
 fi
 
 # 5. Verify priority: CLI flags > env vars > config files
-# Check that the code checks CLI flag before env var before config file
+# Extract resolveServerUrl function body and verify cliFlag is checked BEFORE SERVER_URL_ENV
 TOTAL=$((TOTAL + 1))
-if grep -A5 "resolveServerUrl" "$EXT_FILE" | grep -q "cliFlag\|SERVER_URL_ENV\|readServerJson"; then
-  PASS=$((PASS + 1))
-  echo "  ✅ Server URL has priority chain: flag > env > file"
+SERVERURL_BODY=$(sed -n '/^function resolveServerUrl/,/^}/p' "$EXT_FILE" 2>/dev/null || sed -n '/resolveServerUrl/,/^}/p' "$EXT_FILE" 2>/dev/null || echo "")
+if [[ -n "$SERVERURL_BODY" ]]; then
+  CLI_LINE=$(echo "$SERVERURL_BODY" | grep -n "cliFlag" | head -1 | cut -d: -f1)
+  ENV_LINE=$(echo "$SERVERURL_BODY" | grep -n "SERVER_URL_ENV" | head -1 | cut -d: -f1)
+  FILE_LINE=$(echo "$SERVERURL_BODY" | grep -n "readServerJson" | head -1 | cut -d: -f1)
+  if [[ -n "$CLI_LINE" ]] && [[ -n "$ENV_LINE" ]] && [[ "$CLI_LINE" -lt "$ENV_LINE" ]]; then
+    PASS=$((PASS + 1))
+    echo "  ✅ Server URL priority: cliFlag (line $CLI_LINE) < SERVER_URL_ENV (line $ENV_LINE)"
+  else
+    FAIL=$((FAIL + 1))
+    echo "  ❌ Server URL priority incorrect: cliFlag=$CLI_LINE, SERVER_URL_ENV=$ENV_LINE (should be cliFlag first)"
+  fi
 else
-  # Check the function body directly
-  TOTAL=$((TOTAL + 1))  # skip this test, not critical
   FAIL=$((FAIL + 1))
-  echo "  ❌ Cannot verify server URL priority chain"
+  echo "  ❌ Cannot extract resolveServerUrl function body"
 fi
 
 # 6. Verify auth token has same priority chain
 TOTAL=$((TOTAL + 1))
-if grep -A5 "resolveAuthToken" "$EXT_FILE" | grep -q "cliFlag\|AUTH_TOKEN_ENV\|readServerSecret"; then
-  PASS=$((PASS + 1))
-  echo "  ✅ Auth token has priority chain: flag > env > file"
+AUTHTOKEN_BODY=$(sed -n '/^function resolveAuthToken/,/^}/p' "$EXT_FILE" 2>/dev/null || sed -n '/resolveAuthToken/,/^}/p' "$EXT_FILE" 2>/dev/null || echo "")
+if [[ -n "$AUTHTOKEN_BODY" ]]; then
+  CLI_LINE=$(echo "$AUTHTOKEN_BODY" | grep -n "cliFlag" | head -1 | cut -d: -f1)
+  ENV_LINE=$(echo "$AUTHTOKEN_BODY" | grep -n "AUTH_TOKEN_ENV" | head -1 | cut -d: -f1)
+  FILE_LINE=$(echo "$AUTHTOKEN_BODY" | grep -n "readServerSecret" | head -1 | cut -d: -f1)
+  if [[ -n "$CLI_LINE" ]] && [[ -n "$ENV_LINE" ]] && [[ "$CLI_LINE" -lt "$ENV_LINE" ]]; then
+    PASS=$((PASS + 1))
+    echo "  ✅ Auth token priority: cliFlag (line $CLI_LINE) < AUTH_TOKEN_ENV (line $ENV_LINE)"
+  else
+    FAIL=$((FAIL + 1))
+    echo "  ❌ Auth token priority incorrect: cliFlag=$CLI_LINE, AUTH_TOKEN_ENV=$ENV_LINE (should be cliFlag first)"
+  fi
 else
   FAIL=$((FAIL + 1))
-  echo "  ❌ Cannot verify auth token priority chain"
+  echo "  ❌ Cannot extract resolveAuthToken function body"
 fi
 
 # 7. Config directory tree must exist for known projects
