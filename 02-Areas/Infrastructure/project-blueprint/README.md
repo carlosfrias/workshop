@@ -75,18 +75,29 @@ Project Blueprint sets up a complete AI-orchestrated project structure with:
 
 > 📖 **Prefer a standalone guide?** See [QUICKSTART.md](QUICKSTART.md) for a focused 5-minute walkthrough.
 
-### Install
+### Install & Update
+
+**First-time install:**
 
 ```bash
-# From GitHub (recommended)
-pi install git:git@github.com:carlosfrias/project-blueprint.git
-
-# From GitHub (HTTPS)
-pi install git:https://github.com/carlosfrias/project-blueprint.git
-
-# From local path (development only)
-pi install ./project-blueprint
+pi install git@github.com:carlosfrias/project-blueprint.git
 ```
+
+This reads the package's `package.json`, copies it into pi's extension directory, and registers it in `~/.pi/agent/settings.json`.
+
+**Update after code changes:**
+
+```bash
+pi update git@github.com:carlosfrias/project-blueprint.git
+```
+
+Or update all installed extensions at once:
+
+```bash
+pi update --extensions
+```
+
+**Restart required:** pi reads extension configs at session start. After install or update, restart pi for changes to take effect. `/reload` does NOT pick up extension changes.
 
 ### Create a New Project
 
@@ -178,11 +189,12 @@ pi install npm:@yeliu84/pi-model-router
 #### Step 3: Install project-blueprint
 
 ```bash
-# From GitHub
-pi install github:carlosfrias/project-blueprint
+pi install git@github.com:carlosfrias/project-blueprint.git
+```
 
-# Or from local path (development)
-cd /path/to/agent-workspace/project-blueprint
+#### Option 2: Local Installation (Development Only)
+
+```bash
 pi install ./project-blueprint
 ```
 
@@ -199,7 +211,7 @@ Enables keyword-based model routing in your generated projects.
 
 **decompose-execute-verify** (Recommended for high-volume usage):
 ```bash
-pi install github:carlosfrias/decompose-execute-verify
+pi install git@github.com:carlosfrias/decompose-execute-verify.git
 ```
 
 Enables 75-85% cost reduction through decompose → execute → verify pattern.
@@ -217,7 +229,7 @@ Discover and install agent skills from curated registries.
 
 **librarian** (Recommended for library research):
 ```bash
-pi install github:carlosfrias/librarian
+pi install git@github.com:carlosfrias/librarian.git
 ```
 
 Research open-source libraries with evidence-backed answers and GitHub permalinks.
@@ -253,23 +265,14 @@ pi extension list | grep model-router
 
 ### Install Options
 
-#### Option 1: Local Installation (Development)
+```bash
+pi install git@github.com:carlosfrias/project-blueprint.git
+```
+
+#### Option 2: Local Installation (Development Only)
 
 ```bash
-cd /path/to/agent-workspace/project-blueprint
 pi install ./project-blueprint
-```
-
-#### Option 2: GitHub Installation (Production)
-
-```bash
-pi install github:carlosfrias/project-blueprint
-```
-
-#### Option 3: npm Installation (When Published)
-
-```bash
-pi install npm:project-blueprint
 ```
 
 ### Verify Installation
@@ -609,7 +612,7 @@ project-blueprint/
 
 ```bash
 # 1. Install project-blueprint skill
-pi install github:carlosfrias/project-blueprint
+pi install git@github.com:carlosfrias/project-blueprint.git
 
 # 2. Verify installation
 pi skill list | grep project-blueprint
@@ -923,7 +926,7 @@ pi skill project-blueprint
 **Solution**:
 ```bash
 # Reinstall skill
-pi install github:carlosfrias/project-blueprint
+pi install git@github.com:carlosfrias/project-blueprint.git
 
 # Verify installation
 pi skill list | grep project-blueprint
@@ -989,7 +992,7 @@ pwd
 ls ~/.pi/agent/skills/project-blueprint/prompts/
 
 # Reinstall if missing
-pi install github:carlosfrias/project-blueprint --force
+pi install git@github.com:carlosfrias/project-blueprint.git --force
 ```
 
 ---
@@ -1077,7 +1080,7 @@ Cost-optimized task execution:
 
 ```bash
 # Install decompose-execute-verify skill
-pi install github:carlosfrias/decompose-execute-verify
+pi install git@github.com:carlosfrias/decompose-execute-verify.git
 
 # Use in chains
 /chain decomposed-task "Complex multi-step task"
