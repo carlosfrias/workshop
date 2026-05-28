@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "trading-journal://schemas/account-schema.json",
+  "title": "Account-Level Tracking Schema",
+  "description": "Tracks account capital, margin, deposits/withdrawals separate from P&L (DTI + LS Futures features)",
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "Unique account identifier"
+    },
+    "accountName": {
+      "type": "string",
+      "description": "Human-readable account name (e.g., 'IRA', 'Margin Account')"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD",
+      "description": "Account currency"
+    },
+    "startingCapital": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Initial capital at account inception (DTI feature)"
+    },
+    "currentBalance": {
+      "type": "number",
+      "description": "Current account balance",
+      "readOnly": true
+    },
+    "deposits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amount": {"type": "number", "minimum": 0},
+          "date": {"type": "string", "format": "date"},
+          "source": {"type": "string"},
+          "notes": {"type": "string"}
+        },
+        "required": ["amount", "date"]
+      },
+      "description": "Track deposits separately from P&L (DTI + LS ROR% feature)"
+    },
+    "withdrawals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amount": {"type": "number", "minimum": 0},
+          "date": {"type": "string", "format": "date"},
+          "destination": {"type": "string"},
+          "notes": {"type": "string"}
+        },
+        "required": ["amount", "date"]
+      },
+      "description": "Track withdrawals separately from P&L (DTI + LS ROR% feature)"
+    },
+    "realizedPnL": {
+      "type": "number",
+      "description": "Total realized profit/loss from closed trades (independent of deposits/withdrawals)"
+    },
+    "unrealizedPnL": {
+      "type": "number",
+      "description": "Total unrealized profit/loss from open positions"
+    },
+    "marginUsed": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Current margin in use"
+    },
+    "buyingPower": {
+      "type": "number",
+      "description": "Available buying power"
+    },
+    "marginRequirement": {
+      "type": "number",
+      "description": "Total margin requirement for open positions"
+    },
+    "rorPercent": {
+      "type": "number",
+      "description": "Rate of return percentage accounting for deposits/withdrawals (LS Futures feature)",
+      "readOnly": true
+    },
+    "totalDeposits": {
+      "type": "number",
+      "readOnly": true,
+      "description": "Sum of all deposits"
+    },
+    "totalWithdrawals": {
+      "type": "number",
+      "readOnly": true,
+      "description": "Sum of all withdrawals"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "accountId",
+    "startingCapital",
+    "realizedPnL"
+  ],
+  "calculations": {
+    "currentBalance": "startingCapital + totalDeposits - totalWithdrawals + realizedPnL + unrealizedPnL",
+    "totalDeposits": "sum(deposits[].amount)",
+    "totalWithdrawals": "sum(withdrawals[].amount)",
+    "rorPercent": "((currentBalance - totalDeposits + totalWithdrawals) / startingCapital - 1) * 100"
+  }
+}

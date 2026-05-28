@@ -30,13 +30,13 @@ class TestLogCost:
             log_path = f.name
 
         try:
-            record = log_cost("test-001", "qwen3:8b", 100, 50, log_path=log_path)
+            record = log_cost("test-001", "gemma4:e4b", 100, 50, log_path=log_path)
             assert record["task_id"] == "test-001"
-            assert record["model"] == "qwen3:8b"
+            assert record["model"] == "gemma4:e4b"
             assert record["tokens_input"] == 100
             assert record["tokens_output"] == 50
             assert record["cost_usd"] > 0
-            assert record["billing_tier"] == "local_standard"
+            assert record["billing_tier"] == "local_premium"
 
             # Verify written to file
             with open(log_path) as f:

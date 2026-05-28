@@ -37,4 +37,4 @@ Match task keywords to domain agent files. Trading tasks route to Areas subdirec
 
 ---
 
-*Next: For project-level routing, load [project-map.md](project-map.md). For workspace layout, load [workspace-structure.md](workspace-structure.md).*
+*Next: For project-level routing, load [project-map.md](./project-map.md). For workspace layout, load [./workspace-structure.md](./workspace-structure.md).*

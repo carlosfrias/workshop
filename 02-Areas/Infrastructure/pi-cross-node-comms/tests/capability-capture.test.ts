@@ -68,7 +68,7 @@ async function registerTestAgent(name: string, node: string, model: string): Pro
 }
 
 async function getAgentList(): Promise<any[]> {
-  const resp = await apiRequest("/v1/agents");
+  const resp = await apiRequest("/v1/agents?project=test");
   const data = await resp.json();
   return data.agents || [];
 }

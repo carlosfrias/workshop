@@ -54,7 +54,7 @@ Before considering any task complete, verify:
 
 **Documentation home:** `../personal-vault/` — backlog and session tracking follow vault-native conventions.
 
-**Active Backlog:** Tracked in `../personal-vault/01-Projects/Carlos-Trading-Desk/Overview.md`
+**Active Backlog:** Tracked in `../personal-vault/02-Areas/Trading/Overview.md`
 
 ## Common Mistakes
 

@@ -59,3 +59,9 @@ MAX-TOKENS-GUIDE recommendation for gemma4:e4b: `maxTokens: 8192`
 - [test-tier-qwen35](../test-tier-qwen35/) — companion test (failed)
 - [/Users/friasc/.pi/agent/models.json](/Users/friasc/.pi/agent/models.json)
 - [health-monitor](/Users/friasc/.pi/agent/skills/health-monitor/)
+
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [full legend](../../../personal-vault/01-Projects/doc-standards/wiki/doc-standards/reference/Checkbox-State-Legend.md)
+*Last updated: 2026-05-27*

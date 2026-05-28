@@ -52,3 +52,9 @@ progress: 90
 - This project contains code and agent configs only
 - Target node: **fnet1** (`192.168.0.141`, 3TB primary depot)
 - VFS transition checklist: [vault/VFS-Transition-Checklist.md](../../personal-vault/01-Projects/nextcloud/VFS-Transition-Checklist.md)
+
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [full legend](../../../personal-vault/01-Projects/doc-standards/wiki/doc-standards/reference/Checkbox-State-Legend.md)
+*Last updated: 2026-05-27*

@@ -27,6 +27,8 @@ Cross-node pi communication package. Extracted `coms-net` extension and hub serv
 | Hub server | Bun / Docker | `server/coms-net-server.ts` → `Dockerfile` |
 | Container orchestration | Docker Compose | `docker-compose.yml` |
 | Theme utility | TypeScript | `src/themeMap.ts` |
+| Node resolver | TypeScript | `src/resolve-node.ts` |
+| Heartbeat tick | TypeScript | `src/heartbeat-tick.ts` |
 | Fleet-Dispatcher | Agent definition | `../../workshop/.pi/agents/fleet-dispatcher.md` |
 
 ## Directory Structure
@@ -48,6 +50,8 @@ pi-cross-node-comms/
 │   └── inventory.yml
 ├── src/
 │   ├── index.ts             # Main extension (coms-net client)
+│   ├── resolve-node.ts      # Node name resolution (flag > env > hostname > fallback)
+│   ├── heartbeat-tick.ts    # Extracted heartbeat logic with stale-ctx protection
 │   ├── themeMap.ts          # Theme defaults
 │   └── skills/
 │       └── pi-cross-node-comms/
@@ -83,6 +87,7 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 | **D-E-V cascade** | In pi session: decomposer → fleet-dispatcher → verifier → bookkeeping |
 | Install extension | `pi install .` (from this directory) |
 | Launch agent with extension | `pi -e src/index.ts --server-url http://host:port --auth-token TOKEN --name agent-name --project lab` |
+| Launch with custom node name | `pi -e src/index.ts --node fnet2 --server-url ...` or `PI_COMS_NET_NODE=fnet2 pi -e src/index.ts ...` |
 
 ## Prompt
 
@@ -100,16 +105,54 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 
 **Rule:** Documentation NEVER lives in the code tree. All docs live in personal-vault. Code NEVER lives in personal-vault.
 
-## Conventions
+## Node Identity Rules
 
-- TypeScript, ES modules
-- Server requires Bun runtime
-- Extension requires pi peer dependencies
+1. **Node must be a hostname or IP address** — never an agent name, generated ID, "unknown", or "undefined"
+2. **Resolution priority:** `--node` flag > `PI_COMS_NET_NODE` env > `os.hostname()` > `"unknown"` fallback
+3. Server validates at registration: `isValidNodeName()` rejects `agent-XXXXXX`, all-uppercase codes, fallback names
+4. Widget shows `[?]` when node is invalid — never shows agent name in node position
+5. `coms_net_list` output includes `@node` prefix only for valid hostnames/IPs
+6. **Previous bug (fixed 2026-05-27):** `os.hostname()` was used directly with no override — every agent on `mac-orchestrator` showed that hostname. Now operators set `--node fnet2` or `PI_COMS_NET_NODE=fnet2` to override.
+7. Audit log: When node resolution falls to "unknown", extension logs `node_resolution_fallback` event with source and attempted values
+
+## Capability-Aware Routing
+
+1. **Capabilities are advertised at registration** — `capabilities` field in AgentCard includes `video-inference`, `image-inference`, `audio-inference`, `file-system`
+2. **Fleet-dispatcher filters by capability** — video tasks require `video-inference` capability peer
+3. **No capable peer → immediate degradation to Tier 2 (intercom)** without attempting Tier 1
+4. **Capability detection:** GPU (Metal/CUDA), ffmpeg, `PI_VISION_PROXY_VIDEO_MODEL` env var
+
+## Cost-Control Hard Constraints
+
+1. **`coms_net_await` timeout: 120s max** — never rely on the 30-minute default
+2. **Always pass `timeout_ms` explicitly** to `coms_net_await`
+3. **Pre-flight `coms_net_list`** before any Tier 1 dispatch
+4. **Immediate degradation** on timeout — never retry same peer
 
 ## Must Never
 
 - Commit `.env` files or auth tokens
 - Store documentation here (docs live in personal-vault)
+- Develop directly in `.pi/` folders — always work in workshop, commit, push, `pi update`
+- Use `coms_net_await` without explicit `timeout_ms` parameter
+- Display agent names as node identifiers in the TUI
+
+## Test Command
+
+```bash
+bun test                    # full suite (164 tests, 11 files)
+bun test tests/resolve-node.test.ts     # node resolution priority chain
+bun test tests/node-identity.test.ts   # node validation logic
+bun test tests/tui-footer-node.test.ts  # TUI node display
+bun test tests/heartbeat-tick.test.ts  # heartbeat stale-ctx protection
+```
+
+## Conventions
+
+- TypeScript, ES modules
+- Server requires Bun runtime
+- Extension requires pi peer dependencies
+- **Release flow:** workshop → commit → push → `pi update` (no shortcuts)
 
 ## Cross-Reference
 

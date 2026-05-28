@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
-  "last_updated": "2026-05-02",
+  "version": "1.1.0",
+  "last_updated": "2026-05-27",
   "tiers": [
     {
       "id": "local_basic",
-      "name": "Local Basic",
+      "name": "Local Basic (4B)",
       "model": "qwen3.5:4b",
       "venue": "local",
       "price_per_1k_tokens": 0.0050,
@@ -12,17 +12,26 @@
       "provider": "ollama"
     },
     {
-      "id": "local_standard",
-      "name": "Local Standard",
-      "model": "qwen3:8b",
+      "id": "local_light_vision",
+      "name": "Local Light Vision (8B)",
+      "model": "openbmb/minicpm-o2.6:8b",
       "venue": "local",
-      "price_per_1k_tokens": 0.0060,
-      "margin_pct": 50,
+      "price_per_1k_tokens": 0.0050,
+      "margin_pct": 40,
+      "provider": "ollama"
+    },
+    {
+      "id": "local_moe",
+      "name": "Local MoE (35B-A3B)",
+      "model": "qwen3.5:35b-a3b",
+      "venue": "local",
+      "price_per_1k_tokens": 0.0070,
+      "margin_pct": 45,
       "provider": "ollama"
     },
     {
       "id": "local_premium",
-      "name": "Local Premium",
+      "name": "Local Premium (Gemma4)",
       "model": "gemma4:e4b",
       "venue": "local",
       "price_per_1k_tokens": 0.0050,
@@ -30,8 +39,8 @@
       "provider": "ollama"
     },
     {
-      "id": "cloud_standard",
-      "name": "Cloud Standard",
+      "id": "cloud_budget",
+      "name": "Cloud Budget (Gemma4 31B)",
       "model": "gemma4:31b-cloud",
       "venue": "cloud",
       "price_per_1k_tokens": 0.0150,
@@ -39,13 +48,94 @@
       "provider": "ollama-cloud"
     },
     {
+      "id": "cloud_deepseek",
+      "name": "Cloud DeepSeek V4 Pro",
+      "model": "deepseek-v4-pro:cloud",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0120,
+      "margin_pct": 20,
+      "provider": "ollama-cloud"
+    },
+    {
+      "id": "cloud_qwen_large",
+      "name": "Cloud Qwen 3.5 397B",
+      "model": "qwen3.5:397b-cloud",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0300,
+      "margin_pct": 20,
+      "provider": "ollama-cloud"
+    },
+    {
+      "id": "cloud_glm",
+      "name": "Cloud GLM-5.1",
+      "model": "glm-5.1:cloud",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0400,
+      "margin_pct": 20,
+      "provider": "ollama-cloud"
+    },
+    {
       "id": "cloud_premium",
-      "name": "Cloud Premium",
+      "name": "Cloud Premium (Kimi K2.6)",
       "model": "kimi-k2.6:cloud",
       "venue": "cloud",
       "price_per_1k_tokens": 0.0500,
       "margin_pct": 20,
       "provider": "ollama-cloud"
+    },
+    {
+      "id": "openrouter_gemini_flash",
+      "name": "Gemini 2.5 Flash",
+      "model": "google/gemini-2.5-flash-preview",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0050,
+      "margin_pct": 25,
+      "provider": "openrouter"
+    },
+    {
+      "id": "openrouter_gpt4o",
+      "name": "GPT-4o",
+      "model": "openai/gpt-4o",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0750,
+      "margin_pct": 15,
+      "provider": "openrouter"
+    },
+    {
+      "id": "openrouter_free_gemma3_4b",
+      "name": "Free: Gemma 3 4B",
+      "model": "google/gemma-3-4b-instruct:free",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0005,
+      "margin_pct": 0,
+      "provider": "openrouter"
+    },
+    {
+      "id": "openrouter_free_llama3_8b",
+      "name": "Free: Llama 3 8B",
+      "model": "meta-llama/llama-3-8b-instruct:free",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0005,
+      "margin_pct": 0,
+      "provider": "openrouter"
+    },
+    {
+      "id": "openrouter_free_mistral_7b",
+      "name": "Free: Mistral 7B",
+      "model": "mistralai/mistral-7b-instruct:free",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0005,
+      "margin_pct": 0,
+      "provider": "openrouter"
+    },
+    {
+      "id": "openrouter_free_qwen_7b",
+      "name": "Free: Qwen 2.5 7B",
+      "model": "qwen/qwen-2.5-7b-instruct:free",
+      "venue": "cloud",
+      "price_per_1k_tokens": 0.0005,
+      "margin_pct": 0,
+      "provider": "openrouter"
     }
   ]
 }

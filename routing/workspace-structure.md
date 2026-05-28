@@ -73,4 +73,4 @@ workshop/
 
 ---
 
-*Next: For project routing, load [project-map.md](project-map.md). For domain routing, load [domain-routing.md](domain-routing.md).*
+*Next: For project routing, load [project-map.md](./project-map.md). For domain routing, load [domain-routing.md](./domain-routing.md).*

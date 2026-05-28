@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "trading-journal://schemas/market-lookup-schema.json",
+  "title": "Market Lookup Table Schema",
+  "description": "Contract specs, tick values, margins, commissions for 79+ futures and options (LS Futures feature)",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "version": {"type": "string"},
+        "lastUpdated": {"type": "string", "format": "date-time"},
+        "totalContracts": {"type": "integer", "minimum": 79}
+      }
+    },
+    "contractSpecs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/contractSpec"
+      },
+      "description": "Array of 79+ contract specifications (LS Futures requirement)"
+    },
+    "bySymbol": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/contractSpec"
+      },
+      "description": "Index by symbol for fast lookup"
+    }
+  },
+  "required": ["contractSpecs"],
+  "definitions": {
+    "contractSpec": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Root symbol (e.g., ES, NQ, CL)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full contract name"
+        },
+        "exchange": {
+          "type": "string",
+          "description": "Exchange (CME, CBOT, NYMEX, COMEX, etc.)"
+        },
+        "assetClass": {
+          "type": "string",
+          "enum": ["equity-index", "energy", "metal", "agricultural", "currency", "fixed-income", "crypto"],
+          "description": "Asset class category"
+        },
+        "pointValue": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Dollar value per point (LS Futures feature)"
+        },
+        "tickSize": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum price fluctuation"
+        },
+        "tickValue": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Dollar value per tick"
+        },
+        "minimumTick": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Alias for tickSize"
+        },
+        "contractSize": {
+          "type": "number",
+          "description": "Contract size (units of underlying)"
+        },
+        "tradingHours": {
+          "type": "string",
+          "description": "Trading hours (e.g., 'CME Globex: Sun-Fri 5:00pm-4:00pm CT')"
+        },
+        "settlementMethod": {
+          "type": "string",
+          "enum": ["cash", "physical"],
+          "description": "Cash or physical settlement"
+        },
+        "lastTradingDay": {
+          "type": "string",
+          "description": "Last trading day rule (e.g., 'Third Friday of month')"
+        },
+        "marginRequirement": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Initial margin requirement per contract"
+        },
+        "initialMargin": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Alias for marginRequirement"
+        },
+        "maintenanceMargin": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maintenance margin requirement"
+        },
+        "commissionPerContract": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Commission per contract (LS Futures feature)"
+        },
+        "commission": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Alias for commissionPerContract"
+        },
+        "commissionNotes": {
+          "type": "string",
+          "description": "Notes on commission structure"
+        },
+        "optionOnFuture": {
+          "type": "boolean",
+          "description": "Whether options trade on this future"
+        },
+        "optionMultiplier": {
+          "type": "number",
+          "description": "Multiplier for options on this future"
+        },
+        "sector": {
+          "type": "string",
+          "description": "Sector classification (e.g., 'Technology', 'Energy')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Additional description"
+        },
+        "isActive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether contract is currently active"
+        }
+      },
+      "required": [
+        "symbol",
+        "pointValue",
+        "tickSize",
+        "tickValue"
+      ]
+    }
+  },
+  "examples": {
+    "contractSpecs": [
+      {
+        "symbol": "ES",
+        "name": "E-mini S&P 500",
+        "exchange": "CME",
+        "assetClass": "equity-index",
+        "pointValue": 50,
+        "tickSize": 0.25,
+        "tickValue": 12.50,
+        "contractSize": "$50 x S&P 500 Index",
+        "settlementMethod": "cash",
+        "marginRequirement": 12100,
+        "maintenanceMargin": 11000,
+        "commissionPerContract": 2.50,
+        "optionOnFuture": true,
+        "optionMultiplier": 1,
+        "isActive": true
+      },
+      {
+        "symbol": "NQ",
+        "name": "E-mini NASDAQ-100",
+        "exchange": "CME",
+        "assetClass": "equity-index",
+        "pointValue": 20,
+        "tickSize": 0.25,
+        "tickValue": 5.00,
+        "contractSize": "$20 x NASDAQ-100 Index",
+        "settlementMethod": "cash",
+        "marginRequirement": 17600,
+        "maintenanceMargin": 16000,
+        "commissionPerContract": 2.50,
+        "optionOnFuture": true,
+        "optionMultiplier": 1,
+        "isActive": true
+      },
+      {
+        "symbol": "CL",
+        "name": "Crude Oil WTI",
+        "exchange": "NYMEX",
+        "assetClass": "energy",
+        "pointValue": 1000,
+        "tickSize": 0.01,
+        "tickValue": 10.00,
+        "contractSize": "1,000 barrels",
+        "settlementMethod": "physical",
+        "marginRequirement": 7700,
+        "maintenanceMargin": 7000,
+        "commissionPerContract": 2.50,
+        "optionOnFuture": true,
+        "optionMultiplier": 1000,
+        "isActive": true
+      }
+    ]
+  }
+}

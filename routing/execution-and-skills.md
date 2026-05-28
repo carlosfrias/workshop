@@ -34,7 +34,7 @@ Before executing any task, check the user prompt and activated domain against th
 | Trigger (keywords or domain) | Skill to load | Load path |
 |-------------------------------|---------------|-----------|
 | wiki, documentation, docs, markdown, `*.md`, README, status, session-notes, backlog, activity log, manifest, planning doc | **doc-standards** | `/Users/friasc/.pi/agent/git/github.com/carlosfrias/doc-standards/skills/doc-standards/SKILL.md` |
-| wiki, documentation, docs, markdown, `*.md`, README, status, session-notes, backlog, activity log, manifest, planning doc | **vault taxonomy mapping** | `../personal-vault/01-Projects/Carlos-Trading-Desk/archive/Doc-Standards Vault Taxonomy.md` |
+| wiki, documentation, docs, markdown, `*.md`, README, status, session-notes, backlog, activity log, manifest, planning doc | **vault taxonomy mapping** | `../personal-vault/02-Areas/Trading/archive/Doc-Standards Vault Taxonomy.md` |
 
 ### Hard Rules
 
@@ -44,4 +44,4 @@ Before executing any task, check the user prompt and activated domain against th
 
 ---
 
-*Next: For model routing details, load [model-routing.md](model-routing.md). For workspace layout and cross-references, load [workspace-structure.md](workspace-structure.md).*
+*Next: For model routing details, load [model-routing.md](./model-routing.md). For workspace layout and cross-references, load [workspace-structure.md](./workspace-structure.md).*

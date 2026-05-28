@@ -36,7 +36,8 @@ function parseFrontmatter(content: string): Record<string, unknown> {
 /** Read the fleet-dispatcher agent definition. */
 function readAgentDef(): { path: string; content: string; frontmatter: Record<string, unknown> } {
 	// Project-level definition overrides global — test the project one
-	const projectPath = resolve(import.meta.dirname ?? ".", "../../../.pi/agents/fleet-dispatcher.md");
+	// Path: server/__tests__/ → workspace/.pi/agents/fleet-dispatcher.md
+	const projectPath = resolve(import.meta.dirname ?? ".", "../../../../../.pi/agents/fleet-dispatcher.md");
 	const content = readFileSync(projectPath, "utf8");
 	return { path: projectPath, content, frontmatter: parseFrontmatter(content) };
 }

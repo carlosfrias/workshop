@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-05-28T01:21:08.448Z",
+  "server_url": "http://127.0.0.1:52486",
+  "nodes": [
+    {
+      "node": "fnet4-gpu",
+      "name": "video-worker-1",
+      "model": "gemma4:31b",
+      "project": "test",
+      "status": "online",
+      "registered_at": "2026-05-28T01:21:08.446Z",
+      "simple_bash": true,
+      "file_read": true,
+      "vision": true,
+      "video_extract": true,
+      "code_gen": false,
+      "validated": false
+    },
+    {
+      "node": "unknown",
+      "name": "no-node-agent",
+      "model": "test-model",
+      "project": "test",
+      "status": "online",
+      "registered_at": "2026-05-28T01:21:08.447Z",
+      "simple_bash": true,
+      "file_read": true,
+      "vision": false,
+      "video_extract": false,
+      "code_gen": false,
+      "validated": false
+    },
+    {
+      "node": "fnet4-gpu",
+      "name": "video-node",
+      "model": "gemma4:31b",
+      "project": "test",
+      "status": "online",
+      "registered_at": "2026-05-28T01:21:08.448Z",
+      "simple_bash": true,
+      "file_read": true,
+      "vision": true,
+      "video_extract": true,
+      "code_gen": false,
+      "validated": false
+    },
+    {
+      "node": "fnet1-cpu",
+      "name": "text-node",
+      "model": "qwen3.5:4b",
+      "project": "test",
+      "status": "online",
+      "registered_at": "2026-05-28T01:21:08.448Z",
+      "simple_bash": true,
+      "file_read": true,
+      "vision": false,
+      "video_extract": false,
+      "code_gen": false,
+      "validated": false
+    },
+    {
+      "node": "orchestrator",
+      "name": "vision-node",
+      "model": "minicpm-o2.6",
+      "project": "test",
+      "status": "online",
+      "registered_at": "2026-05-28T01:21:08.448Z",
+      "simple_bash": true,
+      "file_read": true,
+      "vision": true,
+      "video_extract": true,
+      "code_gen": false,
+      "validated": false
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "online": 5,
+    "vision_capable": 3,
+    "video_capable": 3,
+    "code_capable": 0
+  }
+}

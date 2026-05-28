@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "trading-journal://schemas/future-option-schema.json",
+  "title": "Future Option Trade Schema",
+  "description": "Future options with underlying future contract, Greeks (DTI feature)",
+  "type": "object",
+  "properties": {
+    "tradeId": {
+      "type": "string",
+      "description": "Unique trade ID"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Futures root symbol (e.g., ES, NQ)"
+    },
+    "underlyingSymbol": {
+      "type": "string",
+      "description": "Underlying futures contract symbol (e.g., ESZ2026)"
+    },
+    "futureSymbol": {
+      "type": "string",
+      "description": "Alias for underlyingSymbol"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["LONG", "SHORT"],
+      "description": "Trade direction"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OPEN", "PARTIAL", "CLOSED", "EXPIRED"],
+      "description": "Current trade status"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trade entry timestamp (UTC)"
+    },
+    "optionType": {
+      "type": "string",
+      "enum": ["C", "P"],
+      "description": "Call or Put"
+    },
+    "strike": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Strike price"
+    },
+    "expiry": {
+      "type": "string",
+      "format": "date",
+      "description": "Expiration date"
+    },
+    "underlyingContractMonth": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "description": "Underlying futures contract month"
+    },
+    "dte": {
+      "type": "integer",
+      "description": "Days to expiry at entry"
+    },
+    "daysToExpiry": {
+      "type": "integer",
+      "description": "Current days to expiry"
+    },
+    "premium": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Option premium paid/received"
+    },
+    "intrinsicValue": {
+      "type": "number",
+      "description": "Intrinsic value at entry"
+    },
+    "extrinsicValue": {
+      "type": "number",
+      "description": "Extrinsic/time value at entry (DTI feature)"
+    },
+    "delta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Delta at entry (DTI requirement)"
+    },
+    "gamma": {
+      "type": "number",
+      "description": "Gamma at entry"
+    },
+    "theta": {
+      "type": "number",
+      "description": "Theta at entry"
+    },
+    "vega": {
+      "type": "number",
+      "description": "Vega at entry"
+    },
+    "rho": {
+      "type": "number",
+      "description": "Rho at entry"
+    },
+    "impliedVolatility": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Implied volatility at entry"
+    },
+    "currentDelta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Current delta (from live data)"
+    },
+    "currentGamma": {
+      "type": "number",
+      "description": "Current gamma (from live data)"
+    },
+    "currentTheta": {
+      "type": "number",
+      "description": "Current theta (from live data)"
+    },
+    "currentVega": {
+      "type": "number",
+      "description": "Current vega (from live data)"
+    },
+    "currentRho": {
+      "type": "number",
+      "description": "Current rho (from live data)"
+    },
+    "underlyingPrice": {
+      "type": "number",
+      "description": "Underlying futures price at entry"
+    },
+    "currentUnderlyingPrice": {
+      "type": "number",
+      "description": "Current underlying futures price (from live data)"
+    },
+    "contractSpecId": {
+      "type": "string",
+      "description": "Reference to market lookup for underlying contract specs"
+    },
+    "pointValue": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Dollar value per point of underlying future"
+    },
+    "tickSize": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Minimum price fluctuation of underlying"
+    },
+    "tickValue": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Dollar value per tick of underlying"
+    },
+    "contracts": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of option contracts"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "contracts": {"type": "integer", "minimum": 1},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0}
+        },
+        "required": ["price", "contracts", "timestamp"]
+      }
+    },
+    "exits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "contracts": {"type": "integer", "minimum": 1},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0},
+          "pnl": {"type": "number"},
+          "rMultiple": {"type": "number"}
+        },
+        "required": ["price", "contracts", "timestamp"]
+      }
+    },
+    "averageEntryPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average premium paid/received"
+    },
+    "averageExitPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average exit premium"
+    },
+    "commission": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total commission paid"
+    },
+    "realizedPnL": {
+      "type": "number",
+      "description": "Realized P&L on closed portion"
+    },
+    "realizedR": {
+      "type": "number",
+      "description": "Realized R-multiple"
+    },
+    "unrealizedPnL": {
+      "type": "number",
+      "description": "Unrealized P&L on open portion"
+    },
+    "unrealizedR": {
+      "type": "number",
+      "description": "Unrealized R-multiple"
+    },
+    "riskReward": {
+      "type": "string",
+      "description": "Risk-reward ratio"
+    },
+    "riskAmount": {
+      "type": "number",
+      "description": "Dollar amount at risk"
+    },
+    "entryRationale": {
+      "type": "string",
+      "description": "Entry rationale"
+    },
+    "exitRationale": {
+      "type": "string",
+      "description": "Exit rationale"
+    },
+    "setupType": {
+      "type": "string",
+      "description": "Trade setup type"
+    },
+    "blockId": {
+      "type": "string",
+      "description": "Block identifier for block analysis"
+    },
+    "blockNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Sequential block number"
+    },
+    "journalNote": {
+      "type": "string",
+      "description": "Link to journal note"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["ENTRY", "ADJUST_STOP", "SCALE_IN", "SCALE_OUT", "CLOSE", "ROLL", "ASSIGN", "EXERCISE"]
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "details": {"type": "object"}
+        },
+        "required": ["action", "timestamp"]
+      }
+    }
+  },
+  "required": [
+    "tradeId",
+    "symbol",
+    "direction",
+    "status",
+    "timestamp",
+    "optionType",
+    "strike",
+    "expiry",
+    "underlyingSymbol",
+    "contracts",
+    "delta"
+  ]
+}

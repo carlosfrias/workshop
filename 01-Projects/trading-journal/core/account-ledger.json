@@ -1,0 +1,19 @@
+{
+  "accountId": "TRADING-001",
+  "accountName": "Trading Journal Account",
+  "currency": "USD",
+  "startingCapital": 50000.00,
+  "currentBalance": 50000.00,
+  "deposits": [],
+  "withdrawals": [],
+  "realizedPnL": 0.00,
+  "unrealizedPnL": 0.00,
+  "marginUsed": 0.00,
+  "buyingPower": 50000.00,
+  "marginRequirement": 0.00,
+  "rorPercent": 0.00,
+  "totalDeposits": 0.00,
+  "totalWithdrawals": 0.00,
+  "createdAt": "2026-05-27T00:00:00Z",
+  "updatedAt": "2026-05-27T00:00:00Z"
+}

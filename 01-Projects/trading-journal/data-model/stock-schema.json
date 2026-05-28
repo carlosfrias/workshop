@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "trading-journal://schemas/stock-schema.json",
+  "title": "Stock Trade Schema",
+  "description": "Stock trade entry/exit with partial exits, scaling, 3-target system (DTI + LS Stock features)",
+  "type": "object",
+  "properties": {
+    "tradeId": {
+      "type": "string",
+      "pattern": "^[0-9]{8}-[0-9]{4}-[A-Z]+-(LONG|SHORT)$",
+      "description": "Unique trade ID: YYYYMMDD-HHMM-SYMBOL-DIRECTION"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Stock ticker symbol"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["LONG", "SHORT"],
+      "description": "Trade direction"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OPEN", "PARTIAL", "CLOSED"],
+      "description": "Current trade status"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trade entry timestamp (UTC)"
+    },
+    "blockId": {
+      "type": "string",
+      "pattern": "^[A-Z]+-B[0-9]+$",
+      "description": "Block identifier for 25-trade block analysis (DTI feature)"
+    },
+    "blockNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Sequential block number within symbol"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "size": {"type": "number", "minimum": 0},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0}
+        },
+        "required": ["price", "size", "timestamp"]
+      },
+      "description": "Multiple entries for scaling in (DTI feature)"
+    },
+    "exits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "size": {"type": "number", "minimum": 0},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0},
+          "pnl": {"type": "number"},
+          "rMultiple": {"type": "number"}
+        },
+        "required": ["price", "size", "timestamp"]
+      },
+      "description": "Multiple exits for partial closes (DTI + LS feature)"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "targetNumber": {"type": "integer", "minimum": 1, "maximum": 3},
+          "price": {"type": "number"},
+          "sizePercent": {"type": "number", "minimum": 0, "maximum": 100},
+          "filled": {"type": "boolean", "default": false}
+        },
+        "required": ["targetNumber", "price"]
+      },
+      "minItems": 1,
+      "maxItems": 3,
+      "description": "3-target scaling system with separate position sizes (LS Stock feature)"
+    },
+    "stopLoss": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Stop loss price level"
+    },
+    "stopLossHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "rationale": {"type": "string"}
+        },
+        "required": ["price", "timestamp"]
+      },
+      "description": "Track stop adjustments"
+    },
+    "positionSize": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total position size (shares)"
+    },
+    "averageEntryPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Weighted average entry price"
+    },
+    "averageExitPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Weighted average exit price (when closed)"
+    },
+    "commission": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total commission paid (DTI feature)"
+    },
+    "realizedPnL": {
+      "type": "number",
+      "description": "Realized P&L on closed portion"
+    },
+    "realizedR": {
+      "type": "number",
+      "description": "Realized R-multiple on closed portion"
+    },
+    "unrealizedPnL": {
+      "type": "number",
+      "description": "Unrealized P&L on open portion"
+    },
+    "unrealizedR": {
+      "type": "number",
+      "description": "Unrealized R-multiple on open portion"
+    },
+    "riskReward": {
+      "type": "string",
+      "pattern": "^1:[0-9]+\\.?[0-9]*$",
+      "description": "Risk-reward ratio (e.g., '1:2.5')"
+    },
+    "riskAmount": {
+      "type": "number",
+      "description": "Dollar amount at risk (entry - stop) * size"
+    },
+    "entryRationale": {
+      "type": "string",
+      "description": "Entry rationale/setup description"
+    },
+    "exitRationale": {
+      "type": "string",
+      "description": "Exit rationale (when closed)"
+    },
+    "setupType": {
+      "type": "string",
+      "description": "Trade setup type for segmentation analysis"
+    },
+    "timeInDays": {
+      "type": "number",
+      "description": "Trade length in days (LS feature)"
+    },
+    "journalNote": {
+      "type": "string",
+      "description": "Link to journal note (LS feature)"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["ENTRY", "ADJUST_STOP", "SCALE_IN", "SCALE_OUT", "CLOSE", "TRAIL"]
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "details": {"type": "object"}
+        },
+        "required": ["action", "timestamp"]
+      },
+      "description": "Audit trail of all trade management actions"
+    }
+  },
+  "required": [
+    "tradeId",
+    "symbol",
+    "direction",
+    "status",
+    "timestamp",
+    "entries",
+    "stopLoss",
+    "positionSize"
+  ]
+}

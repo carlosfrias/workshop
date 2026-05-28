@@ -12,10 +12,10 @@ Six-stage pipeline: Inbox → Validate → Pending → Review → Import → Arc
 
 | Section | File | LOD | Purpose |
 |---------|------|-----|---------|
-| CORE | [routing/CORE.md](routing/CORE.md) | Low | Identity, conventions, supported formats, key files |
-| PIPELINE | [routing/PIPELINE.md](routing/PIPELINE.md) | Low | Import commands: standard, auto-approve, patch, rollback |
-| PATCHES | [routing/PATCHES.md](routing/PATCHES.md) | Medium | Patch file format and supported patch actions |
-| RULES | [routing/RULES.md](routing/RULES.md) | Low | Must/must-never rules, quality checklist, common mistakes |
+| CORE | [routing/CORE.md](./routing/CORE.md) | Low | Identity, conventions, supported formats, key files |
+| PIPELINE | [routing/PIPELINE.md](./routing/PIPELINE.md) | Low | Import commands: standard, auto-approve, patch, rollback |
+| PATCHES | [routing/PATCHES.md](./routing/PATCHES.md) | Medium | Patch file format and supported patch actions |
+| RULES | [routing/RULES.md](./routing/RULES.md) | Low | Must/must-never rules, quality checklist, common mistakes |
 
 ## Load Directive
 

@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "trading-journal://schemas/option-schema.json",
+  "title": "Option Trade Schema",
+  "description": "Options trade with expiry, strike, Greeks, extrinsic, directional classification (DTI + LS Options features)",
+  "type": "object",
+  "properties": {
+    "tradeId": {
+      "type": "string",
+      "pattern": "^[0-9]{8}-[0-9]{4}-[A-Z]+-[0-9]{6}-[CP]-[0-9]+\\.?[0-9]*-(LONG|SHORT)$",
+      "description": "Unique trade ID: YYYYMMDD-HHMM-SYMBOL-EXPIRY-C/PUT-STRIKE-DIRECTION"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Underlying stock ticker symbol"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["LONG", "SHORT"],
+      "description": "Trade direction (long/short the option)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OPEN", "PARTIAL", "CLOSED", "EXPIRED"],
+      "description": "Current trade status"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trade entry timestamp (UTC)"
+    },
+    "optionType": {
+      "type": "string",
+      "enum": ["C", "P"],
+      "description": "Call or Put"
+    },
+    "strike": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Strike price"
+    },
+    "expiry": {
+      "type": "string",
+      "format": "date",
+      "description": "Expiration date (YYYY-MM-DD)"
+    },
+    "dte": {
+      "type": "integer",
+      "description": "Days to expiry at entry (LS Options feature)"
+    },
+    "daysToExpiry": {
+      "type": "integer",
+      "description": "Current days to expiry (updates daily)"
+    },
+    "premium": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Option premium paid/received (LS Options covered calls feature)"
+    },
+    "intrinsicValue": {
+      "type": "number",
+      "description": "Intrinsic value at entry"
+    },
+    "extrinsicValue": {
+      "type": "number",
+      "description": "Extrinsic/time value at entry (DTI feature)"
+    },
+    "timeValue": {
+      "type": "number",
+      "description": "Alias for extrinsicValue"
+    },
+    "delta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Delta at entry (DTI requirement)"
+    },
+    "gamma": {
+      "type": "number",
+      "description": "Gamma at entry (DTI feature)"
+    },
+    "theta": {
+      "type": "number",
+      "description": "Theta at entry (DTI feature)"
+    },
+    "vega": {
+      "type": "number",
+      "description": "Vega at entry (DTI feature)"
+    },
+    "rho": {
+      "type": "number",
+      "description": "Rho at entry (DTI feature)"
+    },
+    "impliedVolatility": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Implied volatility at entry"
+    },
+    "currentDelta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Current delta (from live data)"
+    },
+    "currentGamma": {
+      "type": "number",
+      "description": "Current gamma (from live data)"
+    },
+    "currentTheta": {
+      "type": "number",
+      "description": "Current theta (from live data)"
+    },
+    "currentVega": {
+      "type": "number",
+      "description": "Current vega (from live data)"
+    },
+    "currentRho": {
+      "type": "number",
+      "description": "Current rho (from live data)"
+    },
+    "tradeClassification": {
+      "type": "string",
+      "enum": ["directional", "non-directional", "covered-call", "synthetic-covered-call"],
+      "description": "Directional vs non-directional classification (LS Options feature)"
+    },
+    "directional": {
+      "type": "boolean",
+      "description": "True if directional trade, false if non-directional"
+    },
+    "coveredCallDetails": {
+      "type": "object",
+      "properties": {
+        "underlyingShares": {"type": "integer", "minimum": 0},
+        "coveredReturnPercent": {"type": "number"},
+        "annualizedReturn": {"type": "number"}
+      },
+      "description": "Covered calls tracking (LS Options feature)"
+    },
+    "syntheticCoveredCallDetails": {
+      "type": "object",
+      "properties": {
+        "longCallStrike": {"type": "number"},
+        "shortCallStrike": {"type": "number"},
+        "netDebit": {"type": "number"}
+      },
+      "description": "Synthetic covered calls tracking (LS Options feature)"
+    },
+    "blockId": {
+      "type": "string",
+      "description": "Block identifier for 25-trade block analysis (DTI feature)"
+    },
+    "blockNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Sequential block number"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "contracts": {"type": "integer", "minimum": 1},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0}
+        },
+        "required": ["price", "contracts", "timestamp"]
+      },
+      "description": "Multiple entries for scaling"
+    },
+    "exits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number", "minimum": 0},
+          "contracts": {"type": "integer", "minimum": 1},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "commission": {"type": "number", "minimum": 0},
+          "pnl": {"type": "number"},
+          "rMultiple": {"type": "number"}
+        },
+        "required": ["price", "contracts", "timestamp"]
+      },
+      "description": "Multiple exits for partial closes"
+    },
+    "contracts": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of option contracts"
+    },
+    "averageEntryPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average premium paid/received"
+    },
+    "averageExitPrice": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average exit premium"
+    },
+    "commission": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total commission paid"
+    },
+    "realizedPnL": {
+      "type": "number",
+      "description": "Realized P&L on closed portion"
+    },
+    "realizedR": {
+      "type": "number",
+      "description": "Realized R-multiple"
+    },
+    "unrealizedPnL": {
+      "type": "number",
+      "description": "Unrealized P&L on open portion"
+    },
+    "unrealizedR": {
+      "type": "number",
+      "description": "Unrealized R-multiple"
+    },
+    "riskReward": {
+      "type": "string",
+      "description": "Risk-reward ratio"
+    },
+    "riskAmount": {
+      "type": "number",
+      "description": "Dollar amount at risk"
+    },
+    "entryRationale": {
+      "type": "string",
+      "description": "Entry rationale"
+    },
+    "exitRationale": {
+      "type": "string",
+      "description": "Exit rationale"
+    },
+    "setupType": {
+      "type": "string",
+      "description": "Trade setup type"
+    },
+    "underlyingPrice": {
+      "type": "number",
+      "description": "Underlying stock price at entry"
+    },
+    "currentUnderlyingPrice": {
+      "type": "number",
+      "description": "Current underlying stock price (from live data)"
+    },
+    "journalNote": {
+      "type": "string",
+      "description": "Link to journal note"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["ENTRY", "ADJUST_STOP", "SCALE_IN", "SCALE_OUT", "CLOSE", "ROLL", "ASSIGN"]
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "details": {"type": "object"}
+        },
+        "required": ["action", "timestamp"]
+      }
+    }
+  },
+  "required": [
+    "tradeId",
+    "symbol",
+    "direction",
+    "status",
+    "timestamp",
+    "optionType",
+    "strike",
+    "expiry",
+    "contracts"
+  ]
+}

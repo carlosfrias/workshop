@@ -70,4 +70,4 @@ This makes prompt capture pipeline-automatic — no agent memory or per-domain A
 
 ## Next Phase
 
-Once domain is activated, load **Phase 2: Planning** (`phase-2-planning.md`).
+Once domain is activated, load **Phase 2: Planning** (`./phase-2-planning.md`).

@@ -1,6 +1,6 @@
 # AGENTS.md — Bookkeeping
 
-**Documentation home:** `../../personal-vault/02-Areas/Trading/bookkeeping/` or `../../personal-vault/01-Projects/Carlos-Trading-Desk/`
+**Documentation home:** `../../personal-vault/02-Areas/Trading/bookkeeping/` or `../../personal-vault/02-Areas/Trading/`
 **Code workspace:** `./` (this directory)
 
 ## [S-TIGHT]
@@ -69,6 +69,6 @@ Bookkeeping system using Beancount plain-text accounting. Three sub-domains: fin
 
 | Need | Go Here |
 |------|---------|
-| Project overview, sessions | `../../personal-vault/01-Projects/Carlos-Trading-Desk/` |
+| Project overview, sessions | `../../personal-vault/02-Areas/Trading/` |
 | Start/stop Fava UI | `playbook-executor` → `start-fava` playbook |
 | Trading desk root router | `../../AGENTS.md` |

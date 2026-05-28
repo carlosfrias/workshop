@@ -16,7 +16,7 @@ cwd: .
 Route D-E-V sub-tasks through fleet (coms_net) → intercom → subagent cascade. Load companion skills for routing algorithm and deployment config.
 
 **HARD CONSTRAINTS (cost-control — never violate):**
-- `coms_net_await` timeout: **120s max** (never 30min default)
+- `coms_net_await` timeout: **120s max**
 - Pre-flight: **require** `coms_net_list` result before any Tier 1 dispatch
 - If `coms_net_await` times out: **degrade immediately** to Tier 2, never retry same peer
 - If Tier 2 fails: **degrade immediately** to Tier 3

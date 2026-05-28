@@ -42,4 +42,4 @@ Route tasks to the correct model by keyword trigger. Default is gemma4:e4b. Do n
 
 ---
 
-*Next: For project-level routing, load [project-map.md](project-map.md). For execution rules, load [execution-and-skills.md](execution-and-skills.md).*
+*Next: For project-level routing, load [project-map.md](./project-map.md). For execution rules, load [execution-and-skills.md](./execution-and-skills.md).*

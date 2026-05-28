@@ -40,3 +40,8 @@ Initial scaffold complete. Ready to run the research-evaluate chain.
 - [ ] Run `research-evaluate` chain to produce research briefs and evaluation matrix
 - [ ] Review evaluation matrix and recommendation
 - [ ] Decide on approach and potentially create an implementation project
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [full legend](../../../personal-vault/01-Projects/doc-standards/wiki/doc-standards/reference/Checkbox-State-Legend.md)
+*Last updated: 2026-05-27*

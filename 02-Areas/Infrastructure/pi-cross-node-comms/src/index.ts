@@ -29,6 +29,7 @@ import { truncateToWidth } from "@mariozechner/pi-tui";
 import { Type } from "@sinclair/typebox";
 import { applyExtensionDefaults } from "./themeMap.ts";
 import { performHeartbeatTick } from "./heartbeat-tick.ts";
+import { resolveNode as resolveNodeName, displayNode as formatDisplayNode, nodeListPrefix as formatNodeListPrefix, isValidHostnameOrIp } from "./resolve-node.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
@@ -48,6 +49,7 @@ const SHUTDOWN_DELETE_TIMEOUT_MS = 2_000;
 const SERVER_URL_ENV = process.env.PI_COMS_NET_SERVER_URL;
 const AUTH_TOKEN_ENV = process.env.PI_COMS_NET_AUTH_TOKEN;
 const PROJECT_ENV = process.env.PI_COMS_NET_PROJECT;
+const NODE_ENV = process.env.PI_COMS_NET_NODE;
 
 const FALLBACK_PALETTE = [
 	"#72F1B8", "#36F9F6", "#FF7EDB", "#FEDE5D",
@@ -344,6 +346,7 @@ interface CliFlags {
 	project?: string;
 	color?: string;
 	explicit?: boolean;
+	node?: string;
 	serverUrl?: string;
 	authToken?: string;
 }
@@ -354,6 +357,7 @@ function readCliFlags(pi: ExtensionAPI): CliFlags {
 	const project = pi.getFlag("project") as string | undefined;
 	const color = pi.getFlag("color") as string | undefined;
 	const explicit = pi.getFlag("explicit") as boolean | undefined;
+	const node = pi.getFlag("node") as string | undefined;
 	const serverUrl = pi.getFlag("server-url") as string | undefined;
 	const authToken = pi.getFlag("auth-token") as string | undefined;
 	return {
@@ -362,6 +366,7 @@ function readCliFlags(pi: ExtensionAPI): CliFlags {
 		project: project && project.length > 0 ? project : undefined,
 		color: color && color.length > 0 ? color : undefined,
 		explicit: explicit === true,
+		node: node && node.length > 0 ? node : undefined,
 		serverUrl: serverUrl && serverUrl.length > 0 ? serverUrl : undefined,
 		authToken: authToken && authToken.length > 0 ? authToken : undefined,
 	};
@@ -395,6 +400,11 @@ export default function (pi: ExtensionAPI) {
 		description: "Hide this agent from auto-discovery; only addressable by exact name",
 		type: "boolean",
 		default: false,
+	});
+	pi.registerFlag("node", {
+		description: "Override node name (hostname or IP) for coms-net identity. Default: PI_COMS_NET_NODE env or os.hostname()",
+		type: "string",
+		default: undefined,
 	});
 	pi.registerFlag("server-url", {
 		description: "coms-net server base URL (overrides env and local server.json)",
@@ -884,9 +894,27 @@ export default function (pi: ExtensionAPI) {
 		if (flags.color && isValidHex(flags.color)) color = flags.color;
 
 		const cwd = ctx.cwd || process.cwd();
-		const node = os.hostname();
+		const nodeResolution = resolveNodeName({
+			cliFlag: flags.node,
+			envVar: NODE_ENV,
+			hostname: os.hostname(),
+		});
+		const node = nodeResolution.node;
 		const model = ctx.model?.id ?? "unknown";
 		const started_at = nowIso();
+
+		if (!nodeResolution.valid) {
+			try {
+				pi.appendEntry("coms-net-log", {
+					event: "node_resolution_fallback",
+					ts: nowIso(),
+					source: nodeResolution.source,
+					cliFlag: flags.node ?? null,
+					envVar: NODE_ENV ?? null,
+					hostname: os.hostname(),
+				});
+			} catch { /* best-effort */ }
+		}
 
 		identity = {
 			session_id,
@@ -1084,7 +1112,8 @@ export default function (pi: ExtensionAPI) {
 			}
 
 			const swatch = r.pending ? theme.fg("dim", "●") : hexFg(r.color, "●");
-			const nodePart = theme.fg("dim", `[${r.node}] `.padStart(12));
+			const displayNodeVal = formatDisplayNode(r.node);
+			const nodePart = theme.fg("dim", `[${displayNodeVal}] `.padStart(12));
 			const namePart = theme.fg("accent", r.name.padEnd(12));
 			const modelPart = theme.fg("dim", abbreviateModel(r.model).padEnd(14));
 			const barFill = r.pending
@@ -1145,7 +1174,9 @@ export default function (pi: ExtensionAPI) {
 				: peers.map((a) => {
 					const live = a.status === "online" ? "●" : a.status === "stale" ? "~" : "✗";
 					const ctxStr = typeof a.context_used_pct === "number" ? ` ${a.context_used_pct}%` : " ?%";
-					return `${live} ${a.name} (${abbreviateModel(a.model)})${ctxStr}${a.purpose ? ` — ${a.purpose}` : ""}`;
+					const nodeStr = formatNodeListPrefix(a.node);
+					const capsStr = a.capabilities ? ` [${a.capabilities}]` : "";
+					return `${live} ${nodeStr}${a.name} (${abbreviateModel(a.model)})${ctxStr}${capsStr}${a.purpose ? ` — ${a.purpose}` : ""}`;
 				}).join("\n");
 
 			return {

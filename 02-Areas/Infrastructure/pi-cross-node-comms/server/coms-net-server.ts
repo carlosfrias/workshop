@@ -314,6 +314,28 @@ function detectLanIP(): string | null {
 	return null;
 }
 
+/** Check if a node name looks like a real hostname or IP, not an agent-generated ID. */
+function isValidNodeName(s: string): boolean {
+	if (!s || s.length === 0) return false;
+	// Reject known bad values
+	if (s === "undefined" || s === "null" || s === "unknown") return false;
+	if (s === "node-unknown" || s === "node-fallback") return false;
+	// Reject auto-generated agent IDs: "agent-A914J7", "worker-3VN9XS"
+	// These have 5+ char suffix of uppercase letters + digits
+	if (/^(agent|worker|peer|node)-[A-Z0-9]{5,}$/.test(s)) return false;
+	// Reject all-uppercase generated codes (e.g. "ABCDEF", "RZDZMM")
+	if (/^[A-Z0-9-]+$/.test(s) && s.length >= 3) return false;
+	// Accept IP addresses
+	if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(s)) return true;
+	// Accept hostnames: must contain a letter, match valid pattern
+	if (!/[a-zA-Z]/.test(s)) return false;
+	if (/^[a-zA-Z0-9]([a-zA-Z0-9\-.]*[a-zA-Z0-9])?$/.test(s)) {
+		if (s.includes(".")) return true;
+		return s.length >= 3;
+	}
+	return false;
+}
+
 export function tokensEqual(a: string, b: string): boolean {
 	const ab = Buffer.from(a, "utf-8");
 	const bb = Buffer.from(b, "utf-8");
@@ -448,6 +470,7 @@ function entryToCard(e: RegistryEntry): AgentCard {
 		provider,
 		color,
 		cwd,
+		node,
 		project,
 		explicit,
 		started_at,
@@ -463,6 +486,7 @@ function entryToCard(e: RegistryEntry): AgentCard {
 		provider,
 		color,
 		cwd,
+		node,
 		project,
 		explicit,
 		started_at,
@@ -573,6 +597,11 @@ async function handleRegister(req: Request): Promise<Response> {
 	} else {
 		resolvedName = resolveUniqueName(p, desiredName);
 	}
+
+	const rawNode = (typeof body.node === "string" && body.node.trim() && body.node !== "undefined")
+		? body.node.trim()
+		: "";
+	const nodeName = isValidNodeName(rawNode) ? rawNode : "unknown";
 
 	const card: AgentCard = {
 		session_id: body.session_id,

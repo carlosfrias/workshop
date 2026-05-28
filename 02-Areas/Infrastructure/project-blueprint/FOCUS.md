@@ -33,3 +33,9 @@ Post-completion architecture fully implemented across agents, skills, and templa
 1. Read `AGENTS.md` for domain routing
 2. Read this file for current focus
 3. Read `threads/project-blueprint/0-THREAD.md` for intent arc
+
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [full legend](../../../../personal-vault/01-Projects/doc-standards/wiki/doc-standards/reference/Checkbox-State-Legend.md)
+*Last updated: 2026-05-27*

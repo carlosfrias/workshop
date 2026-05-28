@@ -42,4 +42,4 @@ Match keywords from the prompt to the project AGENTS.md file. Each project has i
 
 ---
 
-*Next: For domain-level routing (Trading areas, Infrastructure), load [domain-routing.md](domain-routing.md).*
+*Next: For domain-level routing (Trading areas, Infrastructure), load [domain-routing.md](./domain-routing.md).*

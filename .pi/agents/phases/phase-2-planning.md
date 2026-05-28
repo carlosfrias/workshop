@@ -99,4 +99,4 @@ Before any infrastructure task touching ≥2 nodes, verify TI-011:
 
 ## Next Phase
 
-After planning is complete, load **Phase 3: Execution** (`phase-3-execution.md`).
+After planning is complete, load **Phase 3: Execution** (`./phase-3-execution.md`).

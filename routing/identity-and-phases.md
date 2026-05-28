@@ -42,4 +42,4 @@ This workspace uses a phased cognitive model. Load **only** the phase file match
 
 ---
 
-*Next: For which model to route tasks, load [model-routing.md](model-routing.md). For project-level routing, load [project-map.md](project-map.md).*
+*Next: For which model to route tasks, load [model-routing.md](./model-routing.md). For project-level routing, load [project-map.md](./project-map.md).*

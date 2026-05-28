@@ -28,3 +28,8 @@ See personal-vault FOCUS.md for authoritative state: `../../personal-vault/01-Pr
 2. Read personal-vault `FOCUS.md` for full state
 3. Check `scripts/` and `config/` for current code
 4. Run `pytest tests/` to verify state
+
+---
+
+> 📋 **Checkbox states:** `[ ]` To Do | `[/]` In Progress | `[~]` Good Enough | `[x]` Done | `[>]` Deferred | `[!]` Blocked | `[-]` Cancelled — [full legend](../../../../personal-vault/01-Projects/doc-standards/wiki/doc-standards/reference/Checkbox-State-Legend.md)
+*Last updated: 2026-05-27*

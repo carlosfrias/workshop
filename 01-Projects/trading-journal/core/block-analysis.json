@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Block-based income/expense analysis (DTI style: 25 trades per block)",
+    "createdAt": "2026-05-27T00:00:00Z",
+    "updatedAt": "2026-05-27T00:00:00Z"
+  },
+  "blocks": {
+    "ES": [],
+    "NQ": [],
+    "CL": [],
+    "AAPL": [],
+    "SPY": [],
+    "OPTIONS": []
+  },
+  "summary": {
+    "totalBlocks": 0,
+    "completedBlocks": 0,
+    "activeBlocks": 0
+  }
+}

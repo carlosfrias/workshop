@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "createdAt": "2026-05-27T00:00:00Z",
+    "updatedAt": "2026-05-28T00:10:50.162790+00:00",
+    "description": "Trading journal trade log - structured trade data"
+  },
+  "schema": {
+    "trade": {
+      "tradeId": "string (YYYYMMDD-HHMM-SYMBOL-DIRECTION)",
+      "symbol": "string",
+      "direction": "enum [LONG, SHORT]",
+      "entryPrice": "number",
+      "positionSize": "number",
+      "stopLoss": "number",
+      "takeProfit": "array of numbers",
+      "riskReward": "string (e.g., '1:2.5')",
+      "riskAmount": "number (USD)",
+      "entryRationale": "string",
+      "timestamp": "string (ISO 8601 UTC)",
+      "status": "enum [OPEN, CLOSED, PARTIAL]",
+      "exitPrice": "number (optional, when closed)",
+      "exitTimestamp": "string (optional, ISO 8601 UTC)",
+      "realizedPnL": "number (optional, USD)",
+      "realizedR": "number (optional, R-multiple)",
+      "actions": "array of management actions"
+    },
+    "action": {
+      "action": "enum [ADJUST_STOP, SCALE_IN, SCALE_OUT, CLOSE, TRAIL]",
+      "timestamp": "string (ISO 8601 UTC)",
+      "details": "object (action-specific)"
+    }
+  },
+  "trades": [
+    {
+      "tradeId": "20260528-0010-ES-LONG",
+      "symbol": "ES",
+      "direction": "LONG",
+      "entryPrice": 5234.5,
+      "positionSize": 2.0,
+      "stopLoss": 5220.0,
+      "takeProfit": [
+        5260.0,
+        5280.0
+      ],
+      "riskReward": "1:1.8",
+      "riskAmount": 29.0,
+      "entryRationale": "Breakout above resistance with volume confirmation",
+      "timestamp": "2026-05-28T00:10:50.161279+00:00",
+      "status": "OPEN",
+      "actions": [
+        {
+          "action": "ENTRY",
+          "timestamp": "2026-05-28T00:10:50.161279+00:00",
+          "details": {
+            "price": 5234.5,
+            "size": 2.0,
+            "rationale": "Breakout above resistance with volume confirmation"
+          }
+        }
+      ]
+    }
+  ]
+}

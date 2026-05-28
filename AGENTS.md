@@ -13,12 +13,12 @@ Unified routing hub. Detects domain from prompt keywords, routes to section file
 
 | Section | File | Size | Load When |
 |---------|------|------|-----------|
-| Identity & Phases | [routing/identity-and-phases.md](routing/identity-and-phases.md) | ~2KB | Every session — workspace purpose + phase loading |
-| Model Routing | [routing/model-routing.md](routing/model-routing.md) | ~1.2KB | Need to pick a model or understand execution tiers |
-| Project Map | [routing/project-map.md](routing/project-map.md) | ~3KB | Routing to a specific project AGENTS.md |
-| Domain Routing | [routing/domain-routing.md](routing/domain-routing.md) | ~1.5KB | Routing to Trading areas or Infrastructure resources |
-| Execution & Skills | [routing/execution-and-skills.md](routing/execution-and-skills.md) | ~2.5KB | Starting work — execution pattern + mandatory skill auto-load |
-| Workspace Structure | [routing/workspace-structure.md](routing/workspace-structure.md) | ~4KB | Need directory layout, cross-references, discovery path |
+| Identity & Phases | [routing/identity-and-phases.md](./routing/identity-and-phases.md) | ~2KB | Every session — workspace purpose + phase loading |
+| Model Routing | [routing/model-routing.md](./routing/model-routing.md) | ~1.2KB | Need to pick a model or understand execution tiers |
+| Project Map | [routing/project-map.md](./routing/project-map.md) | ~3KB | Routing to a specific project AGENTS.md |
+| Domain Routing | [routing/domain-routing.md](./routing/domain-routing.md) | ~1.5KB | Routing to Trading areas or Infrastructure resources |
+| Execution & Skills | [routing/execution-and-skills.md](./routing/execution-and-skills.md) | ~2.5KB | Starting work — execution pattern + mandatory skill auto-load |
+| Workspace Structure | [routing/workspace-structure.md](./routing/workspace-structure.md) | ~4KB | Need directory layout, cross-references, discovery path |
 
 ---
 
@@ -42,6 +42,14 @@ bash ~/.pi/agent/skills/local-model-pilot/scripts/check-model-tier.sh
 - Output `linear` → load `linear/` scripts from skill
 - Output `decomposed` → load decomposed sections from skill manifest
 
+## Path Resolution Rule
+
+**All navigable markdown links MUST use `./` prefix.** The `read` tool resolves bare paths from CWD, not the file's directory.
+
+- ✅ `[routing/foo.md](./routing/foo.md)` — correct resolution
+- ❌ `[routing/foo.md](routing/foo.md)` — resolves from CWD, breaks
+- ❌ `[[routing/foo]]` — wiki link, not usable by `read`
+
 ---
 
 ## Quick Task Routing
@@ -62,9 +70,9 @@ bash ~/.pi/agent/skills/local-model-pilot/scripts/check-model-tier.sh
 ## Discovery Path
 
 ```
-1. carlos-desktop/AGENTS.md              ← Pick workspace
+1. AGENTS.md              ← Pick workspace
 2. workshop/AGENTS.md                    ← THIS FILE — pick section
-3. routing/{section}.md                  ← Load only what you need
+3. ./routing/{section}.md                  ← Load only what you need
 4. workshop/01-Projects/{project}/AGENTS.md ← Project rules
    OR workshop/02-Areas/Trading/{area}/AGENTS.md ← Domain rules
 5. personal-vault/01-Projects/{project}/   ← Documentation, session history

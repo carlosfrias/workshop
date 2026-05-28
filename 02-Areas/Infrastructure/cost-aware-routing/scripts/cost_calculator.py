@@ -194,7 +194,7 @@ def validate_billing_tiers(tiers: Optional[dict] = None) -> list:
 
         if price <= 0:
             errors.append(f"{tier['id']}: price must be > 0, got {price}")
-        if margin <= 0 or margin > 100:
+        if margin < 0 or margin > 100:
             errors.append(f"{tier['id']}: margin must be 0-100%, got {margin}%")
 
         # Check local tiers are cheaper than cloud tiers
