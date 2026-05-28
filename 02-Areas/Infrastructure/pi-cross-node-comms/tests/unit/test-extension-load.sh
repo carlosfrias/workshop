@@ -118,6 +118,49 @@ for HELPER in "${HELPER_FILES[@]}"; do
   fi
 done
 
+# 9. Reply guard warnings must exist in tool descriptions
+EXPECTED_WARNINGS=("DO NOT call this tool to REPLY to an inbound message" "only use msg_ids you got back from coms_net_send" "Do NOT call this with a msg_id that came in via an inbound")
+for W in "${EXPECTED_WARNINGS[@]}"; do
+  TOTAL=$((TOTAL + 1))
+  if grep -qF "$W" "$EXT_FILE"; then
+    PASS=$((PASS + 1))
+    echo "  ✅ Reply guard warning present: ${W:0:40}..."
+  else
+    FAIL=$((FAIL + 1))
+    echo "  ❌ Missing reply guard warning: ${W:0:40}..."
+  fi
+done
+
+# 10. SSE connection setup
+TOTAL=$((TOTAL + 1))
+if grep -q "connectSSE\|sseUrlPath" "$EXT_FILE"; then
+  PASS=$((PASS + 1))
+  echo "  ✅ Has SSE connection setup"
+else
+  FAIL=$((FAIL + 1))
+  echo "  ❌ Missing SSE connection setup"
+fi
+
+# 11. Heartbeat registration
+TOTAL=$((TOTAL + 1))
+if grep -q "heartbeat\|performHeartbeatTick" "$EXT_FILE"; then
+  PASS=$((PASS + 1))
+  echo "  ✅ Has heartbeat registration"
+else
+  FAIL=$((FAIL + 1))
+  echo "  ❌ Missing heartbeat registration"
+fi
+
+# 12. SSE abort/cleanup
+TOTAL=$((TOTAL + 1))
+if grep -q "sseAbort\|AbortController" "$EXT_FILE"; then
+  PASS=$((PASS + 1))
+  echo "  ✅ Has SSE abort/cleanup"
+else
+  FAIL=$((FAIL + 1))
+  echo "  ❌ Missing SSE abort/cleanup"
+fi
+
 echo ""
 echo "=========================================="
 echo "pi-cross-node-comms extension-load: $PASS passed, $FAIL failed, $TOTAL total"
