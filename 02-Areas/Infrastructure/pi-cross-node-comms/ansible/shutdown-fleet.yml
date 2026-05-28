@@ -70,7 +70,7 @@
 
 - name: PHASE 2 - Stop Hub Server on fnet2
   hosts: fnet2
-  gather_facts: no
+  gather_facts: yes
 
   vars:
     deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
