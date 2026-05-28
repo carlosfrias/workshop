@@ -842,6 +842,7 @@ async function handleHeartbeat(
 				agent: {
 					session_id: entry.session_id,
 					name: entry.name,
+					node: entry.node,
 					context_used_pct: entry.context_used_pct,
 					queue_depth: entry.queue_depth,
 					model: entry.model,
@@ -979,6 +980,7 @@ async function handleSendMessage(req: Request): Promise<Response> {
 			sender: {
 				session_id: sender.session_id,
 				name: sender.name,
+				node: sender.node,
 				cwd: sender.cwd,
 			},
 			prompt: msg.prompt,

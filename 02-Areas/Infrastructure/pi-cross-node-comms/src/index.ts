@@ -137,6 +137,7 @@ interface InboundContext {
 	sender_session: string;
 	sender_name: string;
 	sender_cwd: string;
+	sender_node: string;
 	response_schema?: object | null;
 	fulfilled: boolean;
 }
@@ -671,6 +672,7 @@ export default function (pi: ExtensionAPI) {
 		const senderName = typeof sender.name === "string" ? sender.name : "unknown";
 		const senderCwd = typeof sender.cwd === "string" ? sender.cwd : "?";
 		const senderSession = typeof sender.session_id === "string" ? sender.session_id : "?";
+		const senderNode = typeof sender.node === "string" ? sender.node : "?";
 		const promptText = typeof data.prompt === "string" ? data.prompt : "";
 		const hops = typeof data.hops === "number" ? data.hops : 0;
 		const responseSchema = (data.response_schema && typeof data.response_schema === "object") ? data.response_schema : null;
@@ -681,6 +683,7 @@ export default function (pi: ExtensionAPI) {
 			sender_session: senderSession,
 			sender_name: senderName,
 			sender_cwd: senderCwd,
+			sender_node: senderNode,
 			response_schema: responseSchema,
 			fulfilled: false,
 		};
@@ -689,7 +692,9 @@ export default function (pi: ExtensionAPI) {
 
 		try {
 			pi.sendUserMessage(
-				`[from ${senderName} @ ${senderCwd}]\n` +
+				const nodePrefix = senderNode !== "?" ? `[${senderNode}] ` : "";
+			pi.sendUserMessage(
+				`[from ${nodePrefix}${senderName} @ ${senderCwd}]\n` +
 				`[reply by writing a normal assistant message — your turn output is auto-returned to ${senderName}. ` +
 				`DO NOT call coms_net_send/coms_net_await/coms_net_get to reply; that creates a ping-pong loop. ` +
 				`msg_id ${msg_id} belongs to ${senderName}'s outbound, not yours.]\n\n` +
