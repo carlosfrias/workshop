@@ -100,7 +100,8 @@ print('yes' if d.get('ok') else 'no')
 if [[ "$REGISTER_OK" == "yes" ]]; then
   echo "  ✅ Test agent registered: $TEST_AGENT_NAME"
 else
-  echo "  ⚠️  Test agent registration may have failed (proceeding anyway)"
+  FAIL=$((FAIL + 1))
+  echo "  ❌ Test agent registration failed — cannot continue"
 fi
 
 # Cleanup function — unregister test agent on exit
@@ -164,7 +165,6 @@ if [[ "$FIRST_AGENT_VALID" == "valid" ]]; then
   PASS=$((PASS + 1))
   echo "  ✅ Agent entries have required fields"
 elif [[ "$FIRST_AGENT_VALID" == "no_agents" ]]; then
-  PASS=$((PASS + 1))  # No agents to validate, skip
   echo "  ⚠️  No agents to validate fields (skip)"
 else
   FAIL=$((FAIL + 1))

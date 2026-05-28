@@ -168,25 +168,23 @@ fi
 echo ""
 echo "--- Step 3: Send test dispatch ---"
 
-# Pick the first online agent as target
+# Pick the first online agent as target, fall back to first agent regardless
 TARGET_NAME=$(echo "$AGENTS_RESP" | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 agents = d.get('agents', d if isinstance(d, list) else [])
-for a in agents:
-    if a.get('status') == 'online' or True:
-        print(a.get('name', ''))
-        break
+online = [a for a in agents if a.get('status') == 'online']
+agent = online[0] if online else (agents[0] if agents else None)
+print(agent.get('name', '') if agent else '')
 " 2>/dev/null || echo "")
 
 TARGET_SESSION=$(echo "$AGENTS_RESP" | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 agents = d.get('agents', d if isinstance(d, list) else [])
-for a in agents:
-    if a.get('status') == 'online' or True:
-        print(a.get('session_id', ''))
-        break
+online = [a for a in agents if a.get('status') == 'online']
+agent = online[0] if online else (agents[0] if agents else None)
+print(agent.get('session_id', '') if agent else '')
 " 2>/dev/null || echo "")
 
 TOTAL=$((TOTAL + 1))
