@@ -114,6 +114,8 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 5. `coms_net_list` output includes `@node` prefix only for valid hostnames/IPs
 6. **Previous bug (fixed 2026-05-27):** `os.hostname()` was used directly with no override — every agent on `mac-orchestrator` showed that hostname. Now operators set `--node fnet2` or `PI_COMS_NET_NODE=fnet2` to override.
 7. Audit log: When node resolution falls to "unknown", extension logs `node_resolution_fallback` event with source and attempted values
+8. **SSE node propagation (fixed 2026-05-27):** `agent_updated` and `prompt` events now include `node` field. Previously, peer node was lost on heartbeat updates and inbound prompts showed no sender node.
+9. **Inbound message format:** `[from [fnet3] planner @ /cwd]` — node prefix shown for known nodes, omitted for `?`
 
 ## Capability-Aware Routing
 
@@ -140,11 +142,14 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 ## Test Command
 
 ```bash
-bun test                    # full suite (164 tests, 11 files)
+bun test                    # full suite (250 tests, 15 files)
 bun test tests/resolve-node.test.ts     # node resolution priority chain
 bun test tests/node-identity.test.ts   # node validation logic
 bun test tests/tui-footer-node.test.ts  # TUI node display
 bun test tests/heartbeat-tick.test.ts  # heartbeat stale-ctx protection
+bun test tests/inbound-prompt-node.test.ts  # sender_node in inbound prompts
+bun test server/__tests__/server-sse-node.test.ts  # SSE events include node
+bun test server/__tests__/node-name-integration.test.ts  # server node validation
 ```
 
 ## Conventions
