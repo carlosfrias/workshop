@@ -17,7 +17,7 @@
   vars:
     hub_url: "http://192.168.0.142:8080"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
-    hub_project: "lab"
+    hub_project: "default"
     extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
     systemd_src: "{{ playbook_dir }}/systemd"
 
