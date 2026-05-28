@@ -336,6 +336,31 @@ function isValidNodeName(s: string): boolean {
 	return false;
 }
 
+/**
+ * Validates a model string. Models are more permissive than node names:
+ * - Accept provider-prefixed models: "ollama/qwen3.5:4b", "anthropic/claude-3.5-sonnet"
+ * - Accept short model names: "gpt-4o", "claude-3.5-sonnet", "gemini-2.5-flash"
+ * - Reject obviously invalid sentinel values: "undefined", "null", empty, whitespace-only
+ * - Reject all-uppercase hash-like strings (same pattern as agent IDs)
+ * - Truncate models longer than 128 characters
+ * Returns the validated model string, or "unknown" for invalid input.
+ */
+function sanitizeModel(raw: string | undefined | null): string {
+	if (typeof raw !== "string") return "unknown";
+	const s = raw.trim();
+	if (s.length === 0) return "unknown";
+	// Reject JS sentinel values that leak from undefined/null
+	if (s === "undefined" || s === "null") return "unknown";
+	// Reject whitespace-only strings
+	if (/^\s+$/.test(s)) return "unknown";
+	// Reject all-uppercase hash-like codes (e.g. session IDs, random hex)
+	if (/^[A-Z0-9]+$/.test(s) && s.length >= 6) return "unknown";
+	// Accept anything else (model names are free-form with provider prefixes, colons, dots)
+	// Truncate absurdly long strings
+	if (s.length > 128) return s.slice(0, 128);
+	return s;
+}
+
 export function tokensEqual(a: string, b: string): boolean {
 	const ab = Buffer.from(a, "utf-8");
 	const bb = Buffer.from(b, "utf-8");
@@ -607,7 +632,7 @@ async function handleRegister(req: Request): Promise<Response> {
 		session_id: body.session_id,
 		name: resolvedName,
 		purpose: body.purpose ?? "",
-		model: body.model ?? "unknown",
+		model: sanitizeModel(body.model),
 		provider: body.provider,
 		color: body.color ?? "#888888",
 		cwd: body.cwd ?? "",
@@ -814,7 +839,7 @@ async function handleHeartbeat(
 		entry.context_used_pct = body.context_used_pct;
 	if (typeof body.queue_depth === "number")
 		entry.queue_depth = body.queue_depth;
-	if (typeof body.model === "string") entry.model = body.model;
+	if (typeof body.model === "string" && body.model.trim()) entry.model = sanitizeModel(body.model);
 	if (
 		body.status === "online" ||
 		body.status === "stale" ||
