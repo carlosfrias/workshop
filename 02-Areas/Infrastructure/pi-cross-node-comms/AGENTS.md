@@ -11,7 +11,7 @@ Cross-node pi communication package. Extracted `coms-net` extension and hub serv
 
 1. **HUB FIRST, THEN PI** — Start the hub before launching any pi sessions. The extension reads `server.json` only at init time; no hot-reload.
 2. **Local dev:** Run `scripts/standup-hub.sh` → then start pi (extension auto-discovers `~/.pi/coms-net/projects/<project>/server.json`)
-3. **Production (lab):** Run Ansible `standup-fleet.yml` (6-phase: Docker hub → pi → Ollama → extension → systemd agents → validate)
+3. **Production (lab):** Run Ansible `standup-fleet-chains.yml` (3 concurrent chains: Ollama | Pi+Extension | Hub→Agents→Validate) or legacy `standup-fleet.yml` (6-phase monolith)
 4. **If hub started after pi:** Must restart pi entirely. `/reload` does NOT re-read `server.json` (tested 2026-05-24).
 5. **Fixed port:** Local dev uses port 6420 to avoid ephemeral port confusion. Production uses port 8080 (Docker on fnet2)
 6. **Remote agents ALWAYS need `--server-url` and `--auth-token`** — they cannot read fnet2's `server.json`
@@ -42,8 +42,15 @@ pi-cross-node-comms/
 ├── README.md                ← Quick start
 ├── package.json
 ├── ansible/
-│   ├── standup-fleet.yml    # 6-phase unified playbook (hub+pi+ollama+ext+agents+prune)
-│   ├── shutdown-fleet.yml   # 3-phase shutdown (stop agents → stop hub → verify)
+│   ├── standup-fleet-chains.yml  # Concurrent chain orchestrator (3 chains)
+│   ├── standup-fleet.yml          # 6-phase unified playbook (legacy monolith)
+│   ├── phase1-hub-server.yml     # Chain 3 lead — Docker hub on fnet2
+│   ├── phase2-pi-availability.yml # Chain 2 lead — nvm + Node + pi
+│   ├── phase3-ollama-models.yml   # Chain 1 — LVM + Ollama + models
+│   ├── phase4-extension-deploy.yml # Chain 2 step 2 — coms-net extension
+│   ├── phase5-agent-services.yml  # Chain 3 step 2 — systemd + tmux agents
+│   ├── phase6-fleet-validation.yml # Chain 3 step 3 — validate + prune
+│   ├── shutdown-fleet.yml           # 3-phase shutdown (stop agents → stop hub → verify)
 │   ├── deploy-hub-to-fnet2.yml
 │   ├── deploy-fleet.yml
 │   ├── start-agents.yml
@@ -78,8 +85,10 @@ The cascade is per-sub-task. Decomposer plans are tier-agnostic. Verifier is tie
 
 | Task | Command |
 |------|--------|
-| **Standup fleet (production)** | `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` |
+| **Standup fleet (chains — recommended)** | `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet-chains.yml` |
+| **Standup fleet (legacy monolith)** | `ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml` |
 | **Standup fleet (playbook-executor)** | `scripts/run-playbook.sh "stand up the fleet"` |
+| **Individual phase (standalone)** | `ansible-playbook -i ansible/inventory.yml ansible/phase<N>-<name>.yml` |
 | **Standup hub (local dev)** | `scripts/standup-hub.sh [--port PORT] [--project PROJECT]` |
 | **Shutdown fleet (production)** | `ansible-playbook -i ansible/inventory.yml ansible/shutdown-fleet.yml` |
 | **Shutdown fleet (playbook-executor)** | `scripts/run-playbook.sh "shutdown fleet"` |

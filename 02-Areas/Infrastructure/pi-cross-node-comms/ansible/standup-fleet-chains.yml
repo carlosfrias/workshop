@@ -1,0 +1,57 @@
+---
+# Standup Fleet — Concurrent Chain Orchestrator
+#
+# Runs the 6 separated phase playbooks as 3 concurrent chains.
+# Each chain runs its playbooks sequentially; all chains launch in parallel.
+#
+#   Chain 1: Phase 3 (Ollama + Models)    — longest-running, no deps
+#   Chain 2: Phase 2 → Phase 4            — pi before extension; independent of hub
+#   Chain 3: Phase 1 → Phase 5 → Phase 6  — hub → agents → validate
+#
+# Usage:
+#   ansible-playbook -i inventory.yml standup-fleet-chains.yml
+#
+# Individual phases can still be run standalone:
+#   ansible-playbook -i inventory.yml phase1-hub-server.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
+
+- name: STANDUP FLEET — Concurrent Chain Orchestrator
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Display banner
+      ansible.builtin.debug:
+        msg:
+          - "═══════════════════════════════════════════════════"
+          - "  coms-net FLEET STANDUP (Concurrent Chains)"
+          - "  Chain 1: Phase 3 — Ollama + Models"
+          - "  Chain 2: Phase 2 → Phase 4 — Pi + Extension"
+          - "  Chain 3: Phase 1 → Phase 5 → Phase 6 — Hub → Agents → Validate"
+          - "═══════════════════════════════════════════════════"
+
+# ── Chain 1: Ollama + Models (longest, no dependencies) ─────────────────────
+
+- name: CHAIN 1 — Ollama + Models
+  import_playbook: phase3-ollama-models.yml
+
+# ── Chain 2: Pi Install → Extension Deploy (sequential within chain) ────────
+
+- name: CHAIN 2 — Pi Availability
+  import_playbook: phase2-pi-availability.yml
+
+- name: CHAIN 2 — Extension Deploy
+  import_playbook: phase4-extension-deploy.yml
+
+# ── Chain 3: Hub → Agent Launch → Fleet Validate (sequential within chain) ─
+
+- name: CHAIN 3 — Hub Server
+  import_playbook: phase1-hub-server.yml
+
+- name: CHAIN 3 — Agent Services
+  import_playbook: phase5-agent-services.yml
+
+- name: CHAIN 3 — Fleet Validation
+  import_playbook: phase6-fleet-validation.yml

@@ -1,0 +1,51 @@
+---
+# Phase 4: coms-net Extension Deploy — all lab nodes
+#
+# Deploys the coms-net extension to every lab node.
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase4-extension-deploy.yml
+
+- name: PHASE 4 - coms-net Extension on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    extension_src: "{{ playbook_dir }}/../"
+
+  tasks:
+    - name: Create extension directories
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - src/skills/pi-cross-node-comms
+        - server
+
+    - name: Copy extension files
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
+        mode: '0644'
+      loop:
+        - src/index.ts
+        - src/heartbeat-tick.ts
+        - src/themeMap.ts
+        - src/skills/pi-cross-node-comms/SKILL.md
+        - package.json
+
+    - name: Install extension via pi
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        cd {{ ansible_env.HOME }}/pi-cross-node-comms
+        pi install .
+      args:
+        executable: /bin/bash
+      register: pi_install
+      changed_when: "'Installed' in pi_install.stdout"
+
+    - name: Report extension ready
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} — extension installed"

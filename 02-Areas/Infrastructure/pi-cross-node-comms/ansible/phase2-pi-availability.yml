@@ -1,0 +1,158 @@
+---
+# Phase 2: pi Agent — all lab nodes (idempotent install/upgrade)
+#
+# Ensures pi is installed and current on every lab node (nvm + Node v24.15).
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase2-pi-availability.yml
+
+- name: PHASE 2 - pi Availability on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    pi_version_target: "0.75.5"
+    nvm_version: "0.40.4"
+    node_version: "24.15.0"
+    nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh"
+
+  tasks:
+    # ── Bashrc cleanup ──────────────────────────────────────────
+    - name: Remove conflicting npm PATH lines from .bashrc
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        regexp: '^export PATH=.*npm.*prefix.*\$PATH$'
+        state: absent
+
+    - name: Remove stale .npm-global PATH from .bashrc
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        regexp: '^export PATH="\$HOME/\.npm-global/bin:\$HOME/\.local/bin:\$PATH"$'
+        state: absent
+
+    # ── nvm installation ────────────────────────────────────────
+    - name: Check if nvm is installed
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm --version
+      args:
+        executable: /bin/bash
+      register: nvm_current
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Install nvm
+      ansible.builtin.shell: curl -o- {{ nvm_install_url }} | bash
+      args:
+        executable: /bin/bash
+      when: nvm_current.failed or (nvm_current.stdout | trim) != nvm_version
+      changed_when: true
+
+    - name: Ensure nvm lines in .bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        marker: "# {mark} nvm"
+        block: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+    # ── Node.js via nvm ─────────────────────────────────────────
+    - name: Check current default Node.js version
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm current
+      args:
+        executable: /bin/bash
+      register: node_current
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Install Node.js {{ node_version }} via nvm
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install {{ node_version }}
+        nvm alias default {{ node_version }}
+      args:
+        executable: /bin/bash
+      when: >
+        node_current.failed or
+        (node_current.stdout is defined and
+         (node_current.stdout | regex_replace('^v', '')) != node_version)
+      changed_when: true
+
+    # ── Remove system NodeSource if present ─────────────────────
+    - name: Check if NodeSource package is installed
+      ansible.builtin.shell: dpkg -l nodejs 2>/dev/null | grep -q nodesource && echo "present" || echo "absent"
+      register: nodesource_check
+      changed_when: false
+
+    - name: Remove system NodeSource package
+      ansible.builtin.shell: |
+        sudo apt-get remove -y nodejs
+        sudo rm -f /etc/apt/sources.list.d/nodesource.sources /usr/share/keyrings/nodesource.gpg
+        sudo apt-get autoremove -y
+      when: nodesource_check.stdout | trim == "present"
+      changed_when: true
+
+    - name: Remove stale system-level npm global packages
+      ansible.builtin.shell: |
+        sudo rm -f /usr/local/bin/pi /usr/bin/pi
+        sudo rm -rf /usr/lib/node_modules/@earendil-works /usr/lib/node_modules/@mariozechner /usr/lib/node_modules/pi-intercom
+        sudo rm -rf /usr/local/lib/node_modules/@earendil-works /usr/local/lib/node_modules/@mariozechner /usr/local/lib/node_modules/pi-intercom
+      changed_when: false
+      failed_when: false
+
+    # ── pi installation via nvm ─────────────────────────────────
+    - name: Check current pi version
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pi --version 2>&1
+      args:
+        executable: /bin/bash
+      register: pi_current
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Install or upgrade pi
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        npm uninstall -g @mariozechner/pi-coding-agent 2>/dev/null || true
+        npm install -g @earendil-works/pi-coding-agent
+      args:
+        executable: /bin/bash
+      when: >
+        pi_current.failed or
+        (pi_current.stdout is defined and pi_current.stdout | length > 0 and
+         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<'))
+      changed_when: true
+
+    - name: Run pi update
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pi update
+      args:
+        executable: /bin/bash
+      register: pi_update_result
+      changed_when: true
+      ignore_errors: yes
+
+    - name: Verify pi installation
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pi --version 2>&1
+      args:
+        executable: /bin/bash
+      register: pi_verify
+      changed_when: false
+
+    - name: Report pi status
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} — pi {{ pi_verify.stdout | default(pi_verify.stderr, true) | trim }}, node {{ node_current.stdout | default('unknown') | trim }}"

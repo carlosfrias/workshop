@@ -1,0 +1,83 @@
+---
+# Phase 6: Fleet Validation + Prune Down Nodes
+#
+# Validates the fleet is online, prunes unreachable nodes from the hub.
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase6-fleet-validation.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
+
+- name: PHASE 6 - Fleet Validation + Prune Down Nodes
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_url: "http://192.168.0.142:8080"
+
+  tasks:
+    - name: Wait for agents to register on hub
+      ansible.builtin.shell: |
+        for i in $(seq 1 30); do
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          if [ "$count" -ge 1 ]; then
+            echo "Agents registered: $count"
+            exit 0
+          fi
+          sleep 3
+        done
+        echo "No agents registered after 90 seconds"
+        exit 1
+      register: agent_wait
+      changed_when: false
+
+    - name: Check which lab nodes are reachable via SSH
+      ansible.builtin.shell: |
+        for host in fnet1 fnet2 fnet3 fnet4 fnet5 fnet6 fnet7; do
+          if ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$host" true 2>/dev/null; then
+            echo "$host UP"
+          else
+            echo "$host DOWN"
+          fi
+        done
+      register: ssh_checks
+      changed_when: false
+      failed_when: false
+
+    - name: Build list of down node names
+      ansible.builtin.set_fact:
+        down_node_names: "{{ ssh_checks.stdout_lines | select('match', '.*DOWN') | map('regex_replace', ' DOWN$', '') | list }}"
+
+    - name: Prune down nodes from hub
+      ansible.builtin.shell: |
+        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "
+          import json, sys
+          agents = json.load(sys.stdin).get('agents', [])
+          down = {{ down_node_names | to_json }}
+          for a in agents:
+              if a['name'] in down:
+                  print(a['session_id'])
+        " 2>/dev/null); do
+          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=lab" 2>/dev/null || true
+        done
+      ignore_errors: yes
+
+    - name: Get final agent list
+      ansible.builtin.shell: |
+        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
+      register: final_agents
+      changed_when: false
+
+    - name: Display fleet status
+      ansible.builtin.debug:
+        msg:
+          - "============================================================="
+          - "  FLEET STANDUP COMPLETE"
+          - "  Hub:      {{ hub_url }}"
+          - "  Project:  lab"
+          - "  Agents:   see output above"
+          - ""
+          - "  Down nodes pruned: {{ down_node_names | join(', ') | default('none') }}"
+          - "============================================================="

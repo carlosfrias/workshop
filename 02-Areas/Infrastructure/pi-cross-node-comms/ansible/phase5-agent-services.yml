@@ -1,0 +1,127 @@
+---
+# Phase 5: Start Agent Services — systemd + tmux on all lab nodes
+#
+# Installs systemd service that launches pi agents via tmux for PTY support.
+# Agents survive crashes, hub restarts (SSE reconnect), and host reboots.
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase5-agent-services.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
+
+- name: PHASE 5 - Install and Start Agent Services (systemd)
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    hub_url: "http://192.168.0.142:8080"
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    hub_project: "lab"
+    extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
+    systemd_src: "{{ playbook_dir }}/systemd"
+
+  tasks:
+    # ── Discover pi executable path ──
+    - name: Find pi executable path
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        which pi
+      args:
+        executable: /bin/bash
+      register: pi_which
+      changed_when: false
+
+    - name: Set pi_executable fact
+      ansible.builtin.set_fact:
+        pi_executable: "{{ pi_which.stdout | default('/usr/local/bin/pi') }}"
+
+    # ── Stop any nohup-launched agent (migration path) ──
+    - name: Kill any existing nohup agent on this node
+      ansible.builtin.shell: |
+        pkill -f "pi -e.*coms-net" 2>/dev/null || true
+        pkill -f "pi.*--name.*{{ inventory_hostname }}" 2>/dev/null || true
+        rm -f /tmp/pi-agent-{{ inventory_hostname }}.pid
+        true
+      changed_when: false
+      failed_when: false
+
+    # ── Stop any existing systemd service (for clean restart) ──
+    - name: Stop existing systemd service if running
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        state: stopped
+      ignore_errors: yes
+      changed_when: false
+
+    # ── Create systemd directory ──
+    - name: Ensure systemd directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/system
+        state: directory
+        mode: '0755'
+      become: yes
+
+    # ── Copy the wrapper script ──
+    - name: Copy pi-agent-standalone.sh wrapper
+      ansible.builtin.copy:
+        src: "{{ systemd_src }}/pi-agent-standalone.sh"
+        dest: "{{ extension_path }}/pi-agent-standalone.sh"
+        mode: '0755'
+      become: yes
+
+    # ── Template and install the systemd unit ──
+    - name: Install systemd unit from template
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent@.service.template"
+        dest: "/etc/systemd/system/pi-cross-node-agent@{{ inventory_hostname }}.service"
+        mode: '0644'
+      become: yes
+
+    # ── Install the environment file (secure permissions) ──
+    - name: Install per-node environment file
+      ansible.builtin.template:
+        src: "{{ systemd_src }}/pi-cross-node-agent.conf"
+        dest: "/etc/pi-cross-node-agent@{{ inventory_hostname }}.conf"
+        mode: '0600'
+        owner: root
+        group: root
+      become: yes
+
+    # ── Reload systemd and enable/start the service ──
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      become: yes
+
+    - name: Enable and start pi-cross-node-agent service
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+        enabled: yes
+        state: started
+      become: yes
+      register: service_start
+
+    # ── Wait for service to be running ──
+    - name: Wait for agent service to be active
+      ansible.builtin.systemd:
+        name: "pi-cross-node-agent@{{ inventory_hostname }}"
+      register: service_status
+      until: service_status.status.ActiveState == 'active'
+      retries: 5
+      delay: 3
+
+    - name: Verify pi process is running
+      ansible.builtin.shell: |
+        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }} && echo "running" || echo "not running"
+      register: pi_running
+      changed_when: false
+
+    - name: Report agent service status
+      ansible.builtin.debug:
+        msg: >-
+          {{ '🚀' if pi_running.stdout == 'running' else '❌' }}
+          {{ inventory_hostname }} —
+          pi-cross-node-agent@{{ inventory_hostname }}
+          {{ service_status.status.ActiveState }}

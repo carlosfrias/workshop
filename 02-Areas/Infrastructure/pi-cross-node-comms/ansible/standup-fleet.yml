@@ -306,6 +306,7 @@
       when: >
         pi_current.failed or
         (pi_current.stdout is defined and
+         (pi_current.stdout | length > 0 and
          (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<'))
       changed_when: true
 

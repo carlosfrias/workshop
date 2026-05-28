@@ -1,0 +1,145 @@
+---
+# Phase 1: Hub Server — fnet2 only
+#
+# Docker-deploys and starts the coms-net hub server on fnet2.
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase1-hub-server.yml
+#
+# Env vars:
+#   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
+
+- name: PHASE 1 - Hub Server on fnet2 (Docker)
+  hosts: fnet2
+  gather_facts: yes
+
+  vars:
+    hub_host: "0.0.0.0"
+    hub_port: "8080"
+    hub_project: "lab"
+    coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
+    extension_src: "{{ playbook_dir }}/../"
+    deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
+
+  tasks:
+    - name: Ensure Docker is installed
+      ansible.builtin.shell: |
+        if ! command -v docker >/dev/null 2>&1; then
+          curl -fsSL https://get.docker.com | sh
+          sudo usermod -aG docker $USER
+        fi
+      changed_when: true
+
+    - name: Ensure Docker daemon is running
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Create deployment directory
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create server subdirectory
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}/server"
+        state: directory
+        mode: '0755'
+
+    - name: Copy Docker assets
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/{{ item }}"
+        dest: "{{ deploy_dir }}/{{ item }}"
+        mode: '0644'
+      loop:
+        - Dockerfile
+        - docker-compose.yml
+        - .dockerignore
+
+    - name: Copy hub server source
+      ansible.builtin.copy:
+        src: "{{ extension_src }}/server/coms-net-server.ts"
+        dest: "{{ deploy_dir }}/server/coms-net-server.ts"
+        mode: '0644'
+
+    - name: Kill any process using hub port (legacy Bun cleanup)
+      ansible.builtin.shell: |
+        pid=$(ss -tlnp 2>/dev/null | grep ":{{ hub_port }}" | grep -oP 'pid=\K[0-9]+' || true)
+        [ -n "$pid" ] && sudo kill "$pid" 2>/dev/null || true
+        true
+      changed_when: false
+      failed_when: false
+
+    - name: Stop existing container
+      ansible.builtin.shell: |
+        cd {{ deploy_dir }}
+        docker compose down --remove-orphans 2>/dev/null || true
+      changed_when: false
+      failed_when: false
+
+    - name: Build and start hub via Docker Compose
+      block:
+        - name: Docker compose up
+          ansible.builtin.shell: |
+            cd {{ deploy_dir }}
+            PI_COMS_NET_AUTH_TOKEN="{{ coms_token }}" \
+            PI_COMS_NET_HOST="{{ hub_host }}" \
+            PI_COMS_NET_PORT="{{ hub_port }}" \
+            PI_COMS_NET_PROJECT="{{ hub_project }}" \
+            docker compose up -d --build --force-recreate
+          register: compose_up
+          changed_when: true
+
+        - name: Verify hub health
+          ansible.builtin.uri:
+            url: "http://localhost:{{ hub_port }}/health"
+            status_code: 200
+          register: hub_health
+          retries: 10
+          delay: 2
+          until: hub_health.status == 200
+
+        - name: Report hub ready
+          ansible.builtin.debug:
+            msg:
+              - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }}) [Docker]"
+              - "   Container: coms-net-hub"
+              - "   Server ID: {{ hub_health.json.server_id | default('check-mode-skip') }}"
+              - "   Image: coms-net-hub:latest"
+      rescue:
+        - name: Dump Docker logs for diagnostics
+          ansible.builtin.shell: |
+            cd {{ deploy_dir }}
+            docker compose logs --tail=50 2>&1 || true
+          changed_when: false
+          failed_when: false
+
+        - name: Check Docker is running
+          ansible.builtin.command: docker info
+          register: docker_info
+          changed_when: false
+          failed_when: false
+          check_mode: no
+
+        - name: Check container exists
+          ansible.builtin.shell: |
+            docker ps -a --filter name=coms-net-hub --format '{{ '{{' }}.Status{{ '}}' }}' 2>/dev/null || echo 'missing'
+          register: container_status
+          changed_when: false
+          failed_when: false
+          check_mode: no
+
+        - name: Diagnostic report
+          ansible.builtin.fail:
+            msg:
+              - "❌ Hub failed to start on fnet2 (Docker)"
+              - "   Docker: {{ 'RUNNING' if docker_info.rc == 0 else 'NOT RUNNING' }}"
+              - "   Container: {{ container_status.stdout | default('unknown') }}"
+              - "   Auth token: {{ 'SET' if coms_token else 'EMPTY' }}"
+              - "   Docker logs above this message. Common fixes:"
+              - "     1. Token empty → pass -e 'coms_token=<token>'"
+              - "     2. Docker not installed → run: curl -fsSL https://get.docker.com | sh"
+              - "     3. Port in use → check: docker ps / sudo ss -tlnp | grep {{ hub_port }}"
+              - "     4. Manual rebuild: cd {{ deploy_dir }} && docker compose build --no-clean && docker compose up -d"

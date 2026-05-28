@@ -1,0 +1,101 @@
+---
+# Phase 3: LVM Expansion + Ollama + Target Models — all lab nodes
+#
+# Expands LVM, installs Ollama, and pulls target models on every lab node.
+# Run standalone:
+#   ansible-playbook -i inventory.yml phase3-ollama-models.yml
+
+- name: PHASE 3 - LVM Expansion + Ollama + Models on Lab Nodes
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    target_models:
+      - "qwen3.5:4b"
+      - "qwen3:8b"
+      - "gemma4:e4b"
+
+  tasks:
+    # ── LVM Expansion ──────────────────────────────────────────
+    - name: Check if ubuntu-vg exists
+      ansible.builtin.shell: sudo vgs ubuntu-vg 2>/dev/null
+      register: vg_check
+      changed_when: false
+      failed_when: false
+
+    - name: Expand LVM to full disk (if ubuntu-vg exists)
+      block:
+        - name: Extend logical volume to 100% free space
+          ansible.builtin.shell: sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+          register: lvextend_result
+          changed_when: lvextend_result.rc == 0
+          failed_when: false
+
+        - name: Resize filesystem
+          ansible.builtin.shell: sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
+          register: resize_result
+          changed_when: resize_result.rc == 0
+          failed_when: false
+
+        - name: Verify LVM expansion
+          ansible.builtin.shell: |
+            lv_size=$(sudo lvs ubuntu-vg/ubuntu-lv --noheadings --units g -o lv_size | tr -d ' g')
+            vg_size=$(sudo vgs ubuntu-vg --noheadings --units g -o vg_size | tr -d ' g')
+            percent=$(awk "BEGIN {printf \"%.0f\", ($lv_size / $vg_size) * 100}")
+            echo "LVM: ${lv_size}G / ${vg_size}G (${percent}%)"
+          register: lvm_verify
+          changed_when: false
+
+        - name: Report LVM expansion
+          ansible.builtin.debug:
+            msg: "✅ {{ inventory_hostname }} — {{ lvm_verify.stdout }}"
+      when: vg_check.rc == 0
+
+    # ── Ollama Installation ────────────────────────────────────
+    - name: Check if Ollama is installed
+      ansible.builtin.command: ollama --version
+      register: ollama_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Install Ollama
+      ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
+      when: ollama_check.rc != 0
+      changed_when: true
+
+    - name: Ensure Ollama systemd service is running
+      ansible.builtin.systemd:
+        name: ollama
+        enabled: true
+        state: started
+      when: ansible_service_mgr == 'systemd'
+      ignore_errors: yes
+
+    - name: Wait for Ollama API
+      ansible.builtin.uri:
+        url: http://localhost:11434/api/tags
+        status_code: 200
+      register: api_ready
+      retries: 15
+      delay: 5
+      until: api_ready.status == 200
+
+    - name: Pull target models
+      ansible.builtin.command: ollama pull {{ item }}
+      register: model_pull
+      retries: 3
+      delay: 30
+      until: model_pull.rc == 0
+      loop: "{{ target_models }}"
+
+    - name: List installed models
+      ansible.builtin.command: ollama list
+      register: model_list
+      changed_when: false
+
+    - name: Report Ollama status
+      ansible.builtin.debug:
+        msg:
+          - "✅ {{ inventory_hostname }} — Ollama ready"
+          - "   Models: {{ model_list.stdout_lines | join(', ') }}"

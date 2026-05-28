@@ -31,19 +31,43 @@ pi update --extensions
 
 ## Usage
 
-### Fleet Standup (Single Command)
+### Fleet Standup
+
+**Concurrent chains (recommended):** Runs 3 chains in parallel — much faster than the monolith.
 
 ```bash
-# Humanized invocation
+ansible-playbook -i ansible/inventory.yml ansible/standup-fleet-chains.yml
+```
+
+| Chain | Playbooks (sequential) | Rationale |
+|-------|----------------------|------------|
+| Chain 1 | Phase 3 — Ollama + Models | Longest-running, no deps |
+| Chain 2 | Phase 2 → Phase 4 | Pi before extension; independent of hub |
+| Chain 3 | Phase 1 → Phase 5 → Phase 6 | Hub → Agents → Validate |
+
+**Individual phases (run standalone):**
+
+```bash
+ansible-playbook -i ansible/inventory.yml ansible/phase1-hub-server.yml     # Hub on fnet2
+ansible-playbook -i ansible/inventory.yml ansible/phase2-pi-availability.yml  # Pi on all nodes
+ansible-playbook -i ansible/inventory.yml ansible/phase3-ollama-models.yml     # Ollama + models
+ansible-playbook -i ansible/inventory.yml ansible/phase4-extension-deploy.yml # Extension on all nodes
+ansible-playbook -i ansible/inventory.yml ansible/phase5-agent-services.yml   # systemd agents
+ansible-playbook -i ansible/inventory.yml ansible/phase6-fleet-validation.yml # Validate + prune
+```
+
+**Legacy monolith (still available):**
+
+```bash
+ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml
+```
+
+**Humanized invocation (playbook-executor):**
+
+```bash
 ./scripts/run-playbook.sh "stand up the fleet"
 ./scripts/run-playbook.sh "get the lab online"
 ./scripts/run-playbook.sh "deploy pi and ollama to the lab"
-
-# Or programmatically
-./scripts/run-playbook.sh standup_fleet
-
-# Or directly
-ansible-playbook -i ansible/inventory.yml ansible/standup-fleet.yml
 ```
 
 ### 1. Start the Hub Server
