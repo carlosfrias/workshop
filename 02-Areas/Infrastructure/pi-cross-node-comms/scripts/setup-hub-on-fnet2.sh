@@ -20,6 +20,7 @@ MACOS_USER="friasc"
 MACOS_SERVER_SRC="/Users/friasc/Cloud/carlos-desktop/workshop/02-Areas/Infrastructure/pi-cross-node-comms/server/coms-net-server.ts"
 LOCAL_SERVER_DIR="$HOME/.pi/coms-net/server"
 LOCAL_SERVER_FILE="$LOCAL_SERVER_DIR/coms-net-server.ts"
+DOCKER_COMPOSE_DIR="$HOME/coms-net-hub"
 HUB_HOST="0.0.0.0"
 HUB_PORT="8080"
 HUB_PROJECT="${PI_COMS_NET_PROJECT:-lab}"
@@ -147,11 +148,57 @@ stop_hub() {
     fi
 }
 
+docker_running() {
+    command -v docker &>/dev/null && docker ps --format '{{.Names}}' 2>/dev/null | grep -q 'coms-net-hub'
+}
+
+docker_stop() {
+    if docker_running; then
+        log "Stopping Docker coms-net-hub container..."
+        docker compose -f "$DOCKER_COMPOSE_DIR/docker-compose.yml" down 2>/dev/null \
+          || docker-compose -f "$DOCKER_COMPOSE_DIR/docker-compose.yml" down 2>/dev/null \
+          || docker stop coms-net-hub 2>/dev/null \
+          || true
+        log "Docker hub stopped."
+    else
+        log "Docker hub not running."
+    fi
+}
+
+docker_rebuild() {
+    log "Rebuilding Docker coms-net-hub image from $DOCKER_COMPOSE_DIR..."
+    # Copy latest server source into Docker build context
+    mkdir -p "$DOCKER_COMPOSE_DIR/server"
+    cp "$LOCAL_SERVER_FILE" "$DOCKER_COMPOSE_DIR/server/coms-net-server.ts" 2>/dev/null \
+      || scp "${MACOS_USER}@${MACOS_IP}:${MACOS_SERVER_SRC}" "$DOCKER_COMPOSE_DIR/server/coms-net-server.ts"
+
+    # Rebuild and recreate container
+    cd "$DOCKER_COMPOSE_DIR"
+    export PI_COMS_NET_AUTH_TOKEN="$AUTH_TOKEN"
+    export PI_COMS_NET_PROJECT="$HUB_PROJECT"
+    docker compose build --no-cache \
+      || docker-compose build --no-cache
+    docker compose up -d --force-recreate \
+      || docker-compose up -d --force-recreate
+    log "Docker hub rebuilt and started."
+    sleep 3
+}
+
 show_status() {
     echo ""
     echo -e "${CYAN}══════════════════════════════════════════════════════${NC}"
     echo -e "${CYAN}  coms-net Hub — fnet2 (192.168.0.142)${NC}"
     echo -e "${CYAN}══════════════════════════════════════════════════════${NC}"
+    echo ""
+    echo -e "${GREEN}── Deployment Mode ──${NC}"
+    if docker_running; then
+        echo "  Mode:    Docker"
+        docker ps --filter name=coms-net-hub --format '{{.ID}} {{.Status}}' 2>/dev/null
+    elif server_running; then
+        echo "  Mode:    Bare (bun process)"
+    else
+        echo "  Mode:    NOT RUNNING"
+    fi
     echo ""
     echo -e "${GREEN}── System Resources ──${NC}"
     echo "  CPU:     $(nproc) cores ($(lscpu 2>/dev/null | grep 'Model name' | sed 's/.*: *//'))"
@@ -203,20 +250,48 @@ ACTION="${1:-start}"
 
 case "$ACTION" in
     start)
-        install_bun
-        if [ ! -f "$LOCAL_SERVER_FILE" ]; then
-            copy_server_code
+        if docker_running; then
+            log "Docker hub already running."
         else
-            log "Server code already present."
+            install_bun
+            if [ ! -f "$LOCAL_SERVER_FILE" ]; then
+                copy_server_code
+            else
+                log "Server code already present."
+            fi
+            start_hub
         fi
-        start_hub
         ;;
-    stop)   stop_hub ;;
-    restart) stop_hub; sleep 1; start_hub ;;
+    stop)   docker_stop; stop_hub ;;
+    restart)
+        if docker_running; then
+            docker_rebuild
+        else
+            stop_hub; sleep 1; start_hub
+        fi
+        ;;
+    rebuild)
+        install_bun; copy_server_code
+        if docker_running; then
+            docker_rebuild
+        else
+            docker_rebuild
+        fi
+        ;;
     status) show_status ;;
     install) install_bun; copy_server_code ;;
+    docker-stop) docker_stop ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status|install}"
+        echo "Usage: $0 {start|stop|restart|rebuild|status|install|docker-stop}"
+        echo ""
+        echo "Commands:"
+        echo "  start        Start hub (bare process or detect Docker)"
+        echo "  stop         Stop hub (Docker + bare)"
+        echo "  restart      Restart hub (rebuilds Docker if running)"
+        echo "  rebuild      Copy latest code + rebuild Docker image"
+        echo "  status       Show hub status (Docker or bare)"
+        echo "  install      Install bun + copy server code"
+        echo "  docker-stop  Stop Docker hub only"
         exit 1
         ;;
 esac
