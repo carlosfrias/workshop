@@ -35,14 +35,48 @@ if [ -z "$PI_BIN" ]; then
     exit 1
 fi
 
-# Create a new tmux session running pi with all arguments
+# Separate pi native flags from extension flags.
+# Pi native flags: --model, --no-session, --extension, --append-system-prompt
+# Extension flags: --name, --project, --server-url, --auth-token, --purpose, --node
+# Extension flags must come AFTER -- in the pi command line.
+#
+# The systemd unit passes all args in order: native flags first, then
+# the -- separator, then extension flags. We split at -- to build the
+# correct command:
+#   pi <native-flags> -- <extension-flags>
+
+NATIVE_ARGS=()
+EXT_ARGS=()
+SEEN_DASH_DASH=false
+for arg in "$@"; do
+    if [[ "$arg" == "--" ]]; then
+        SEEN_DASH_DASH=true
+        continue
+    fi
+    if $SEEN_DASH_DASH; then
+        EXT_ARGS+=("$arg")
+    else
+        NATIVE_ARGS+=("$arg")
+    fi
+done
+
+# Build the pi command: native flags + -- + extension flags
+PI_CMD="$PI_BIN"
+for arg in "${NATIVE_ARGS[@]}"; do
+    PI_CMD="$PI_CMD $arg"
+done
+if [[ ${#EXT_ARGS[@]} -gt 0 ]]; then
+    PI_CMD="$PI_CMD --"
+    for arg in "${EXT_ARGS[@]}"; do
+        PI_CMD="$PI_CMD $arg"
+    done
+fi
+
+# Create a new tmux session running pi
 # -d = detached (no terminal attached)
 # The pi process inherits a proper PTY from tmux.
-# We pass PI_BIN directly (already resolved via NVM above) instead of
-# wrapping in bash -lc, because the login-shell environment under systemd
-# can differ from SSH and cause pi to fail to start.
 tmux new-session -d -s "$SESSION_NAME" -x 200 -y 50 \
-    "$PI_BIN $*"
+    $PI_CMD
 
 # Wait for pi to initialize and be ready for input
 sleep 5

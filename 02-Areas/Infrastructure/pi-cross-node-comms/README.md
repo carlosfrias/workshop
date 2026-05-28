@@ -2,13 +2,32 @@
 
 Cross-node pi communication using an HTTP/SSE hub.
 
-## Install
+## Install & Update
+
+### First-time install
 
 ```bash
-cd workshop/01-Projects/pi-cross-node-comms
-bun install        # install bun itself (if not already)
-pi install .       # install extension
+cd workshop/02-Areas/Infrastructure/pi-cross-node-comms
+pi install .       # install extension globally into pi
 ```
+
+This reads `package.json` for the extension entry point, copies the package into pi's extension directory, and adds it to `~/.pi/settings.json`. After installing, the `coms_net_send`, `coms_net_await`, `coms_net_list`, and `coms_net` tools become available in any pi session.
+
+### Update after code changes
+
+After making changes to the extension source:
+
+```bash
+pi update ./workshop/02-Areas/Infrastructure/pi-cross-node-comms
+```
+
+Or update all installed extensions at once:
+
+```bash
+pi update --extensions
+```
+
+**Restart required:** pi reads extension configs at session start. After install or update, restart pi (or start a new session) for changes to take effect. `/reload` does NOT pick up extension changes.
 
 ## Usage
 

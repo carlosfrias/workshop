@@ -691,8 +691,7 @@ export default function (pi: ExtensionAPI) {
 		currentInbound = inbound;
 
 		try {
-			pi.sendUserMessage(
-				const nodePrefix = senderNode !== "?" ? `[${senderNode}] ` : "";
+			const nodePrefix = senderNode !== "?" ? `[${senderNode}] ` : "";
 			pi.sendUserMessage(
 				`[from ${nodePrefix}${senderName} @ ${senderCwd}]\n` +
 				`[reply by writing a normal assistant message — your turn output is auto-returned to ${senderName}. ` +

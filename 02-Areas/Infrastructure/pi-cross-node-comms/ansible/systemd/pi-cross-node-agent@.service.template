@@ -16,15 +16,16 @@ User={{ ansible_user | default('friasc') }}
 Group={{ ansible_user | default('friasc') }}
 
 ExecStart={{ extension_path }}/pi-agent-standalone.sh \
+    --model ollama/qwen3.5:4b \
+    --no-session \
+    --extension {{ extension_path }}/src/index.ts \
+    --append-system-prompt "You are %i, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a request wrapped in :::dev-request::: markers, execute the sub-task and return your result wrapped in :::dev-response::: JSON with these fields: dev_pipeline.plan_id, dev_pipeline.sub_task_id, dev_pipeline.tier_executed, dev_pipeline.status (SUCCESS|FAIL), dev_pipeline.output, dev_pipeline.execution_time_ms, dev_pipeline.error_reason. Return ONLY the :::dev-response::: JSON, no extra text. For non-D-E-V prompts: report hostname, CPU cores, RAM, disk, and ollama models, then wait for tasks. If task cannot be completed, set status: FAIL with error_reason." \
+    -- \
     --name %i \
     --project {{ hub_project }} \
     --server-url {{ hub_url }} \
     --auth-token {{ coms_token }} \
-    --purpose "lab worker — %i" \
-    --model ollama/qwen3.5:4b \
-    --no-session \
-    --extension {{ extension_path }}/src/index.ts \
-    --append-system-prompt "You are %i, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a request wrapped in :::dev-request::: markers, execute the sub-task and return your result wrapped in :::dev-response::: JSON with these fields: dev_pipeline.plan_id, dev_pipeline.sub_task_id, dev_pipeline.tier_executed, dev_pipeline.status (SUCCESS|FAIL), dev_pipeline.output, dev_pipeline.execution_time_ms, dev_pipeline.error_reason. Return ONLY the :::dev-response::: JSON, no extra text. For non-D-E-V prompts: report hostname, CPU cores, RAM, disk, and ollama models, then wait for tasks. If task cannot be completed, set status: FAIL with error_reason."
+    --purpose "lab worker — %i"
 
 WorkingDirectory={{ extension_path }}
 
@@ -41,7 +42,7 @@ StandardError=journal
 SyslogIdentifier=pi-agent-%i
 
 NoNewPrivileges=true
-ProtectSystem=strict
+ProtectSystem=no
 ProtectHome=no
 ReadWritePaths={{ extension_path }} /tmp /home/{{ ansible_user | default('friasc') }}/.pi
 PrivateTmp=true
