@@ -25,7 +25,7 @@ Match keywords from the prompt to the project AGENTS.md file. Each project has i
 | health, monitor, RAM, CPU, swap, system status, resource, saturation | `./01-Projects/health-monitor/AGENTS.md` |
 | model, pilot, ollama, local model, model routing, models.json | `./01-Projects/local-model-pilot/AGENTS.md` |
 | node, router, routing plan, node scoring, execution location | `./01-Projects/node-router/AGENTS.md` |
-| cross-node, coms-net, coms net, fleet, hub, multi-machine, pi-cross-node, fleet-dispatcher cascade | `./01-Projects/pi-cross-node-comms/AGENTS.md` |
+| cross-node, coms-net, coms net, fleet, hub, multi-machine, pi-cross-node, fleet-dispatcher cascade | Standalone repo: `pi install git:git@github.com:carlosfrias/pi-cross-node-comms` — docs in `personal-vault/02-Areas/Infrastructure/pi-cross-node-comms/` |
 | sshfs, mount, remote, lab node, workspace mount | `./01-Projects/sshfs-accessible/AGENTS.md` |
 | cost, billing, tier, margin, invoice, cost-aware, cost model, cost per token, depreciation, power cost, billing engine, cost tracker, cost status, cost audit | `./01-Projects/cost-aware-routing/AGENTS.md` |
 | nextcloud, cloud storage, file sync, collaboration, private cloud, fnet2, nc config, nc deploy, nc ansible | `./01-Projects/nextcloud/AGENTS.md` |
