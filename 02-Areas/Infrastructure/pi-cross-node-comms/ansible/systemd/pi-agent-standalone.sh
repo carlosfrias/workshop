@@ -35,42 +35,33 @@ if [ -z "$PI_BIN" ]; then
     exit 1
 fi
 
-# Separate pi native flags from extension flags.
-# Pi native flags: --model, --no-session, --extension, --append-system-prompt
-# Extension flags: --name, --project, --server-url, --auth-token, --purpose, --node
-# Extension flags must come AFTER -- in the pi command line.
+# Build the pi command from all flags.
 #
-# The systemd unit passes all args in order: native flags first, then
-# the -- separator, then extension flags. We split at -- to build the
-# correct command:
-#   pi <native-flags> -- <extension-flags>
+# Pi v0.76+ supports extension CLI flags (like --name, --project,
+# --server-url, --auth-token, --purpose, --node) directly on the
+# command line — no -- separator needed. The systemd unit template
+# historically used a -- separator between native and extension flags.
+# We now flatten all flags into a single command line, which works
+# correctly regardless of whether -- is present.
+#
+# Split at -- is kept for backward compat with older systemd units,
+# but the resulting PI_CMD omits the -- separator entirely.
 
-NATIVE_ARGS=()
-EXT_ARGS=()
+ALL_ARGS=()
 SEEN_DASH_DASH=false
 for arg in "$@"; do
     if [[ "$arg" == "--" ]]; then
         SEEN_DASH_DASH=true
         continue
     fi
-    if $SEEN_DASH_DASH; then
-        EXT_ARGS+=("$arg")
-    else
-        NATIVE_ARGS+=("$arg")
-    fi
+    ALL_ARGS+=("$arg")
 done
 
-# Build the pi command: native flags + -- + extension flags
+# Build the pi command — all flags flat (no -- separator)
 PI_CMD="$PI_BIN"
-for arg in "${NATIVE_ARGS[@]}"; do
+for arg in "${ALL_ARGS[@]}"; do
     PI_CMD="$PI_CMD $arg"
 done
-if [[ ${#EXT_ARGS[@]} -gt 0 ]]; then
-    PI_CMD="$PI_CMD --"
-    for arg in "${EXT_ARGS[@]}"; do
-        PI_CMD="$PI_CMD $arg"
-    done
-fi
 
 # Create a new tmux session running pi
 # -d = detached (no terminal attached)
