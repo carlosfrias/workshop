@@ -17,7 +17,7 @@
   vars:
     hub_url: "http://192.168.0.142:8080"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
-    hub_project: "default"
+    hub_project: "lab"
     extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
     systemd_src: "{{ playbook_dir }}/systemd"
 
@@ -114,14 +114,15 @@
 
     - name: Verify pi process is running
       ansible.builtin.shell: |
-        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }} && echo "running" || echo "not running"
+        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }}
       register: pi_running
       changed_when: false
+      failed_when: false
 
     - name: Report agent service status
       ansible.builtin.debug:
         msg: >-
-          {{ '🚀' if pi_running.stdout == 'running' else '❌' }}
+          {{ '🚀' if pi_running.stdout | trim == 'active' else '❌' }}
           {{ inventory_hostname }} —
           pi-cross-node-agent@{{ inventory_hostname }}
-          {{ service_status.status.ActiveState }}
+          {{ pi_running.stdout | trim }}

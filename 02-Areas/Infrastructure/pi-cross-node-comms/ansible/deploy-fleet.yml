@@ -21,18 +21,19 @@
   vars:
     hub_host: "0.0.0.0"
     hub_port: "8080"
-    hub_project: "default"
+    hub_project: "lab"
     coms_token: "{{ lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0') }}"
     # Paths on the orchestrator
     ansible_playbook_dir: "{{ playbook_dir | default(lookup('env', 'PWD')) }}"
     extension_src: "{{ ansible_playbook_dir }}/../"
 
-  # ========================================================================
-  # Phase 1: Hub Server → fnet2 only
-  # ========================================================================
-  - name: ── PHASE 1: Hub Server on fnet2 ──
-    when: inventory_hostname == 'fnet2'
-    block:
+  tasks:
+    # ========================================================================
+    # Phase 1: Hub Server → fnet2 only
+    # ========================================================================
+    - name: "PHASE 1: Hub Server on fnet2"
+      when: inventory_hostname == 'fnet2'
+      block:
       - name: Install Bun on fnet2
         ansible.builtin.shell: |
           curl -fsSL https://bun.sh/install | bash
@@ -92,12 +93,12 @@
             - "✅ Hub running on fnet2 (192.168.0.142:{{ hub_port }})"
             - "   Server ID: {{ hub_health.json.server_id }}"
 
-  # ========================================================================
-  # Phase 2: Extension → all lab nodes
-  # ========================================================================
-  - name: ── PHASE 2: Extension on lab nodes ──
-    when: "'lab_nodes' in group_names"
-    block:
+    # ========================================================================
+    # Phase 2: Extension → all lab nodes
+    # ========================================================================
+    - name: "PHASE 2: Extension on lab nodes"
+      when: "'lab_nodes' in group_names"
+      block:
       - name: Create extension directories
         ansible.builtin.file:
           path: "{{ ansible_env.HOME }}/pi-cross-node-comms/{{ item }}"
@@ -129,14 +130,14 @@
         ansible.builtin.debug:
           msg: "✅ {{ inventory_hostname }} — extension installed"
 
-  # ========================================================================
-  # Phase 3: Final status
-  # ========================================================================
-  - name: ── PHASE 3: Status Report ──
-    hosts: localhost
-    connection: local
-    gather_facts: no
-    tasks:
+# ========================================================================
+# Phase 3: Final status
+# ========================================================================
+- name: "PHASE 3: Status Report"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
       - name: Check hub from macOS
         ansible.builtin.uri:
           url: "http://192.168.0.142:{{ hub_port }}/health"

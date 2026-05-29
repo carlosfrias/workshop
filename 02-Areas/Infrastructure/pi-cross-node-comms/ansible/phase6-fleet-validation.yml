@@ -21,7 +21,7 @@
     - name: Wait for agents to register on hub
       ansible.builtin.shell: |
         for i in $(seq 1 30); do
-          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
           if [ "$count" -ge 1 ]; then
             echo "Agents registered: $count"
             exit 0
@@ -52,7 +52,7 @@
 
     - name: Prune down nodes from hub
       ansible.builtin.shell: |
-        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "
+        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "
           import json, sys
           agents = json.load(sys.stdin).get('agents', [])
           down = {{ down_node_names | to_json }}
@@ -60,13 +60,13 @@
               if a['name'] in down:
                   print(a['session_id'])
         " 2>/dev/null); do
-          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=default" 2>/dev/null || true
+          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=lab" 2>/dev/null || true
         done
       ignore_errors: yes
 
     - name: Get final agent list
       ansible.builtin.shell: |
-        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
+        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
       register: final_agents
       changed_when: false
 

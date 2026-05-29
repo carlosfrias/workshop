@@ -51,7 +51,7 @@
   vars:
     hub_host: "0.0.0.0"
     hub_port: "8080"
-    hub_project: "default"
+    hub_project: "lab"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
     extension_src: "{{ playbook_dir }}/../"
     deploy_dir: "{{ ansible_env.HOME }}/coms-net-hub"
@@ -188,7 +188,7 @@
   strategy: free
 
   vars:
-    pi_version_target: "0.75.5"
+    pi_version_target: "0.77.0"
     nvm_version: "0.40.4"
     node_version: "24.15.0"
     nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh"
@@ -306,8 +306,8 @@
       when: >
         pi_current.failed or
         (pi_current.stdout is defined and
-         pi_current.stdout | length > 0 and
-         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<'))
+         (pi_current.stdout | length > 0 and
+         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<')))
       changed_when: true
 
     - name: Run pi update
@@ -503,7 +503,7 @@
   vars:
     hub_url: "http://192.168.0.142:8080"
     coms_token: "{{ (lookup('env', 'PI_COMS_NET_AUTH_TOKEN') | default('', true)) or '7e095b8e0b5d8bc44feea4da24e989fcf92b9341b5db8ed9604f05c412f386a0' }}"
-    hub_project: "default"
+    hub_project: "lab"
     extension_path: "{{ ansible_env.HOME }}/pi-cross-node-comms"
     systemd_src: "{{ playbook_dir }}/systemd"
 
@@ -600,17 +600,18 @@
 
     - name: Verify pi process is running
       ansible.builtin.shell: |
-        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }} && echo "running" || echo "not running"
+        systemctl is-active pi-cross-node-agent@{{ inventory_hostname }}
       register: pi_running
       changed_when: false
+      failed_when: false
 
     - name: Report agent service status
       ansible.builtin.debug:
         msg: >-
-          {{ '🚀' if pi_running.stdout == 'running' else '❌' }}
+          {{ '🚀' if pi_running.stdout | trim == 'active' else '❌' }}
           {{ inventory_hostname }} —
           pi-cross-node-agent@{{ inventory_hostname }}
-          {{ service_status.status.ActiveState }}
+          {{ pi_running.stdout | trim }}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PHASE 6: Fleet Validation + Prune Down Nodes
@@ -633,7 +634,7 @@
     - name: Wait for agents to register on hub
       ansible.builtin.shell: |
         for i in $(seq 1 30); do
-          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
+          count=$(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('agents',[])))" 2>/dev/null || echo 0)
           if [ "$count" -ge 1 ]; then
             echo "Agents registered: $count"
             exit 0
@@ -664,7 +665,7 @@
 
     - name: Prune down nodes from hub
       ansible.builtin.shell: |
-        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -c "
+        for sid in $(curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -c "
           import json, sys
           agents = json.load(sys.stdin).get('agents', [])
           down = {{ down_node_names | to_json }}
@@ -672,13 +673,13 @@
               if a['name'] in down:
                   print(a['session_id'])
         " 2>/dev/null); do
-          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=default" 2>/dev/null || true
+          curl -sf -X DELETE -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents/${sid}?project=lab" 2>/dev/null || true
         done
       ignore_errors: yes
 
     - name: Get final agent list
       ansible.builtin.shell: |
-        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=default" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
+        curl -sf -H "Authorization: Bearer {{ coms_token }}" "{{ hub_url }}/v1/agents?project=lab" | python3 -m json.tool 2>/dev/null || echo '{"agents":[]}'
       register: final_agents
       changed_when: false
 

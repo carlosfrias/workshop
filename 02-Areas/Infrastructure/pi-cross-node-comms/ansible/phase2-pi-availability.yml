@@ -11,7 +11,7 @@
   strategy: free
 
   vars:
-    pi_version_target: "0.75.5"
+    pi_version_target: "0.77.0"
     nvm_version: "0.40.4"
     node_version: "24.15.0"
     nvm_install_url: "https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh"
@@ -128,8 +128,9 @@
         executable: /bin/bash
       when: >
         pi_current.failed or
-        (pi_current.stdout is defined and pi_current.stdout | length > 0 and
-         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<'))
+        (pi_current.stdout is defined and
+         (pi_current.stdout | length > 0 and
+         (pi_current.stdout | regex_replace('^v', '')) is version(pi_version_target, '<')))
       changed_when: true
 
     - name: Run pi update
