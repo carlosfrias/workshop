@@ -1,67 +1,65 @@
 ---
-status: released
-version: 0.3.0
+status: testing
+version: 0.3.1
 last_updated: 2026-05-30
-phase: Fleet idle CPU burn fix released to upstream main
+phase: Full power-down/restart fleet validation test
 ---
 
 # FOCUS — pi-cross-node-comms
 
 ## Current Focus
 
-Fleet idle CPU burn fix. All 7 nodes were running qwen3.5:4b at 580-600% CPU even with no tasks, causing thermal stress (up to 99°C on fnet7). Root cause identified and fixed.
+**Full fleet power-down and restart validation test.** All fixes from sessions 2026-05-29 and 2026-05-30 need end-to-end verification after a cold reboot. This tests that NFS mounts, Ollama config, systemd units, and fan/governor settings all survive a reboot.
 
-### Session 2026-05-30 — Fleet Idle CPU Burn Fix
+### Session 2026-05-30 — Fleet Validation Power-Down/Restart Test
 
-**Root Cause:** The systemd unit template hardcoded `--model ollama/qwen3.5:4b`, which caused pi to immediately load and hold a persistent streaming connection to Ollama. The Ollama runner burned 100% CPU per core indefinitely because Ollama cannot unload the model while a client holds an open HTTP connection — even with `OLLAMA_KEEP_ALIVE=0` (known bug [ollama#7645](https://github.com/ollama/ollama/issues/7645)). Additionally, `.pi/agent/settings.json` on some nodes had `defaultModel` set, overriding the model-router.
+**Objective:** Verify that all fleet config changes persist across a full power cycle by shutting down all 7 fleet nodes, restarting them, and validating:
 
-**Additional finding:** fnet7 had its CPU governor set to `performance` instead of `powersave`, and all fan cooling devices were stuck at state 0 (off) on fnet3–fnet7 despite temperatures reaching 84–99°C.
+1. **NFS mount** — `/mnt/carlos-desktop` auto-mounts from fstab and is read/write
+2. **Ollama idle** — No Ollama runner loaded at idle, `OLLAMA_KEEP_ALIVE=0` in effect
+3. **Pi agents** — systemd services start, no `--model` flag, agents connect to hub
+4. **Fan cooling** — Fan devices at `cur_state=max_state` (not 0)
+5. **CPU governor** — Set to `powersave` (not `performance`)
+6. **Temperatures** — All nodes under 55°C at idle within 5 minutes of boot
 
-**Fixes applied:**
-1. Removed `--model ollama/qwen3.5:4b` from systemd unit template — pi now uses model-router for on-demand model selection
-2. Removed `defaultModel` from `.pi/agent/settings.json` on all fleet nodes
-3. Set `INITIAL_PROMPT_ENABLED=false` in pi-agent-standalone.sh — prevents model load on startup
-4. Added `OLLAMA_KEEP_ALIVE=0` to systemd unit template and ollama service override
-5. Set fan cooling devices to max on fnet3–fnet7
-6. Fixed fnet7 CPU governor from `performance` to `powersave`
-7. Added ollama-idle-unload watchdog script (safety net, currently disabled)
-8. Added Ollama keep-alive override to phase3-ollama-models.yml Ansible playbook
+**Prerequisites completed:**
+- [x] Fleet idle CPU burn fix (removed `--model`, `defaultModel`, initial prompt)
+- [x] `OLLAMA_KEEP_ALIVE=0` set in systemd and ollama override
+- [x] NFS mounts configured on all 7 nodes with persistent fstab entries
+- [x] Fan cooling devices set to max on fnet3–fnet7
+- [x] CPU governor set to powersave on fnet7
+- [x] All changes committed and tagged v0.3.0 in both repos
 
-**Results:** All 7 nodes went from 580-600% CPU idle burn to 0% (no Ollama runner loaded). Temperatures dropped dramatically:
-
-| Node | Before | After | Δ |
-|------|--------|-------|---|
-| fnet1 | 49.5°C | 49.5°C | — |
-| fnet2 | 56.0°C | 37.0°C | -19°C |
-| fnet3 | 86.0°C | 41.0°C | -45°C |
-| fnet4 | 91.0°C | 44.0°C | -47°C |
-| fnet5 | 90.0°C | 47.0°C | -43°C |
-| fnet6 | 93.0°C | 63.0°C | -30°C |
-| fnet7 | 99.0°C | 60.0°C | -39°C |
+**Test plan:**
+1. SSH into all 7 nodes and run `sudo shutdown -h now` (or `sudo poweroff`)
+2. Wait 30 seconds after all nodes are down
+3. Wake/power on all nodes (may require physical button press or WOL)
+4. Wait 2-3 minutes for boot
+5. SSH into each node and validate all 6 checks above
+6. Run `ansible-playbook -i inventory.yml phase0-nfs-mount.yml` to verify idempotent NFS setup
+7. Run `ansible-playbook -i inventory.yml phase6-fleet-validation.yml` for full validation
 
 ## Active Work
 
-- [x] Remove --model flag from systemd unit template
-- [x] Remove defaultModel from settings.json on all nodes
-- [x] Set OLLAMA_KEEP_ALIVE=0 in systemd unit and ollama override
-- [x] Set INITIAL_PROMPT_ENABLED=false in pi-agent-standalone.sh
-- [x] Fix fnet7 CPU governor to powersave
-- [x] Force fan cooling devices on fnet3–fnet7
-- [x] Add ollama-idle-unload.sh watchdog (safety net)
-- [x] Add Ollama keep-alive override to phase3 playbook
-- [x] Commit and push all changes to upstream main
+- [ ] Full power-down of all 7 fleet nodes
+- [ ] Restart and validate NFS mounts persist
+- [ ] Validate Ollama idle (no runner loaded)
+- [ ] Validate pi-agent services start without `--model`
+- [ ] Validate fan cooling devices active
+- [ ] Validate CPU governor is powersave
+- [ ] Validate temperatures under 55°C at idle
 
 ## Next Steps
 
-1. Run full fleet standup with updated playbooks to verify end-to-end
-2. Verify model-router correctly selects models when coms-net tasks arrive
-3. Remove `defaultModel` from Ansible-deployed settings template (if one exists)
-4. Add fan cooling device configuration to fleet standup playbooks
-5. Add CPU governor check (ensure `powersave`) to fleet validation phase
+1. Power down all fleet nodes: `for n in fnet{1..7}; do ssh $n sudo poweroff; done`
+2. Wait, then power on (physical or WOL)
+3. Run validation playbook against all nodes
+4. If any config doesn't persist, add to Ansible playbooks for persistence
 
 ## Blockers
 
-None
+- Some nodes may not support Wake-on-LAN — may need physical power button press
+- fnet3–fnet7 fan/governor settings are runtime-only and may not survive reboot unless added to systemd or sysfs rules
 
 ## Quality Checks
 
@@ -71,18 +69,22 @@ None
 - [x] systemctl status reports use `'active'` not `'running'`
 - [x] deploy-fleet.yml has valid YAML structure
 - [x] All 7 fleet nodes confirmed IDLE with no Ollama runners
+- [x] NFS mounts verified read+write on all 7 nodes
+- [ ] NFS mounts persist across reboot (PENDING TEST)
+- [ ] Fan/governor settings persist across reboot (PENDING TEST)
+- [ ] Pi agents start without model loading (PENDING TEST)
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `ansible/standup-fleet.yml` | Full fleet standup (6 phases) |
-| `ansible/phase3-ollama-models.yml` | Ollama + models + keep-alive override |
-| `ansible/phase5-agent-services.yml` | Systemd agent launch |
-| `ansible/systemd/pi-cross-node-agent@.service.template` | Agent unit (no --model) |
-| `ansible/systemd/pi-agent-standalone.sh` | Agent wrapper (no initial prompt) |
-| `ansible/systemd/ollama-idle-unload.sh` | Watchdog safety net |
-| `ansible/systemd/pi-cross-node-agent.conf` | Per-node env file |
+| File | Purpose | Must Be In Sync With |
+|------|---------|----------------------|
+| `ansible/phase0-nfs-mount.yml` | NFS mount for orchestrator workspace | Workshop + upstream |
+| `ansible/systemd/pi-cross-node-agent@.service.template` | Agent systemd unit (**no --model**) | Workshop + upstream |
+| `ansible/systemd/pi-agent-standalone.sh` | Agent wrapper (**no initial prompt**) | Workshop + upstream |
+| `ansible/systemd/ollama-idle-unload.sh` | Watchdog (safety net, disabled by default) | Workshop + upstream |
+| `ansible/phase3-ollama-models.yml` | Ollama + models + `OLLAMA_KEEP_ALIVE=0` override | Workshop + upstream |
+| `ansible/standup-fleet.yml` | Full fleet standup (7 phases, incl. NFS) | Workshop + upstream |
+| `FOCUS.md` | Current focus & status | Workshop only |
 
 ---
 
