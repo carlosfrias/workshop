@@ -126,3 +126,26 @@
           {{ inventory_hostname }} —
           pi-cross-node-agent@{{ inventory_hostname }}
           {{ pi_running.stdout | trim }}
+
+    # ── Fleet cooling service (persist fan + governor across reboot) ──
+    - name: Copy fleet-cooling-setup.sh
+      ansible.builtin.copy:
+        src: "{{ systemd_src }}/fleet-cooling-setup.sh"
+        dest: "{{ extension_path }}/fleet-cooling-setup.sh"
+        mode: '0755'
+      become: yes
+
+    - name: Install fleet-cooling systemd unit
+      ansible.builtin.copy:
+        src: "{{ systemd_src }}/fleet-cooling.service"
+        dest: "/etc/systemd/system/fleet-cooling.service"
+        mode: '0644'
+      become: yes
+
+    - name: Enable and start fleet-cooling service
+      ansible.builtin.systemd:
+        name: fleet-cooling
+        daemon_reload: yes
+        enabled: yes
+        state: started
+      become: yes

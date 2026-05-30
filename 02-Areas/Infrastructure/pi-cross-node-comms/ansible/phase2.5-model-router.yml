@@ -18,6 +18,7 @@
   gather_facts: no
   vars:
     config_src: "configs/model-router-15gi.json"
+    default_model: "openbmb/minicpm-o2.6:8b"
 
   tasks:
     - name: Ensure ~/.pi/agent directory exists
@@ -37,15 +38,36 @@
       ansible.builtin.shell: python3 -c "import json; json.load(open('$HOME/.pi/agent/model-router.json'))"
       changed_when: false
 
+    - name: Install pi-model-router npm package (15Gi)
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pi install npm:@yeliu84/pi-model-router
+      register: mr_install_15gi
+      changed_when: "'already installed' not in mr_install_15gi.stdout"
+
+    - name: Set defaultModel in settings.json (15Gi)
+      ansible.builtin.shell: |
+        python3 -c "
+        import json
+        f = '$HOME/.pi/agent/settings.json'
+        with open(f) as fh: d = json.load(fh)
+        d['defaultModel'] = '{{ default_model }}'
+        with open(f, 'w') as fh: json.dump(d, fh, indent=2)
+        print('defaultModel set to {{ default_model }}')
+        "
+      changed_when: true
+
     - name: Show deployed profile (15Gi)
       ansible.builtin.debug:
-        msg: "{{ inventory_hostname }} — tier: 15Gi, profile: local (high=qwen3:8b, medium=qwen3.5:4b, low=qwen3.5:4b)"
+        msg: "{{ inventory_hostname }} — tier: 15Gi, defaultModel={{ default_model }}"
 
 - name: Deploy model-router configs (31Gi tier)
   hosts: ram_31gi
   gather_facts: no
   vars:
     config_src: "configs/model-router-31gi.json"
+    default_model: "openbmb/minicpm-o2.6:8b"
 
   tasks:
     - name: Ensure ~/.pi/agent directory exists
@@ -65,9 +87,29 @@
       ansible.builtin.shell: python3 -c "import json; json.load(open('$HOME/.pi/agent/model-router.json'))"
       changed_when: false
 
+    - name: Install pi-model-router npm package (31Gi)
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pi install npm:@yeliu84/pi-model-router
+      register: mr_install_31gi
+      changed_when: "'already installed' not in mr_install_31gi.stdout"
+
+    - name: Set defaultModel in settings.json (31Gi)
+      ansible.builtin.shell: |
+        python3 -c "
+        import json
+        f = '$HOME/.pi/agent/settings.json'
+        with open(f) as fh: d = json.load(fh)
+        d['defaultModel'] = '{{ default_model }}'
+        with open(f, 'w') as fh: json.dump(d, fh, indent=2)
+        print('defaultModel set to {{ default_model }}')
+        "
+      changed_when: true
+
     - name: Show deployed profile (31Gi)
       ansible.builtin.debug:
-        msg: "{{ inventory_hostname }} — tier: 31Gi, profile: local (high=gemma4:e4b, medium=qwen3:8b, low=qwen3.5:4b)"
+        msg: "{{ inventory_hostname }} — tier: 31Gi, defaultModel={{ default_model }}"
 
 - name: Verify deployments
   hosts: ram_15gi,ram_31gi
