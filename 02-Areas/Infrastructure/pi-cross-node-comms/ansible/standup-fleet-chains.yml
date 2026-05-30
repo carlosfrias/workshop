@@ -1,18 +1,22 @@
 ---
 # Standup Fleet — Concurrent Chain Orchestrator
 #
-# Runs the 6 separated phase playbooks as 3 concurrent chains.
+# Runs the 7 separated phase playbooks as 3 concurrent chains.
 # Each chain runs its playbooks sequentially; all chains launch in parallel.
 #
-#   Chain 1: Phase 3 (Ollama + Models)    — longest-running, no deps
-#   Chain 2: Phase 2 → Phase 4            — pi before extension; independent of hub
-#   Chain 3: Phase 1 → Phase 5 → Phase 6  — hub → agents → validate
+#   Chain 0: Phase 0 (NFS Mount)               — shared filesystem, must complete first
+#   Chain 1: Phase 3 (Ollama + Models)          — longest-running, no deps
+#   Chain 2: Phase 2 → Phase 4                — pi before extension; independent of hub
+#   Chain 3: Phase 1 → Phase 5 → Phase 6      — hub → agents → validate
+#
+# NOTE: Phase 0 (NFS Mount) is run as a pre-flight before the chains,
+#       because multiple phases depend on the shared workspace being mounted.
 #
 # Usage:
 #   ansible-playbook -i inventory.yml standup-fleet-chains.yml
 #
 # Individual phases can still be run standalone:
-#   ansible-playbook -i inventory.yml phase1-hub-server.yml
+#   ansible-playbook -i inventory.yml phase0-nfs-mount.yml
 #
 # Env vars:
 #   PI_COMS_NET_AUTH_TOKEN — auth token (default: shared lab token)
@@ -27,10 +31,16 @@
         msg:
           - "═══════════════════════════════════════════════════"
           - "  coms-net FLEET STANDUP (Concurrent Chains)"
+          - "  Pre-flight: Phase 0 — NFS Mount"
           - "  Chain 1: Phase 3 — Ollama + Models"
           - "  Chain 2: Phase 2 → Phase 4 — Pi + Extension"
           - "  Chain 3: Phase 1 → Phase 5 → Phase 6 — Hub → Agents → Validate"
           - "═══════════════════════════════════════════════════"
+
+# ── Pre-flight: NFS Mount (must complete before chains) ──────────────────────
+
+- name: PRE-FLIGHT — NFS Mount (Orchestrator Workspace)
+  import_playbook: phase0-nfs-mount.yml
 
 # ── Chain 1: Ollama + Models (longest, no dependencies) ─────────────────────
 
