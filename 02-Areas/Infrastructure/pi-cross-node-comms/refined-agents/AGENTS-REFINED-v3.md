@@ -7,31 +7,51 @@ trigger: All 7 fleet nodes running Ollama model at 580-600% CPU idle, causing th
 supersedes: AGENTS-REFINED-v1.md
 ---
 
-# AGENTS-REFINED-v2 — pi-cross-node-comms
+# AGENTS-REFINED-v3 — pi-cross-node-comms
 
 ## Battle-Tested Rules
 
-### RULE 1: Workshop-First, Release-Through-Main
+### RULE 1: Workshop-First, Release-Through-GitHub-Upstream
 
-**Trigger:** Any code change to ansible playbooks, tests, scripts, or extension code.  
-**Rule:** All code changes MUST originate in the workshop codebase (`workshop/02-Areas/Infrastructure/pi-cross-node-comms/`). The `.pi/agent/git/` clone is read-only — never edit files there directly. Changes reach `.pi` ONLY through `pi install`/`pi update` pulling from the GitHub `main` branch. No exceptions.
+**Trigger:** Any code change to ansible playbooks, tests, scripts, or extension code.
+
+**Rule:** All code changes MUST originate in the workshop codebase. The `~/.pi/agent/git/` clones are read-only caches — they are NOT the upstream repository. The upstream is the project's GitHub repository (e.g., `carlosfrias/pi-cross-node-comms`). The `.pi` cache is updated ONLY through `pi install`/`pi update` pulling from GitHub `main`. No exceptions.
+
+**Three repository roles — never confuse them:**
+
+| Role | Location | Purpose | Write? |
+|------|----------|---------|--------|
+| Workshop | `workshop/02-Areas/Infrastructure/<project>/` | Develop, edit, test | ✅ Yes |
+| GitHub upstream | `github.com:carlosfrias/<project>` (pushed via local clone) | Release, tag, distribute | ✅ Push only |
+| `.pi` cache | `~/.pi/agent/git/github.com/carlosfrias/<project>/` | `pi install`/`pi update` read cache | ❌ Never |
 
 **The correct flow:**
 
 ```
-workshop (develop) → git commit → git push origin main → pi update (consume)
+workshop (develop) → git commit → push origin main → GitHub upstream
+                     ↓
+               port to flat upstream repo if paths differ
+                     ↓
+               push to GitHub upstream (tag release)
+                     ↓
+               pi install / pi update (consumes into .pi cache)
 ```
 
 **Never:**
-- Edit files in `~/.pi/agent/git/` directly
+- Edit files in `~/.pi/agent/git/` directly — it is a read-only cache, not the upstream
 - Create hotfix branches in `.pi`
 - Copy workshop files to `.pi` as a shortcut
+- Confuse `~/.pi/agent/git/` with the GitHub upstream — they share a local clone path but serve different purposes
 
 **Always:**
 - Develop in workshop
-- Commit to workshop repo
-- Port functional changes to upstream repo via git push to `main`
+- Commit to workshop repo (monorepo)
+- Port functional changes to the flat upstream repo if paths differ (workshop uses `02-Areas/Infrastructure/<project>/` prefix; upstream is flat)
+- Push to the GitHub upstream `main` branch
+- Tag releases on the GitHub upstream
 - Verify `pi update` pulls the fix with no specifiers
+
+**Origin:** Sessions 2026-05-29 and 2026-05-30 — `.pi` folder was contaminated with direct edits, an unnecessary hotfix branch was created, and the `.pi/agent/git/` local clone was repeatedly confused with the GitHub upstream. The local clone at `~/.pi/agent/git/` is just a git working directory used by `pi install`/`pi update`; it happens to push to the same GitHub remote but is NOT a source of truth. Only workshop and GitHub `main` are sources of truth.
 
 ### RULE 2: TDD for All Development
 
@@ -155,7 +175,7 @@ echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 **Key details:**
 - macOS NFS uses UID 501 for `friasc`, Linux uses UID 1000. The `-mapall=501:20` export option maps all client UIDs to the macOS `friasc` user, enabling write access.
 - `-maproot` and `-mapall` are **mutually exclusive** on macOS NFS. Use ONLY `-mapall=501:20`.
-- NFSv4 is NOT supported by macOS NFS server. Use `.  Use `vers=3` on clients.
+- NFSv4 is NOT supported by macOS NFS server. Use `vers=3` on clients.
 - The `intr` mount option is **deprecated** on kernel 6.8+ and causes mount failures. Do NOT include it in fstab.
 - Ansible playbook `phase0-nfs-mount.yml` automates this setup.
 
@@ -173,12 +193,19 @@ echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 6. **OLLAMA_KEEP_ALIVE** — `cat /proc/$(pgrep -f 'ollama serve')/environ | tr '\0' '\n' | grep OLLAMA_KEEP_ALIVE` — must be 0
 7. **defaultModel in settings.json** — must not exist
 
+### RULE 11: sudo Requires Terminal on macOS Orchestrator
+
+**Trigger:** Any task that requires `sudo` on the macOS host (editing `/etc/exports`, restarting `nfsd`, system configuration).  
+**Rule:** The pi agent cannot run `sudo` commands on the macOS orchestrator because it lacks a terminal for password input. When a task requires `sudo` on macOS, write a shell script to `/tmp/` and ask the user to run `sudo bash /tmp/script.sh` in their terminal. Never try `sudo` directly from the agent — it will always fail with `sudo: a terminal is required to read the password`.
+
+**Substance:** Session 2026-05-30 — NFS configuration changes to `/etc/exports` and `nfsd restart` both required `sudo` on macOS. Multiple attempts to use `sudo sh -c` and `sudo tee` all failed. The working workaround was writing `/tmp/fix-nfs-exports.sh` and asking the user to run `sudo bash /tmp/fix-nfs-exports.sh`.
+
 ### Universal Rules (from root AGENTS.md)
 
 These rules apply across ALL projects and were extracted from the 2026-05-29 session:
 
-- **RULE 1:** Workshop-First, Release-Through-Main (same as this project's RULE 1)
-- **RULE 2:** TDD for All Development (same as this project's RULE 2)
+- **RULE 1:** Workshop-First, Release-Through-GitHub-Upstream (updated — .pi cache is NOT upstream)
+- **RULE 2:** TDD for All Development
 - **RULE 3:** Project-Level AGENTS.md Required
 - **RULE 4:** Refined Agents Are Versioned and Mandatory
 
@@ -192,7 +219,8 @@ These rules apply across ALL projects and were extracted from the 2026-05-29 ses
 | `ansible/systemd/pi-agent-standalone.sh` | Agent wrapper (**no initial prompt**) | Workshop + upstream |
 | `ansible/systemd/ollama-idle-unload.sh` | Watchdog (safety net, disabled by default) | Workshop + upstream |
 | `ansible/phase3-ollama-models.yml` | Ollama + models + `OLLAMA_KEEP_ALIVE=0` override | Workshop + upstream |
-| `ansible/standup-fleet.yml` | Full fleet standup (6 phases) | Workshop + upstream |
+| `ansible/standup-fleet.yml` | Full fleet standup (7 phases, incl. NFS) | Workshop + upstream |
+| `FOCUS.md` | Current focus & status | Workshop only |
 | `ansible/phase0-nfs-mount.yml` | NFS mount for orchestrator workspace | Workshop + upstream |
 
 ## Discovery Path
