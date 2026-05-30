@@ -2,6 +2,7 @@
 # Standup Fleet — Full coms-net Hub + Lab Readiness Playbook
 #
 # Single-playbook orchestrator that:
+#   Phase 0: NFS mount — orchestrator shared workspace on all lab nodes
 #   Phase 1: Docker-deploys and starts the coms-net hub server on fnet2
 #   Phase 2: Ensures pi is installed and current on every lab node (nvm + Node v24.15)
 #   Phase 3: LVM expansion + Ollama installation + model pulls on every lab node
@@ -32,6 +33,7 @@
         msg:
           - "═══════════════════════════════════════════════════"
           - "  coms-net FLEET STANDUP"
+          - "  Phase 0: NFS Mount (orchestrator workspace share)"
           - "  Phase 1: Hub Server (fnet2) [Docker]"
           - "  Phase 2: pi Agent (all nodes) [nvm + Node v24.15]"
           - "  Phase 3: LVM Expansion + Ollama + Models (all nodes)"
@@ -39,6 +41,78 @@
           - "  Phase 5: Agent Launch (all nodes)"
           - "  Phase 6: Fleet Validation + Prune"
           - "═══════════════════════════════════════════════════"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 0: NFS Mount — Orchestrator Shared Workspace
+# ══════════════════════════════════════════════════════════════════════════════
+
+- name: PHASE 0 - NFS Mount (Orchestrator Shared Workspace)
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    nfs_server: "192.168.0.154"
+    nfs_export: "/Users/friasc/Cloud/carlos-desktop"
+    mount_point: "/mnt/carlos-desktop"
+    mount_options: "vers=3,rw,soft,_netdev"
+
+  tasks:
+    - name: Ensure nfs-common is installed
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present
+      become: yes
+
+    - name: Create mount point
+      ansible.builtin.file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: '0755'
+      become: yes
+
+    - name: Add NFS mount to fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: "{{ nfs_server }}:{{ nfs_export }} {{ mount_point }} nfs {{ mount_options }} 0 0"
+        regexp: "^{{ nfs_server }}:{{ nfs_export }}\\s+{{ mount_point }}\\s+nfs\\s+.*$"
+        state: present
+        create: yes
+      become: yes
+
+    - name: Mount NFS share
+      ansible.builtin.shell: |
+        if ! mountpoint -q {{ mount_point }} 2>/dev/null; then
+          mount {{ mount_point }} 2>&1 || mount -t nfs -o {{ mount_options }} {{ nfs_server }}:{{ nfs_export }} {{ mount_point }} 2>&1
+        fi
+      register: mount_result
+      changed_when: "'mounted' in mount_result.stdout or mount_result.rc == 0"
+
+    - name: Verify NFS mount
+      ansible.builtin.shell: mountpoint -q {{ mount_point }}
+      register: mount_verify
+      changed_when: false
+
+    - name: Verify read access
+      ansible.builtin.shell: ls {{ mount_point }}/workshop/ > /dev/null
+      register: read_verify
+      changed_when: false
+
+    - name: Verify write access
+      ansible.builtin.shell: |
+        touch {{ mount_point }}/workshop/.nfs-verify-{{ inventory_hostname }} && \
+        rm {{ mount_point }}/workshop/.nfs-verify-{{ inventory_hostname }}
+      register: write_verify
+      changed_when: false
+
+    - name: Report NFS status
+      ansible.builtin.debug:
+        msg: >-
+          {{ '✅' if mount_verify.rc == 0 else '❌' }}
+          {{ inventory_hostname }} —
+          NFS mounted at {{ mount_point }}
+          (R{{ '✅' if read_verify.rc == 0 else '❌' }}
+          W{{ '✅' if write_verify.rc == 0 else '❌' }})
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PHASE 1: Hub Server — fnet2 only

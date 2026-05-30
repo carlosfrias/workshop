@@ -1,0 +1,105 @@
+---
+# Phase 0: NFS Mount — Orchestrator Shared Workspace on Fleet Nodes
+#
+# Mounts the macOS orchestrator's workspace directory on all lab nodes
+# via NFSv3 so fleet agents can read code and config without rsync.
+#
+# Prerequisites on orchestrator (macOS):
+#   1. /etc/exports must contain:
+#      /Users/friasc/Cloud/carlos-desktop -network 192.168.0.0 -mask 255.255.255.0 -alldirs -mapall=501:20
+#   2. nfsd must be running: sudo nfsd enable && sudo nfsd start
+#
+# Run from the macOS orchestrator:
+#   cd workshop/02-Areas/Infrastructure/pi-cross-node-comms/ansible
+#   ansible-playbook -i inventory.yml phase0-nfs-mount.yml
+#
+- name: PHASE 0 - NFS Mount (Orchestrator Shared Workspace)
+  hosts: lab_nodes
+  gather_facts: yes
+  strategy: free
+
+  vars:
+    nfs_server: "192.168.0.154"
+    nfs_export: "/Users/friasc/Cloud/carlos-desktop"
+    mount_point: "/mnt/carlos-desktop"
+    mount_options: "vers=3,rw,soft,_netdev"
+
+  tasks:
+    - name: Ensure nfs-common is installed
+      ansible.builtin.apt:
+        name: nfs-common
+        state: present
+      become: yes
+
+    - name: Create mount point
+      ansible.builtin.file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: '0755'
+      become: yes
+
+    - name: Check if mount already exists in fstab
+      ansible.builtin.shell: "grep -c '{{ mount_point }}' /etc/fstab || true"
+      register: fstab_check
+      changed_when: false
+
+    - name: Add NFS mount to fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: "{{ nfs_server }}:{{ nfs_export }} {{ mount_point }} nfs {{ mount_options }} 0 0"
+        state: present
+        create: yes
+      become: yes
+      when: fstab_check.stdout | trim == "0"
+
+    - name: Ensure correct mount options in fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: "^{{ nfs_server }}:{{ nfs_export }}\\s+{{ mount_point }}\\s+nfs\\s+.*$"
+        line: "{{ nfs_server }}:{{ nfs_export }} {{ mount_point }} nfs {{ mount_options }} 0 0"
+        state: present
+      become: yes
+
+    - name: Unmount if currently mounted with wrong options
+      ansible.builtin.shell: |
+        if mountpoint -q {{ mount_point }} 2>/dev/null; then
+          current_opts=$(mount | grep " {{ mount_point }} " | grep -o 'vers=[0-9]*' || true)
+          if [ -z "$current_opts" ] || [ "$current_opts" != "vers=3" ]; then
+            umount {{ mount_point }} 2>/dev/null || true
+          fi
+        fi
+      changed_when: false
+
+    - name: Mount NFS share
+      ansible.builtin.shell: |
+        if ! mountpoint -q {{ mount_point }} 2>/dev/null; then
+          mount {{ mount_point }} 2>&1 || mount -t nfs -o {{ mount_options }} {{ nfs_server }}:{{ nfs_export }} {{ mount_point }} 2>&1
+        fi
+      register: mount_result
+      changed_when: "'mounted' in mount_result.stdout or mount_result.rc == 0"
+
+    - name: Verify mount is active
+      ansible.builtin.shell: mountpoint -q {{ mount_point }}
+      register: mount_verify
+      changed_when: false
+
+    - name: Verify read access
+      ansible.builtin.shell: ls {{ mount_point }}/workshop/ > /dev/null
+      register: read_verify
+      changed_when: false
+
+    - name: Verify write access
+      ansible.builtin.shell: |
+        touch {{ mount_point }}/workshop/.nfs-verify-{{ inventory_hostname }} && \
+        rm {{ mount_point }}/workshop/.nfs-verify-{{ inventory_hostname }}
+      register: write_verify
+      changed_when: false
+
+    - name: Report NFS status
+      ansible.builtin.debug:
+        msg: >-
+          {{ '✅' if mount_verify.rc == 0 else '❌' }}
+          {{ inventory_hostname }} —
+          NFS {{ nfs_export }} mounted at {{ mount_point }}
+          (R{{ '✅' if read_verify.rc == 0 else '❌' }}
+          W{{ '✅' if write_verify.rc == 0 else '❌' }})
