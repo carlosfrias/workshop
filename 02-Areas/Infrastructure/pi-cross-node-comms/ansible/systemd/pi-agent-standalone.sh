@@ -6,8 +6,17 @@
 # The coms-net extension maintains its SSE connection to the hub as long as
 # pi's REPL is alive. systemd manages the tmux session lifecycle.
 #
-# After pi starts, we send an initial prompt via tmux send-keys to kick
-# pi into its agent loop (extension loading, hub connection).
+# IDLE MODEL OFFLOADING (2026-05-29):
+# Previously, the initial prompt caused pi to immediately load the Ollama model,
+# which then stayed at 100% CPU indefinitely because pi's streaming HTTP
+# connection prevents Ollama from unloading (even with OLLAMA_KEEP_ALIVE=0).
+# This is a known Ollama bug: https://github.com/ollama/ollama/issues/7645
+#
+# Fix: Do NOT send an initial prompt. Instead, let pi start idle in the REPL.
+# The model will only load when a coms-net task arrives, and the
+# ollama-idle-unload watchdog will kill stuck runners.
+#
+# The INITIAL_PROMPT is kept as a fallback but is NOT sent by default.
 
 set -euo pipefail
 
@@ -21,9 +30,14 @@ unset _saved_args
 
 SESSION_NAME="pi-agent"
 TMUX_TMPDIR="$HOME/.tmux"
+
+# Export OLLAMA_KEEP_ALIVE=0 so pi's Ollama requests unloads model after each response
+# This complements the systemd override on the ollama service itself.
+export OLLAMA_KEEP_ALIVE=0
 mkdir -p "$TMUX_TMPDIR"
 export TMUX_TMPDIR
 INITIAL_PROMPT="You are a coms-net fleet agent. Your extension is already loaded. Report your hostname, then wait for tasks via the coms-net tools."
+INITIAL_PROMPT_ENABLED=false  # Set to true only for debugging; false prevents idle model loading
 
 # Kill any existing tmux session with this name
 tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
@@ -72,9 +86,17 @@ tmux new-session -d -s "$SESSION_NAME" -x 200 -y 50 \
 # Wait for pi to initialize and be ready for input
 sleep 5
 
-# Send the initial prompt to kick pi into its agent loop
-# This triggers extension loading and coms-net hub connection
-tmux send-keys -t "$SESSION_NAME" "$INITIAL_PROMPT" Enter
+# Send the initial prompt ONLY if enabled (default: false)
+# When disabled, pi starts idle and the model loads only on demand.
+# This prevents the Ollama runner from burning 100% CPU at idle.
+if [[ "$INITIAL_PROMPT_ENABLED" == "true" ]]; then
+    tmux send-keys -t "$SESSION_NAME" "$INITIAL_PROMPT" Enter
+else
+    # For idle start: pi loads extensions but does NOT trigger model inference.
+    # The coms-net extension connects to the hub and listens for tasks.
+    # When a task arrives, pi will load the model on demand.
+    :
+fi
 
 # Wait for the tmux session to exit (which happens if pi crashes)
 # tmux wait-session blocks until the session is destroyed

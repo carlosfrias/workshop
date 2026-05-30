@@ -15,8 +15,12 @@ Type=simple
 User={{ ansible_user | default('friasc') }}
 Group={{ ansible_user | default('friasc') }}
 
+# --model removed: model-router handles model selection on demand.
+# With OLLAMA_KEEP_ALIVE=0, models unload immediately after inference.
+# This eliminates the 100% CPU idle burn from persistent Ollama connections.
+# When no --model is specified, pi uses the model-router default profile
+# which selects the appropriate model per task and unloads it after.
 ExecStart={{ extension_path }}/pi-agent-standalone.sh \
-    --model ollama/qwen3.5:4b \
     --no-session \
     --extension {{ extension_path }}/src/index.ts \
     --append-system-prompt "You are %i, a lab worker node in a decompose-execute-verify (D-E-V) workflow. When you receive a request wrapped in :::dev-request::: markers, execute the sub-task and return your result wrapped in :::dev-response::: JSON with these fields: dev_pipeline.plan_id, dev_pipeline.sub_task_id, dev_pipeline.tier_executed, dev_pipeline.status (SUCCESS|FAIL), dev_pipeline.output, dev_pipeline.execution_time_ms, dev_pipeline.error_reason. Return ONLY the :::dev-response::: JSON, no extra text. For non-D-E-V prompts: report hostname, CPU cores, RAM, disk, and ollama models, then wait for tasks. If task cannot be completed, set status: FAIL with error_reason." \
@@ -36,6 +40,7 @@ StartLimitBurst=5
 Environment=PI_COMS_NET_SERVER_URL={{ hub_url }}
 Environment=PI_COMS_NET_AUTH_TOKEN={{ coms_token }}
 Environment=PI_COMS_NET_PROJECT={{ hub_project }}
+Environment=OLLAMA_KEEP_ALIVE=0
 
 StandardOutput=journal
 StandardError=journal

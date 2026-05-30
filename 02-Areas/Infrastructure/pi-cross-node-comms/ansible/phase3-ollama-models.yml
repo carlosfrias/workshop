@@ -89,6 +89,50 @@
       until: model_pull.rc == 0
       loop: "{{ target_models }}"
 
+    - name: Configure Ollama keep-alive override
+      block:
+        - name: Ensure Ollama service override directory exists
+          ansible.builtin.file:
+            path: /etc/systemd/system/ollama.service.d
+            state: directory
+            mode: '0755'
+          become: yes
+
+        - name: Install Ollama keep-alive override (models unload immediately after use)
+          ansible.builtin.copy:
+            content: |
+              [Service]
+              Environment="OLLAMA_KEEP_ALIVE=0"
+            dest: /etc/systemd/system/ollama.service.d/override.conf
+            mode: '0644'
+          become: yes
+          register: override_install
+
+        - name: Reload systemd daemon
+          ansible.builtin.systemd:
+            daemon_reload: yes
+          become: yes
+
+        - name: Restart Ollama to apply keep-alive override
+          ansible.builtin.systemd:
+            name: ollama
+            state: restarted
+          become: yes
+
+        - name: Wait for Ollama API after restart
+          ansible.builtin.uri:
+            url: http://localhost:11434/api/tags
+            status_code: 200
+          register: api_ready_after_restart
+          retries: 15
+          delay: 5
+          until: api_ready_after_restart.status == 200
+
+        - name: Report Ollama keep-alive override
+          ansible.builtin.debug:
+            msg: "✅ {{ inventory_hostname }} — OLLAMA_KEEP_ALIVE=0 set (models unload immediately after use)"
+      when: ansible_service_mgr == 'systemd'
+
     - name: List installed models
       ansible.builtin.command: ollama list
       register: model_list
@@ -99,3 +143,4 @@
         msg:
           - "✅ {{ inventory_hostname }} — Ollama ready"
           - "   Models: {{ model_list.stdout_lines | join(', ') }}"
+          - "   Keep-alive: 0 (immediate unload)"
