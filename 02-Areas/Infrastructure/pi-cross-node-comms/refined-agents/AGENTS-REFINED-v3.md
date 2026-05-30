@@ -137,6 +137,30 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 ```
 
+### RULE 10: NFS Mount for Orchestrator Workspace
+
+**Trigger:** Fleet node setup or standup.  
+**Rule:** All fleet nodes MUST mount the macOS orchestrator's workspace directory via NFS. This eliminates the need for rsync/scp to deploy code and config to fleet nodes.
+
+**Required NFS server config on macOS orchestrator (`/etc/exports`):**
+```
+/Users/friasc/Cloud/carlos-desktop -network 192.168.0.0 -mask 255.255.255.0 -alldirs -mapall=501:20
+```
+
+**Required client mount on each fleet node (`/etc/fstab`):**
+```
+192.168.0.154:/Users/friasc/Cloud/carlos-desktop /mnt/carlos-desktop nfs vers=3,rw,soft,_netdev 0 0
+```
+
+**Key details:**
+- macOS NFS uses UID 501 for `friasc`, Linux uses UID 1000. The `-mapall=501:20` export option maps all client UIDs to the macOS `friasc` user, enabling write access.
+- `-maproot` and `-mapall` are **mutually exclusive** on macOS NFS. Use ONLY `-mapall=501:20`.
+- NFSv4 is NOT supported by macOS NFS server. Use `.  Use `vers=3` on clients.
+- The `intr` mount option is **deprecated** on kernel 6.8+ and causes mount failures. Do NOT include it in fstab.
+- Ansible playbook `phase0-nfs-mount.yml` automates this setup.
+
+**Substance:** Session 2026-05-30 — NFSv4 failed silently, `-mapall` + `-maproot` caused nfsd to reject the export (empty showmount), and `intr` option caused mount failures on Ubuntu 24.04 (kernel 6.8). Each of these took significant debugging to isolate.
+
 ### RULE 9: Fleet Node Health Check Items
 
 **Trigger:** Diagnosing fleet node issues.  
@@ -169,7 +193,7 @@ These rules apply across ALL projects and were extracted from the 2026-05-29 ses
 | `ansible/systemd/ollama-idle-unload.sh` | Watchdog (safety net, disabled by default) | Workshop + upstream |
 | `ansible/phase3-ollama-models.yml` | Ollama + models + `OLLAMA_KEEP_ALIVE=0` override | Workshop + upstream |
 | `ansible/standup-fleet.yml` | Full fleet standup (6 phases) | Workshop + upstream |
-| `FOCUS.md` | Current focus & status | Workshop only |
+| `ansible/phase0-nfs-mount.yml` | NFS mount for orchestrator workspace | Workshop + upstream |
 
 ## Discovery Path
 
