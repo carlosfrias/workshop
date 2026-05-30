@@ -5,9 +5,9 @@ tags:
   - fleet
   - PARA
   - area
-version: 1.0.0
+version: 0.3.0
 status: active
-last_updated: 2026-05-29
+last_updated: 2026-05-30
 ---
 
 # pi-cross-node-comms — Project AGENTS
@@ -27,7 +27,7 @@ Project AGENTS for `workshop/02-Areas/Infrastructure/pi-cross-node-comms/`. Cont
 | **Status** | 🔧 Active |
 | **Version** | 0.2.1 |
 | **Upstream** | `carlosfrias/pi-cross-node-comms` (GitHub private, main branch) |
-| **Last release** | `3a321c5d` — fix(fleet-standup): 5 playbook bugs |
+| **Last release** | `0328ee24` — fix(fleet): eliminate idle CPU burn from persistent Ollama connections |
 
 ## Key Files
 
@@ -54,7 +54,8 @@ Project AGENTS for `workshop/02-Areas/Infrastructure/pi-cross-node-comms/`. Cont
 | Version | Date | Session | Key Rules |
 |---------|------|---------|-----------|
 | [v1](./refined-agents/AGENTS-REFINED-v1.md) | 2026-05-29 | fleet-standup-bugfix | Workshop-first, TDD for playbooks, paren balance, systemctl output, release pipeline |
-| [v2](./refined-agents/AGENTS-REFINED-v2.md) | 2026-05-29 | fleet-standup-bugfix | Same as v1 + TDD expanded to all development (see root AGENTS.md RULE 2) |
+| [v2](./refined-agents/AGENTS-REFINED-v3.md) | 2026-05-29 | fleet-standup-bugfix | Same as v1 + TDD expanded to all development (see root AGENTS.md RULE 2) |
+| [v3](./refined-agents/AGENTS-REFINED-v3.md) | 2026-05-30 | fleet-idle-cpu-burn | No hardcoded --model, OLLAMA_KEEP_ALIVE=0, no initial prompt, no defaultModel, fan/governor checks |
 
 ## Routing
 
