@@ -5,9 +5,9 @@ tags:
   - fleet
   - PARA
   - area
-version: 0.3.0
+version: 0.3.1
 status: active
-last_updated: 2026-05-30
+last_updated: 2026-05-29
 ---
 
 # pi-cross-node-comms — Project AGENTS
@@ -53,9 +53,9 @@ Project AGENTS for `workshop/02-Areas/Infrastructure/pi-cross-node-comms/`. Cont
 
 | Version | Date | Session | Key Rules |
 |---------|------|---------|-----------|
-| [v1](./refined-agents/AGENTS-REFINED-v1.md) | 2026-05-29 | fleet-standup-bugfix | Workshop-first, TDD for playbooks, paren balance, systemctl output, release pipeline |
-| [v2](./refined-agents/AGENTS-REFINED-v3.md) | 2026-05-29 | fleet-standup-bugfix | Same as v1 + TDD expanded to all development (see root AGENTS.md RULE 2) |
-| [v3](./refined-agents/AGENTS-REFINED-v3.md) | 2026-05-30 | fleet-idle-cpu-burn | No hardcoded --model, OLLAMA_KEEP_ALIVE=0, no initial prompt, no defaultModel, fan/governor checks |
+| [v1](./refined-agents/AGENTS-REFINED-v1.md) | 2026-05-29 | fleet-standup-bugfix | Workshop-first, TDD for playbooks, paren balance |
+| [v3](./refined-agents/AGENTS-REFINED-v3.md) | 2026-05-30 | fleet-idle-cpu-burn | No hardcoded --model, OLLAMA_KEEP_ALIVE=0, fan/governor checks |
+| [v4](./refined-agents/AGENTS-REFINED-v4.md) | 2026-05-29 | fleet-model-loading-root-cause | pi-model-router required, defaultModel required (NOT removed), fleet-cooling systemd oneshot |
 
 ## Routing
 
