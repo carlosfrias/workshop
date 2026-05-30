@@ -1,15 +1,23 @@
 ---
-status: active
-version: 2.6.0
+status: released
+version: 0.2.1
 last_updated: 2026-05-29
-phase: Phase 6 complete, fleet operational
+phase: Fixes released to upstream main, awaiting pi update verification
 ---
 
 # FOCUS — pi-cross-node-comms
 
 ## Current Focus
 
-Fleet standup bug fixes and TDD test suite. Five bugs found and fixed during fleet standup:
+Fleet standup bug fixes and TDD test suite complete. Five bugs fixed, 42 TDD tests created, fix pushed to upstream `main`.
+
+### Session 2026-05-29
+- Fixed 5 playbook bugs and committed to workshop (812cb5a) and upstream main (3a321c5d)
+- Created 5 TDD test suites (42 tests, all green)
+- Created `FOCUS.md` and `PLAN.md`
+- `.pi` folder cleaned — no dev artifacts remain
+- Deleted ill‑advised hotfix branch; never created branches again
+- **Lesson:** Workshop is the sole source of truth; `.pi` is read‑only through `pi install`/`pi update`
 1. **Missing closing `)` in when-clause** — `standup-fleet.yml` and `phase2-pi-availability.yml` had unbalanced parentheses in Jinja2 when conditions
 2. **Stale `pi_version_target`** — Both playbooks had `0.75.5` instead of current `0.77.0`
 3. **Wrong `systemctl is-active` comparison** — `standup-fleet.yml` and `phase5-agent-services.yml` compared output to `"running"` instead of `"active"` (always showed ❌)

@@ -25,7 +25,7 @@ Infrastructure domain for workshop/02-Areas/. Contains 10 active infrastructure 
 | [`health-monitor/`](./health-monitor/) | ✅ Archived | - | Resource monitoring (RAM, CPU, swap, disk, network) |
 | [`local-model-pilot/`](./local-model-pilot/) | ✅ Archived | - | Ollama model routing configuration |
 | [`node-router/`](./node-router/) | ✅ Archived | v1.0.0 | Execution location scoring + routing |
-| [`pi-cross-node-comms/`](./pi-cross-node-comms/) | ✅ Archived | - | Cross-node SSE coordination |
+| [`pi-cross-node-comms/`](./pi-cross-node-comms/) | 🔧 Active | v0.2.1 | Cross-node SSE coordination, fleet standup |
 | [`playbook-executor/`](./playbook-executor/) | ✅ Archived | - | Playbook execution framework |
 | [`project-blueprint/`](./project-blueprint/) | ✅ Archived | v1.4.0 | Orchestration framework scaffolding |
 | [`sshfs-accessible/`](./sshfs-accessible/) | ✅ Archived | - | SSHFS mounts for lab nodes |
@@ -71,4 +71,4 @@ Before declaring infrastructure work complete:
 
 ---
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-29*
